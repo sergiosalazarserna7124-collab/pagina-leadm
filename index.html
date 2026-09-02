@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutoKPI — Gestión comercial para inmobiliarias</title>
+<meta name="description" content="AutoKPI analiza cada llamada y chat de tu equipo, llena el CRM solo y te dice qué asesor sí trabaja. Gestión comercial real para inmobiliarias con más de 5 asesores.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="AutoKPI — Gestión comercial para inmobiliarias">
+<meta property="og:description" content="No necesitas más herramientas. Necesitas saber qué hace tu equipo con cada lead.">
+<meta property="og:type" content="website">
+
+<!-- Preconnect al player del VSL (ConverteAI/vturb): el video no carga hasta
+     el clic, pero la conexión ya queda caliente. -->
+<link rel="preconnect" href="https://scripts.converteai.net">
+<link rel="preconnect" href="https://cdn.converteai.net">
+<!-- El calendario (GHL) carga lazy al hacer scroll; esto solo adelanta el DNS. -->
+<link rel="dns-prefetch" href="https://api.leadconnectorhq.com">
+<link rel="dns-prefetch" href="https://link.msgsndr.com">
+
+<style>
+/* ── Reset mínimo ──────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+img,svg,iframe{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+
+/* ── Tokens ────────────────────────────────────────────────────────────── */
+:root{
+  --bg:#000;
+  --ink:#fff;
+  --ink-2:#a8b0c0;
+  --amarillo:#e8d44d;
+  --azul:#4f7fe8;
+  --violeta:#7b5cf0;
+  --grad:linear-gradient(135deg,var(--azul),var(--violeta));
+  --borde:1px solid rgba(255,255,255,.08);
+  --card:rgba(255,255,255,.03);
+  --radius:12px;
+  --sec-pad:48px;      /* móvil */
+  --container:1100px;
+}
+@media (min-width:820px){:root{--sec-pad:80px}}
+
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:16px;line-height:1.6;
+  overflow-x:hidden;
+}
+
+.container{max-width:var(--container);margin:0 auto;padding:0 20px}
+section{padding:var(--sec-pad) 0}
+h1,h2{text-wrap:balance;line-height:1.15}
+h2{font-size:24px;font-weight:700}
+@media (min-width:820px){h2{font-size:32px}}
+.sub{color:var(--ink-2);max-width:640px;margin:14px auto 0}
+
+/* ── 1 · HERO ──────────────────────────────────────────────────────────── */
+.hero{position:relative;text-align:center;padding-top:64px}
+@media (min-width:820px){.hero{padding-top:96px}}
+/* Glow radial azul/violeta, CSS puro — sin imágenes */
+.hero::before{
+  content:"";position:absolute;inset:-20% -10% auto;height:120%;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%,rgba(79,127,232,.16),transparent 70%),
+    radial-gradient(ellipse 40% 40% at 62% 8%,rgba(123,92,240,.12),transparent 70%);
+  pointer-events:none;z-index:-1;
+}
+.badge{
+  display:inline-block;font-size:13px;letter-spacing:.02em;color:var(--ink);
+  padding:7px 16px;border-radius:999px;border:1px solid transparent;
+  background:linear-gradient(#0a0c13,#0a0c13) padding-box,var(--grad) border-box;
+}
+.hero h1{
+  font-size:30px;font-weight:800;letter-spacing:-.01em;
+  max-width:900px;margin:22px auto 0;
+}
+.hero .amarillo{color:var(--amarillo);font-size:16px;max-width:680px;margin:18px auto 0}
+.hero .mira{color:var(--azul);font-size:16px;margin-top:16px}
+@media (min-width:820px){
+  .hero h1{font-size:44px}
+  .hero .amarillo{font-size:18px}
+}
+
+/* ── 2 · VSL (facade: el iframe se inyecta solo al hacer clic) ─────────── */
+.vsl{padding-top:36px}
+@media (min-width:820px){.vsl{padding-top:72px}}
+.vsl-frame{
+  position:relative;max-width:900px;margin:0 auto;aspect-ratio:16/9;
+  border-radius:var(--radius);border:var(--borde);overflow:hidden;
+  background:
+    radial-gradient(ellipse 80% 90% at 50% 110%,rgba(79,127,232,.22),transparent 65%),
+    linear-gradient(160deg,#0d1017,#07080c);
+  box-shadow:0 0 70px rgba(79,127,232,.22),0 0 24px rgba(123,92,240,.12);
+}
+.vsl-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vsl-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vsl-play{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;width:100%;
+  transition:opacity .2s;
+}
+.vsl-play:hover .vsl-play-btn{transform:scale(1.06)}
+.vsl-play-btn{
+  width:76px;height:76px;border-radius:50%;display:grid;place-items:center;
+  background:var(--grad);box-shadow:0 8px 32px rgba(79,127,232,.45);
+  transition:transform .2s;
+}
+.vsl-play span{font-size:14px;color:var(--ink-2)}
+
+/* ── 3 · CTA ───────────────────────────────────────────────────────────── */
+.cta-box{text-align:center;padding-top:40px}
+@media (min-width:820px){.cta-box{padding-top:72px}}
+.btn{
+  display:inline-block;text-decoration:none;text-align:center;
+  background:var(--grad);color:#fff;font-weight:700;font-size:17px;
+  letter-spacing:.02em;padding:17px 38px;border-radius:var(--radius);
+  box-shadow:0 8px 30px rgba(79,127,232,.35);
+  transition:transform .18s,box-shadow .18s;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(123,92,240,.45)}
+.btn:focus-visible,.vsl-play:focus-visible{
+  outline:2px solid var(--azul);outline-offset:3px;border-radius:var(--radius);
+}
+.micro{font-size:13px;color:var(--ink-2);margin-top:12px}
+
+/* ── 4 · Prueba social ─────────────────────────────────────────────────── */
+.logos{text-align:center;padding-top:56px;padding-bottom:0}
+.logos p{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+/* Marquesina: dos copias idénticas de la lista y un translateX(-50%) en bucle.
+   Es solo transform (composición en GPU), dentro de las reglas de velocidad.
+   Se pausa al pasar el mouse y se apaga con prefers-reduced-motion. */
+.marquee{
+  overflow:hidden;margin-top:26px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+}
+.marquee-track{display:flex;width:max-content;animation:marquee 32s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes marquee{to{transform:translateX(-50%)}}
+.marquee-grupo{display:flex;align-items:center;gap:56px;padding-right:56px}
+.cliente{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  text-decoration:none;opacity:.6;filter:grayscale(1);transition:opacity .2s;
+}
+.cliente:hover{opacity:1;filter:none}
+.cliente svg,.cliente img{height:20px;width:auto}
+.cliente .ig{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-2)}
+.cliente .ig svg{height:12px;width:12px;stroke:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){
+  .marquee{mask-image:none;-webkit-mask-image:none}
+  .marquee-track{animation:none;width:auto;flex-wrap:wrap;justify-content:center}
+  .marquee-grupo[aria-hidden]{display:none}
+  .marquee-grupo{flex-wrap:wrap;justify-content:center;padding-right:0}
+}
+.metricas{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 56px;margin-top:44px}
+.metricas div b{display:block;font-size:30px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.metricas div span{font-size:13px;color:var(--ink-2)}
+
+/* ── 5 · Gestión comercial ─────────────────────────────────────────────── */
+.gestion{text-align:center}
+.cards{
+  display:grid;grid-template-columns:1fr;gap:16px;
+  margin-top:40px;text-align:left;
+}
+@media (min-width:720px){.cards{grid-template-columns:1fr 1fr;gap:20px}}
+.card{
+  background:var(--card);border:var(--borde);border-radius:var(--radius);
+  padding:26px;transition:transform .18s,border-color .18s;
+}
+.card:hover{transform:translateY(-2px);border-color:rgba(123,92,240,.35)}
+.card .icon{
+  width:44px;height:44px;border-radius:10px;display:grid;place-items:center;
+  background:rgba(79,127,232,.12);margin-bottom:16px;
+}
+.card .icon svg{stroke:var(--azul)}
+.card h3{font-size:18px;margin-bottom:8px}
+.card p{color:var(--ink-2);font-size:15px}
+
+/* ── 6 · Antes / Después ───────────────────────────────────────────────── */
+.vs{display:grid;grid-template-columns:1fr;gap:16px;margin-top:40px}
+@media (min-width:820px){.vs{grid-template-columns:1fr 1fr;gap:20px}}
+.vs-col{border-radius:var(--radius);padding:28px;border:var(--borde)}
+.vs-hoy{background:rgba(232,86,86,.05);border-color:rgba(232,86,86,.18)}
+.vs-auto{background:rgba(79,180,232,.05);border-color:rgba(79,127,232,.25)}
+.vs-col h3{font-size:18px;margin-bottom:18px}
+.vs-hoy h3{color:#e88a86}
+.vs-auto h3{color:#6fd3b8}
+.vs-col ul{list-style:none;display:grid;gap:12px}
+.vs-col li{display:flex;gap:12px;color:var(--ink-2);font-size:15px}
+.vs-col li b{flex:none;width:20px;text-align:center;font-weight:700}
+.vs-hoy li b{color:#e88a86}
+.vs-auto li b{color:#6fd3b8}
+
+
+/* ── 8 · Agendar ───────────────────────────────────────────────────────── */
+.agendar{text-align:center}
+.cal-frame{
+  position:relative;max-width:900px;margin:40px auto 0;min-height:680px;
+  border-radius:var(--radius);border:var(--borde);overflow:hidden;
+  background:var(--card);
+}
+.cal-frame::before{
+  content:"Cargando calendario…";position:absolute;inset:0;
+  display:grid;place-items:center;color:var(--ink-2);font-size:14px;
+}
+.cal-frame iframe{position:relative;width:100%;height:680px;border:0}
+
+
+/* ── Footer ────────────────────────────────────────────────────────────── */
+.footer{
+  border-top:var(--borde);padding:28px 0;text-align:center;
+  font-size:13px;color:var(--ink-2);
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ 1 · HERO ═══ -->
+<section class="hero">
+  <div class="container">
+    <span class="badge">Solo para inmobiliarias con más de 5 asesores</span>
+    <h1>No necesitas más herramientas. Necesitas saber qué hace tu equipo con cada lead de tu inmobiliaria.</h1>
+    <p class="amarillo">Tu problema no es la herramienta. Es que no tienes control de lo que pasa después de que el lead entra.</p>
+    <p class="mira">👇 Mira este video y descubre cómo podemos ayudarte</p>
+  </div>
+</section>
+
+<!-- ═══ 2 · VSL ═══
+     Facade sobre el player de ConverteAI (vturb): ni el iframe ni su SDK
+     existen hasta que el usuario hace clic. Reemplaza el src de la portada
+     con tu imagen .webp real (16:9, ~1280×720, < 60 KB). -->
+<section class="vsl" aria-label="Video de presentación">
+  <div class="container">
+    <div class="vsl-frame" id="vsl" data-vsl="https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6a0550a3993552b8596a362a/v4/embed.html">
+      <img class="vsl-poster" src="portada-vsl.webp" width="1280" height="720"
+           alt="Portada del video de AutoKPI" fetchpriority="high" decoding="async"
+           onerror="this.remove()">
+      <button class="vsl-play" id="vsl-play" aria-label="Reproducir el video">
+        <span class="vsl-play-btn" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5.5v13l11-6.5z"/></svg>
+        </span>
+        <span>Ver el video (3 min)</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3 · CTA PRINCIPAL ═══ -->
+<div class="cta-box container">
+  <a class="btn" href="#agendar">QUIERO AGENDAR MI DEMO →</a>
+  <p class="micro">30 minutos. Sin compromiso.</p>
+</div>
+
+<!-- ═══ 4 · PRUEBA SOCIAL ═══
+     Marquesina con los clientes reales y su Instagram (cada uno linkea a su
+     perfil). Son wordmarks SVG inline: cero requests extra. Cuando tengas el
+     ARCHIVO del logo de alguno, sustituye su <svg> por
+     <img src="logos/nombre.webp" height="20" loading="lazy" alt="Nombre">
+     — el CSS lo pone en gris y con hover igual. OJO: la lista está DUPLICADA
+     (segundo grupo aria-hidden) para el bucle; cambia los dos. -->
+<section class="logos" aria-label="Clientes">
+  <div class="container">
+    <p>Inmobiliarias que ya operan con AutoKPI</p>
+    <div class="marquee">
+      <div class="marquee-track">
+        <div class="marquee-grupo">
+        <a class="cliente" href="https://www.instagram.com/shark_realtor/" target="_blank" rel="noopener"><svg viewBox="0 0 195 22" role="img" aria-label="SHARK REALTORS"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="800" letter-spacing="1" fill="#fff">SHARK REALTORS</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@shark_realtor</span></a>
+        <a class="cliente" href="https://www.instagram.com/imexicorealestate/" target="_blank" rel="noopener"><svg viewBox="0 0 72 22" role="img" aria-label="iMexico"><text x="0" y="17" font-family="inherit" font-size="16" font-style="italic" font-weight="700" fill="#fff">iMexico</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@imexicorealestate</span></a>
+        <a class="cliente" href="https://www.instagram.com/dkdelkaribe/" target="_blank" rel="noopener"><svg viewBox="0 0 160 22" role="img" aria-label="DK DEL KARIBE"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="300" letter-spacing="2" fill="#fff">DK DEL KARIBE</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@dkdelkaribe</span></a>
+        <a class="cliente" href="https://www.instagram.com/grupo_daxi/" target="_blank" rel="noopener"><svg viewBox="0 0 132 22" role="img" aria-label="GRUPO DAXI"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="300" letter-spacing="3" fill="#fff">GRUPO DAXI</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@grupo_daxi</span></a>
+        <a class="cliente" href="https://www.instagram.com/marlenecortesg/" target="_blank" rel="noopener"><svg viewBox="0 0 122 22" role="img" aria-label="ZIBAHOME"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="600" letter-spacing="2" fill="#fff">ZIBAHOME</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@marlenecortesg</span></a>
+        <a class="cliente" href="https://www.instagram.com/remaxcenote/" target="_blank" rel="noopener"><svg viewBox="0 0 150 22" role="img" aria-label="RE/MAX CENOTE"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="800" fill="#fff">RE/MAX CENOTE</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@remaxcenote</span></a>
+        <a class="cliente" href="https://www.instagram.com/urbanza/" target="_blank" rel="noopener"><svg viewBox="0 0 110 22" role="img" aria-label="URBANZA"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="700" letter-spacing="2" fill="#fff">URBANZA</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@urbanza</span></a>
+        </div>
+        <div class="marquee-grupo" aria-hidden="true">
+        <a class="cliente" href="https://www.instagram.com/shark_realtor/" target="_blank" rel="noopener"><svg viewBox="0 0 195 22" role="img" aria-label="SHARK REALTORS"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="800" letter-spacing="1" fill="#fff">SHARK REALTORS</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@shark_realtor</span></a>
+        <a class="cliente" href="https://www.instagram.com/imexicorealestate/" target="_blank" rel="noopener"><svg viewBox="0 0 72 22" role="img" aria-label="iMexico"><text x="0" y="17" font-family="inherit" font-size="16" font-style="italic" font-weight="700" fill="#fff">iMexico</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@imexicorealestate</span></a>
+        <a class="cliente" href="https://www.instagram.com/dkdelkaribe/" target="_blank" rel="noopener"><svg viewBox="0 0 160 22" role="img" aria-label="DK DEL KARIBE"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="300" letter-spacing="2" fill="#fff">DK DEL KARIBE</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@dkdelkaribe</span></a>
+        <a class="cliente" href="https://www.instagram.com/grupo_daxi/" target="_blank" rel="noopener"><svg viewBox="0 0 132 22" role="img" aria-label="GRUPO DAXI"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="300" letter-spacing="3" fill="#fff">GRUPO DAXI</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@grupo_daxi</span></a>
+        <a class="cliente" href="https://www.instagram.com/marlenecortesg/" target="_blank" rel="noopener"><svg viewBox="0 0 122 22" role="img" aria-label="ZIBAHOME"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="600" letter-spacing="2" fill="#fff">ZIBAHOME</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@marlenecortesg</span></a>
+        <a class="cliente" href="https://www.instagram.com/remaxcenote/" target="_blank" rel="noopener"><svg viewBox="0 0 150 22" role="img" aria-label="RE/MAX CENOTE"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="800" fill="#fff">RE/MAX CENOTE</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@remaxcenote</span></a>
+        <a class="cliente" href="https://www.instagram.com/urbanza/" target="_blank" rel="noopener"><svg viewBox="0 0 110 22" role="img" aria-label="URBANZA"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="700" letter-spacing="2" fill="#fff">URBANZA</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@urbanza</span></a>
+        </div>
+      </div>
+    </div>
+    <!-- {METRICAS}: ajusta los números; estos salen de la operación real. -->
+    <div class="metricas">
+      <div><b>+15</b><span>inmobiliarias operando</span></div>
+      <div><b>+1M</b><span>conversaciones analizadas</span></div>
+      <div><b>3</b><span>países</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5 · GESTIÓN COMERCIAL ═══ -->
+<section class="gestion">
+  <div class="container">
+    <h2>Esto no es un CRM más. Es gestión comercial de verdad.</h2>
+    <p class="sub">Tu CRM te dice qué había. AutoKPI te dice qué está pasando ahora mismo con cada lead y con cada asesor de tu equipo.</p>
+    <div class="cards">
+      <div class="card">
+        <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M3 12h2l2-6 3 12 3-9 2 5 2-2h4"/></svg></span>
+        <h3>Cada llamada y chat, analizado</h3>
+        <p>La IA escucha, clasifica y actualiza el CRM sin que el asesor toque nada.</p>
+      </div>
+      <div class="card">
+        <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 20v-6M12 20V6M19 20v-10"/></svg></span>
+        <h3>Sabes qué asesor sí trabaja</h3>
+        <p>Ranking real de desempeño por canal, no percepciones.</p>
+      </div>
+      <div class="card">
+        <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></span>
+        <h3>Ningún lead se queda sin tocar</h3>
+        <p>Detectas leads fríos, sin respuesta y mal gestionados el mismo día.</p>
+      </div>
+      <div class="card">
+        <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg></span>
+        <h3>Reportes que sí lees</h3>
+        <p>Dashboard diario, semanal y mensual con el estado comercial completo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6 · ANTES / DESPUÉS ═══ -->
+<section aria-label="Antes y después">
+  <div class="container">
+    <div class="vs">
+      <div class="vs-col vs-hoy">
+        <h3>Cómo operas hoy</h3>
+        <ul>
+          <li><b>✕</b>El asesor no llena el CRM.</li>
+          <li><b>✕</b>No sabes qué se dijo en la llamada.</li>
+          <li><b>✕</b>Los reportes son a mano.</li>
+          <li><b>✕</b>Te enteras del lead perdido un mes después.</li>
+        </ul>
+      </div>
+      <div class="vs-col vs-auto">
+        <h3>Cómo operas con AutoKPI</h3>
+        <ul>
+          <li><b>✓</b>El CRM se llena solo.</li>
+          <li><b>✓</b>Cada conversación queda analizada.</li>
+          <li><b>✓</b>Reportes automáticos.</li>
+          <li><b>✓</b>Alertas el mismo día.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ 8 · AGENDAR ═══
+     Widget de booking de GHL (LeadConnector). NO carga en el primer paint:
+     el iframe y su script de auto-altura (form_embed.js) se inyectan cuando
+     la sección entra al viewport (IntersectionObserver, margen de 600px). -->
+<section class="agendar" id="agendar">
+  <div class="container">
+    <h2>Agenda una llamada de 30 minutos</h2>
+    <p class="sub">Te muestro con tus propios números qué está pasando con tus leads. Estás a una llamada de dejar de operar a ciegas.</p>
+    <div class="cal-frame" id="cal" data-cal="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjUA"></div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">© <span id="anio">2026</span> AutoKPI · Gestión comercial para inmobiliarias</div>
+</footer>
+
+<script>
+/* ── JS total < 2 KB. Solo dos trabajos: facade del VSL y lazy del calendario. ── */
+(function(){
+  "use strict";
+
+  /* 1 · VSL facade: el iframe nace al hacer clic, nunca antes. */
+  var vsl=document.getElementById("vsl"),play=document.getElementById("vsl-play");
+  if(play)play.addEventListener("click",function(){
+    var url=vsl.getAttribute("data-vsl");
+    if(!url||url.charAt(0)==="{"){console.warn("[AutoKPI] Falta la URL del VSL");return}
+    var f=document.createElement("iframe");
+    if(url.indexOf("converteai.net")>-1){
+      /* ConverteAI/vturb: los MISMOS parámetros que su snippet oficial —
+         propaga los UTM de la página (location.search) y la URL en `vl`,
+         que es lo que usa su analítica— más su SDK, que recién aquí se carga.
+         OJO con `vl`: solo si la página vive en http(s). Abierta como archivo
+         o en una vista previa (data:), la "dirección" puede medir megabytes,
+         el query se infla y CloudFront responde 494. En esos contextos el
+         player carga igual, solo sin ese dato de analítica. */
+      var esWeb=location.protocol==="http:"||location.protocol==="https:";
+      var vl=esWeb?location.href.slice(0,1500):"";
+      f.src=url+(esWeb&&location.search?location.search:"?")+"&vl="+encodeURIComponent(vl);
+      var m=url.match(/players\/([a-z0-9]+)/i);
+      if(m)f.id="ifr_"+m[1];
+      f.setAttribute("referrerpolicy","origin");
+      var sc=document.createElement("script");
+      sc.src="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
+      sc.async=true;document.head.appendChild(sc);
+    }else{
+      f.src=url+(url.indexOf("?")>-1?"&":"?")+"autoplay=1";
+    }
+    f.title="Video de presentación de AutoKPI";
+    f.allow="autoplay; fullscreen; picture-in-picture";
+    f.setAttribute("allowfullscreen","");
+    vsl.appendChild(f);
+    play.remove();
+    var p=vsl.querySelector(".vsl-poster");if(p)p.remove();
+  });
+
+  /* 2 · Calendario GHL: iframe + form_embed.js (auto-altura), solo al acercarse. */
+  var cal=document.getElementById("cal");
+  function cargarCal(){
+    if(!cal||cal.dataset.listo)return;
+    var url=cal.getAttribute("data-cal");
+    if(!url||url.charAt(0)==="{"){console.warn("[AutoKPI] Falta la URL del calendario");return}
+    cal.dataset.listo="1";
+    var f=document.createElement("iframe");
+    f.src=url;f.title="Calendario para agendar la demo";
+    f.id=url.split("/").pop()+"_"+Date.now(); /* el id que espera form_embed.js */
+    f.setAttribute("allow","payment");
+    f.setAttribute("scrolling","no");
+    cal.appendChild(f);
+    var sc=document.createElement("script");
+    sc.src="https://link.msgsndr.com/js/form_embed.js";
+    document.body.appendChild(sc);
+  }
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){cargarCal();io.disconnect()}});
+    },{rootMargin:"600px"});
+    if(cal)io.observe(cal);
+  }else{cargarCal()}
+
+
+  var anio=document.getElementById("anio");
+  if(anio)anio.textContent=(new Date).getFullYear();
+})();
+</script>
+</body>
+</html>
