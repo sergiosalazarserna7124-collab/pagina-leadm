@@ -59,8 +59,11 @@ h2{font-size:24px;font-weight:700}
 .sub{color:var(--ink-2);max-width:640px;margin:14px auto 0}
 
 /* ── 1 · HERO ──────────────────────────────────────────────────────────── */
-.hero{position:relative;text-align:center;padding-top:64px}
-@media (min-width:820px){.hero{padding-top:96px}}
+/* padding-bottom:0 a propósito: `section` ya pone --sec-pad arriba y abajo,
+   y encima .vsl sumaba el suyo → 84px en móvil y 152px en escritorio de negro
+   entre el texto y el video. El aire entre bloques lo pone UNO solo. */
+.hero{position:relative;text-align:center;padding-top:48px;padding-bottom:0}
+@media (min-width:820px){.hero{padding-top:72px}}
 /* Glow radial azul/violeta, CSS puro — sin imágenes */
 .hero::before{
   content:"";position:absolute;inset:-20% -10% auto;height:120%;
@@ -79,15 +82,14 @@ h2{font-size:24px;font-weight:700}
   max-width:900px;margin:22px auto 0;
 }
 .hero .amarillo{color:var(--amarillo);font-size:16px;max-width:680px;margin:18px auto 0}
-.hero .mira{color:var(--azul);font-size:16px;margin-top:16px}
 @media (min-width:820px){
   .hero h1{font-size:44px}
   .hero .amarillo{font-size:18px}
 }
 
 /* ── 2 · VSL (facade: el iframe se inyecta solo al hacer clic) ─────────── */
-.vsl{padding-top:36px}
-@media (min-width:820px){.vsl{padding-top:72px}}
+.vsl{padding-top:24px;padding-bottom:0}
+@media (min-width:820px){.vsl{padding-top:32px}}
 .vsl-frame{
   position:relative;max-width:900px;margin:0 auto;aspect-ratio:16/9;
   border-radius:var(--radius);border:var(--borde);overflow:hidden;
@@ -102,18 +104,23 @@ h2{font-size:24px;font-weight:700}
   position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:14px;width:100%;
   transition:opacity .2s;
+  /* Velo oscuro: sin él, el texto gris del botón se pierde sobre la portada
+     (que es clara) y el play deja de leerse. */
+  background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(0,0,0,.55),rgba(0,0,0,.30));
 }
+.vsl-play span:last-child{text-shadow:0 1px 3px rgba(0,0,0,.6)}
 .vsl-play:hover .vsl-play-btn{transform:scale(1.06)}
 .vsl-play-btn{
-  width:76px;height:76px;border-radius:50%;display:grid;place-items:center;
+  width:62px;height:62px;border-radius:50%;display:grid;place-items:center;
   background:var(--grad);box-shadow:0 8px 32px rgba(79,127,232,.45);
   transition:transform .2s;
 }
-.vsl-play span{font-size:14px;color:var(--ink-2)}
+.vsl-play span{font-size:14px;color:#e8ecf4}
+@media (min-width:820px){.vsl-play-btn{width:76px;height:76px}}
 
 /* ── 3 · CTA ───────────────────────────────────────────────────────────── */
-.cta-box{text-align:center;padding-top:40px}
-@media (min-width:820px){.cta-box{padding-top:72px}}
+.cta-box{text-align:center;padding-top:24px}
+@media (min-width:820px){.cta-box{padding-top:32px}}
 .btn{
   display:inline-block;text-decoration:none;text-align:center;
   background:var(--grad);color:#fff;font-weight:700;font-size:17px;
@@ -199,15 +206,20 @@ h2{font-size:24px;font-weight:700}
 /* ── 8 · Agendar ───────────────────────────────────────────────────────── */
 .agendar{text-align:center}
 .cal-frame{
-  position:relative;max-width:900px;margin:40px auto 0;min-height:680px;
+  /* Altura RESERVADA antes de que el iframe exista: sin esto la página pega un
+     salto cuando el calendario entra al viewport. En móvil el widget de GHL
+     se apila (fecha arriba, horas abajo) y necesita bastante más alto. */
+  position:relative;max-width:900px;margin:28px auto 0;min-height:900px;
   border-radius:var(--radius);border:var(--borde);overflow:hidden;
   background:var(--card);
 }
+@media (min-width:820px){.cal-frame{min-height:700px;margin-top:36px}}
 .cal-frame::before{
   content:"Cargando calendario…";position:absolute;inset:0;
   display:grid;place-items:center;color:var(--ink-2);font-size:14px;
 }
-.cal-frame iframe{position:relative;width:100%;height:680px;border:0}
+.cal-frame iframe{position:relative;width:100%;height:900px;border:0;display:block}
+@media (min-width:820px){.cal-frame iframe{height:700px}}
 
 
 /* ── Footer ────────────────────────────────────────────────────────────── */
@@ -230,18 +242,18 @@ h2{font-size:24px;font-weight:700}
     <span class="badge">Solo para inmobiliarias con más de 5 asesores</span>
     <h1>No necesitas más herramientas. Necesitas saber qué hace tu equipo con cada lead de tu inmobiliaria.</h1>
     <p class="amarillo">Tu problema no es la herramienta. Es que no tienes control de lo que pasa después de que el lead entra.</p>
-    <p class="mira">👇 Mira este video y descubre cómo podemos ayudarte</p>
   </div>
 </section>
 
 <!-- ═══ 2 · VSL ═══
      Facade sobre el player de ConverteAI (vturb): ni el iframe ni su SDK
-     existen hasta que el usuario hace clic. Reemplaza el src de la portada
-     con tu imagen .webp real (16:9, ~1280×720, < 60 KB). -->
+     existen hasta que el usuario hace clic. La portada es el cover REAL del
+     video (bajado de images.converteai.net/.../cover.jpg y recomprimido a
+     1120px/44 KB); si cambias el video, vuelve a bajarlo de ahí. -->
 <section class="vsl" aria-label="Video de presentación">
   <div class="container">
     <div class="vsl-frame" id="vsl" data-vsl="https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6a0550a3993552b8596a362a/v4/embed.html">
-      <img class="vsl-poster" src="portada-vsl.webp" width="1280" height="720"
+      <img class="vsl-poster" src="portada-vsl.jpg" width="1120" height="630"
            alt="Portada del video de AutoKPI" fetchpriority="high" decoding="async"
            onerror="this.remove()">
       <button class="vsl-play" id="vsl-play" aria-label="Reproducir el video">
@@ -426,17 +438,44 @@ h2{font-size:24px;font-weight:700}
     f.id=url.split("/").pop()+"_"+Date.now(); /* el id que espera form_embed.js */
     f.setAttribute("allow","payment");
     f.setAttribute("scrolling","no");
+    f.loading="lazy";
     cal.appendChild(f);
+    /* El script de auto-altura de GHL entra async y SOLO aquí: en el <head>
+       bloquearía el primer pintado de una página que ni siquiera lo necesita
+       hasta que alguien baja a agendar. */
     var sc=document.createElement("script");
     sc.src="https://link.msgsndr.com/js/form_embed.js";
+    sc.async=true;
     document.body.appendChild(sc);
   }
-  if("IntersectionObserver" in window){
-    var io=new IntersectionObserver(function(es){
-      es.forEach(function(e){if(e.isIntersecting){cargarCal();io.disconnect()}});
+  var io=null;
+  function pararVigilancia(){
+    if(io){io.disconnect();io=null}
+    window.removeEventListener("scroll",porScroll);
+  }
+  /* Red 1 — el observador: carga al acercarse (600px antes de verse). */
+  if("IntersectionObserver" in window && cal){
+    io=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){cargarCal();pararVigilancia()}});
     },{rootMargin:"600px"});
-    if(cal)io.observe(cal);
-  }else{cargarCal()}
+    io.observe(cal);
+  }
+  /* Red 2 — por scroll: si el observador no llega a dispararse (navegadores
+     viejos, o una pestaña que nunca llegó a componerse), el calendario tiene
+     que cargar igual. Pasivo y se desengancha solo. */
+  function porScroll(){
+    if(!cal)return;
+    if(cal.getBoundingClientRect().top - window.innerHeight < 600){
+      cargarCal();pararVigilancia();
+    }
+  }
+  window.addEventListener("scroll",porScroll,{passive:true});
+  if(!("IntersectionObserver" in window))cargarCal();
+
+  /* Red 3 — al pulsar el CTA: el botón salta al calendario, así que empieza a
+     cargarlo YA en vez de esperar a que el scroll suave termine. */
+  var irAAgendar=document.querySelector('a.btn[href="#agendar"]');
+  if(irAAgendar)irAAgendar.addEventListener("click",cargarCal);
 
 
   var anio=document.getElementById("anio");
