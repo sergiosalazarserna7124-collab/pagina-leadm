@@ -3,19 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AutoKPI — Gestión comercial para inmobiliarias</title>
-<meta name="description" content="AutoKPI analiza cada llamada y chat de tu equipo, llena el CRM solo y te dice qué asesor sí trabaja. Gestión comercial real para inmobiliarias con más de 5 asesores.">
+<title>Lead Master — Gestión comercial para inmobiliarias</title>
+<meta name="description" content="Lead Master escucha cada llamada y cada chat de tu equipo y te dice qué asesor está quemando los leads que pagaste. Para inmobiliarias con más de 5 asesores.">
 <meta name="theme-color" content="#000000">
-<meta property="og:title" content="AutoKPI — Gestión comercial para inmobiliarias">
-<meta property="og:description" content="No necesitas más herramientas. Necesitas saber qué hace tu equipo con cada lead.">
+<meta property="og:title" content="Lead Master — Gestión comercial para inmobiliarias">
+<meta property="og:description" content="Cada lead que entra te costó dinero. Descubre cuáles se están perdiendo por cómo los trabaja tu equipo.">
 <meta property="og:type" content="website">
 
 <!-- Preconnect al player del VSL (ConverteAI/vturb): el video no carga hasta
      el clic, pero la conexión ya queda caliente. -->
 <link rel="preconnect" href="https://scripts.converteai.net">
 <link rel="preconnect" href="https://cdn.converteai.net">
-<!-- El calendario (GHL) carga lazy al hacer scroll; esto solo adelanta el DNS. -->
-<link rel="dns-prefetch" href="https://api.leadconnectorhq.com">
+<!-- El calendario (GHL) carga lazy; esto solo adelanta DNS y TLS.
+     Medido el 2026-09-02: el widget dispara 101 peticiones —92 a su propio
+     CDN— y sus llamadas de fondo (free-slots 2,4s · forms/data 1,9s) mandan
+     sobre el total. No podemos acelerar su iframe, pero sí llegar con las
+     conexiones ya abiertas. -->
+<link rel="preconnect" href="https://api.leadconnectorhq.com" crossorigin>
+<link rel="preconnect" href="https://backend.leadconnectorhq.com" crossorigin>
+<link rel="preconnect" href="https://stcdn.leadconnectorhq.com" crossorigin>
 <link rel="dns-prefetch" href="https://link.msgsndr.com">
 
 <style>
@@ -132,7 +138,6 @@ h2{font-size:24px;font-weight:700}
 .btn:focus-visible,.vsl-play:focus-visible{
   outline:2px solid var(--azul);outline-offset:3px;border-radius:var(--radius);
 }
-.micro{font-size:13px;color:var(--ink-2);margin-top:12px}
 
 /* ── 4 · Prueba social ─────────────────────────────────────────────────── */
 .logos{text-align:center;padding-top:56px;padding-bottom:0}
@@ -187,21 +192,6 @@ h2{font-size:24px;font-weight:700}
 .card h3{font-size:18px;margin-bottom:8px}
 .card p{color:var(--ink-2);font-size:15px}
 
-/* ── 6 · Antes / Después ───────────────────────────────────────────────── */
-.vs{display:grid;grid-template-columns:1fr;gap:16px;margin-top:40px}
-@media (min-width:820px){.vs{grid-template-columns:1fr 1fr;gap:20px}}
-.vs-col{border-radius:var(--radius);padding:28px;border:var(--borde)}
-.vs-hoy{background:rgba(232,86,86,.05);border-color:rgba(232,86,86,.18)}
-.vs-auto{background:rgba(79,180,232,.05);border-color:rgba(79,127,232,.25)}
-.vs-col h3{font-size:18px;margin-bottom:18px}
-.vs-hoy h3{color:#e88a86}
-.vs-auto h3{color:#6fd3b8}
-.vs-col ul{list-style:none;display:grid;gap:12px}
-.vs-col li{display:flex;gap:12px;color:var(--ink-2);font-size:15px}
-.vs-col li b{flex:none;width:20px;text-align:center;font-weight:700}
-.vs-hoy li b{color:#e88a86}
-.vs-auto li b{color:#6fd3b8}
-
 
 /* ── 8 · Agendar ───────────────────────────────────────────────────────── */
 .agendar{text-align:center}
@@ -215,8 +205,10 @@ h2{font-size:24px;font-weight:700}
 }
 @media (min-width:820px){.cal-frame{min-height:700px;margin-top:36px}}
 .cal-frame::before{
-  content:"Cargando calendario…";position:absolute;inset:0;
-  display:grid;place-items:center;color:var(--ink-2);font-size:14px;
+  content:"Cargando el calendario… puede tardar unos segundos";
+  position:absolute;inset:0;padding:0 24px;
+  display:grid;place-items:center;text-align:center;
+  color:var(--ink-2);font-size:14px;
 }
 .cal-frame iframe{position:relative;width:100%;height:900px;border:0;display:block}
 @media (min-width:820px){.cal-frame iframe{height:700px}}
@@ -231,6 +223,23 @@ h2{font-size:24px;font-weight:700}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{transition:none!important}
+}
+/* Móvil (Sergio 2026-09-02: "se ve muy grande"). A 30px el H1 ocupaba 5
+   líneas y empujaba el video fuera de la primera pantalla. Escala fluida:
+   crece con el ancho en vez de saltar de golpe. */
+@media (max-width:819px){
+  .hero{padding-top:32px}
+  .badge{font-size:12px;padding:6px 13px}
+  .hero h1{font-size:clamp(22px,6.2vw,29px);line-height:1.14;margin-top:16px}
+  .hero .amarillo{font-size:clamp(14px,3.8vw,16px);margin-top:12px}
+  .vsl{padding-top:18px}
+  .cta-box{padding-top:18px}
+  .btn{font-size:15px;padding:15px 24px}
+  .vsl-play span{font-size:13px}
+  h2{font-size:21px}
+  .sub{font-size:14.5px}
+  /* El rótulo partía "LEAD / MASTER" en dos líneas a 390px. */
+  .logos p{font-size:11px;letter-spacing:.09em}
 }
 </style>
 </head>
@@ -254,7 +263,7 @@ h2{font-size:24px;font-weight:700}
   <div class="container">
     <div class="vsl-frame" id="vsl" data-vsl="https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6a0550a3993552b8596a362a/v4/embed.html">
       <img class="vsl-poster" src="portada-vsl.jpg" width="1120" height="630"
-           alt="Portada del video de AutoKPI" fetchpriority="high" decoding="async"
+           alt="Portada del video de Lead Master" fetchpriority="high" decoding="async"
            onerror="this.remove()">
       <button class="vsl-play" id="vsl-play" aria-label="Reproducir el video">
         <span class="vsl-play-btn" aria-hidden="true">
@@ -269,7 +278,6 @@ h2{font-size:24px;font-weight:700}
 <!-- ═══ 3 · CTA PRINCIPAL ═══ -->
 <div class="cta-box container">
   <a class="btn" href="#agendar">QUIERO AGENDAR MI DEMO →</a>
-  <p class="micro">30 minutos. Sin compromiso.</p>
 </div>
 
 <!-- ═══ 4 · PRUEBA SOCIAL ═══
@@ -281,7 +289,7 @@ h2{font-size:24px;font-weight:700}
      (segundo grupo aria-hidden) para el bucle; cambia los dos. -->
 <section class="logos" aria-label="Clientes">
   <div class="container">
-    <p>Inmobiliarias que ya operan con AutoKPI</p>
+    <p>Inmobiliarias que ya operan con Lead Master</p>
     <div class="marquee">
       <div class="marquee-track">
         <div class="marquee-grupo">
@@ -316,58 +324,33 @@ h2{font-size:24px;font-weight:700}
 <!-- ═══ 5 · GESTIÓN COMERCIAL ═══ -->
 <section class="gestion">
   <div class="container">
-    <h2>Esto no es un CRM más. Es gestión comercial de verdad.</h2>
-    <p class="sub">Tu CRM te dice qué había. AutoKPI te dice qué está pasando ahora mismo con cada lead y con cada asesor de tu equipo.</p>
+    <h2>No es un CRM. Es lo que te dice quién está quemando los leads que pagaste.</h2>
+    <p class="sub">Cada lead que entra te costó dinero. Lead Master escucha todas las llamadas y todos los chats, y te muestra cuáles se están perdiendo por cómo los trabajó tu equipo.</p>
     <div class="cards">
       <div class="card">
         <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M3 12h2l2-6 3 12 3-9 2 5 2-2h4"/></svg></span>
         <h3>Cada llamada y chat, analizado</h3>
-        <p>La IA escucha, clasifica y actualiza el CRM sin que el asesor toque nada.</p>
+        <p>La IA escucha, clasifica y lo deja escrito sin que el asesor toque nada.</p>
       </div>
       <div class="card">
         <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 20v-6M12 20V6M19 20v-10"/></svg></span>
-        <h3>Sabes qué asesor sí trabaja</h3>
-        <p>Ranking real de desempeño por canal, no percepciones.</p>
+        <h3>Sabes quién quema tus leads</h3>
+        <p>Por asesor y con nombre: a quién se le mueren, cuántos y por qué.</p>
       </div>
       <div class="card">
         <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></span>
         <h3>Ningún lead se queda sin tocar</h3>
-        <p>Detectas leads fríos, sin respuesta y mal gestionados el mismo día.</p>
+        <p>El mismo día ves a quién nadie llamó, quién quedó colgado y quién se está enfriando.</p>
       </div>
       <div class="card">
         <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg></span>
         <h3>Reportes que sí lees</h3>
-        <p>Dashboard diario, semanal y mensual con el estado comercial completo.</p>
+        <p>Diario, semanal y mensual: qué entró, qué se trabajó y qué se perdió.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ 6 · ANTES / DESPUÉS ═══ -->
-<section aria-label="Antes y después">
-  <div class="container">
-    <div class="vs">
-      <div class="vs-col vs-hoy">
-        <h3>Cómo operas hoy</h3>
-        <ul>
-          <li><b>✕</b>El asesor no llena el CRM.</li>
-          <li><b>✕</b>No sabes qué se dijo en la llamada.</li>
-          <li><b>✕</b>Los reportes son a mano.</li>
-          <li><b>✕</b>Te enteras del lead perdido un mes después.</li>
-        </ul>
-      </div>
-      <div class="vs-col vs-auto">
-        <h3>Cómo operas con AutoKPI</h3>
-        <ul>
-          <li><b>✓</b>El CRM se llena solo.</li>
-          <li><b>✓</b>Cada conversación queda analizada.</li>
-          <li><b>✓</b>Reportes automáticos.</li>
-          <li><b>✓</b>Alertas el mismo día.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
 
 
 <!-- ═══ 8 · AGENDAR ═══
@@ -384,7 +367,7 @@ h2{font-size:24px;font-weight:700}
 
 
 <footer class="footer">
-  <div class="container">© <span id="anio">2026</span> AutoKPI · Gestión comercial para inmobiliarias</div>
+  <div class="container">© <span id="anio">2026</span> Lead Master · Gestión comercial para inmobiliarias</div>
 </footer>
 
 <script>
@@ -396,7 +379,7 @@ h2{font-size:24px;font-weight:700}
   var vsl=document.getElementById("vsl"),play=document.getElementById("vsl-play");
   if(play)play.addEventListener("click",function(){
     var url=vsl.getAttribute("data-vsl");
-    if(!url||url.charAt(0)==="{"){console.warn("[AutoKPI] Falta la URL del VSL");return}
+    if(!url||url.charAt(0)==="{"){console.warn("[Lead Master] Falta la URL del VSL");return}
     var f=document.createElement("iframe");
     if(url.indexOf("converteai.net")>-1){
       /* ConverteAI/vturb: los MISMOS parámetros que su snippet oficial —
@@ -418,7 +401,7 @@ h2{font-size:24px;font-weight:700}
     }else{
       f.src=url+(url.indexOf("?")>-1?"&":"?")+"autoplay=1";
     }
-    f.title="Video de presentación de AutoKPI";
+    f.title="Video de presentación de Lead Master";
     f.allow="autoplay; fullscreen; picture-in-picture";
     f.setAttribute("allowfullscreen","");
     vsl.appendChild(f);
@@ -431,7 +414,7 @@ h2{font-size:24px;font-weight:700}
   function cargarCal(){
     if(!cal||cal.dataset.listo)return;
     var url=cal.getAttribute("data-cal");
-    if(!url||url.charAt(0)==="{"){console.warn("[AutoKPI] Falta la URL del calendario");return}
+    if(!url||url.charAt(0)==="{"){console.warn("[Lead Master] Falta la URL del calendario");return}
     cal.dataset.listo="1";
     var f=document.createElement("iframe");
     f.src=url;f.title="Calendario para agendar la demo";
@@ -460,16 +443,14 @@ h2{font-size:24px;font-weight:700}
     },{rootMargin:"600px"});
     io.observe(cal);
   }
-  /* Red 2 — por scroll: si el observador no llega a dispararse (navegadores
-     viejos, o una pestaña que nunca llegó a componerse), el calendario tiene
-     que cargar igual. Pasivo y se desengancha solo. */
-  function porScroll(){
-    if(!cal)return;
-    if(cal.getBoundingClientRect().top - window.innerHeight < 600){
-      cargarCal();pararVigilancia();
-    }
-  }
-  window.addEventListener("scroll",porScroll,{passive:true});
+  /* Red 2 — al PRIMER scroll, sin esperar a llegar a la sección.
+     El widget de GHL tarda ~12 s en terminar de montarse (101 peticiones
+     suyas), así que arrancarlo cuando el usuario ya está mirando el
+     calendario es llegar tarde. Cualquier scroll indica intención de seguir
+     bajando: se le da esa ventaja. Sigue sin cargar en el primer pintado,
+     que es lo que protege el LCP. */
+  function porScroll(){ cargarCal(); pararVigilancia(); }
+  window.addEventListener("scroll",porScroll,{passive:true,once:true});
   if(!("IntersectionObserver" in window))cargarCal();
 
   /* Red 3 — al pulsar el CTA: el botón salta al calendario, así que empieza a
