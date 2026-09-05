@@ -115,7 +115,7 @@ h2{font-size:24px;font-weight:700}
   .hero .amarillo{font-size:18px}
 }
 
-/* ── 2 · VSL (facade: el iframe se inyecta solo al hacer clic) ─────────── */
+/* ── 2 · VSL (facade: el player se inyecta solo al hacer clic) ────────── */
 .vsl{padding-top:24px;padding-bottom:0}
 @media (min-width:820px){.vsl{padding-top:32px}}
 .vsl-frame{
@@ -126,7 +126,8 @@ h2{font-size:24px;font-weight:700}
     linear-gradient(160deg,#0d1017,#07080c);
   box-shadow:0 0 70px rgba(79,127,232,.22),0 0 24px rgba(123,92,240,.12);
 }
-.vsl-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vsl-frame iframe,.vsl-frame vturb-smartplayer{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vsl-frame vturb-smartplayer video{width:100%;height:100%;object-fit:contain}
 .vsl-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .vsl-play{
   position:absolute;inset:0;display:flex;flex-direction:column;
@@ -419,38 +420,67 @@ h2{font-size:24px;font-weight:700}
 (function(){
   "use strict";
 
-  /* 1 · VSL facade: el iframe nace al hacer clic, nunca antes. */
+  /* 1 · VSL facade: el player nace al hacer clic, nunca antes. */
   var vsl=document.getElementById("vsl"),play=document.getElementById("vsl-play");
-  if(play)play.addEventListener("click",function(){
-    var url=vsl.getAttribute("data-vsl");
-    if(!url||url.charAt(0)==="{"){console.warn("[Lead Master] Falta la URL del VSL");return}
+
+  /* Quitar la portada y el botón: el player ya ocupa su lugar. */
+  function taparPortada(){
+    if(play)play.remove();
+    var p=vsl.querySelector(".vsl-poster");if(p)p.remove();
+  }
+
+  /* UN SOLO CLIC. El player de vturb trae "Smart Autoplay" activo: dentro de
+     un iframe arrancaba MUDO y ponía su propio aviso de "clic para el sonido"
+     — ese era el segundo clic. Montado como componente NATIVO en esta página,
+     el clic del usuario vale como activación aquí mismo y el player arranca
+     reproduciendo CON sonido (verificado: paused=false, volume=1,
+     inSmartAutoPlay=false).
+
+     Este vigilante es solo una red por si algún navegador lo mandara igual al
+     modo mudo: se le sube el volumen, que es la única palanca que expone su
+     API (no hay play/unmute públicos). Nunca lo pausa ni lo reinicia. */
+  function asegurarSonido(el){
+    var t0=Date.now();
+    var iv=setInterval(function(){
+      if(Date.now()-t0>8000){clearInterval(iv);return}          /* se rinde solo */
+      if(el.inSmartAutoPlay===true){
+        if(typeof el.setVolume==="function"){try{el.setVolume(1)}catch(e){}}
+        clearInterval(iv);
+      }else if(el.alreadyPlayed===true){clearInterval(iv)}      /* ya sonaba: nada que hacer */
+    },250);
+  }
+
+  /* Player NATIVO de ConverteAI/vturb: de la URL del embed salen la cuenta y
+     el id del player (.../<cuenta>/players/<id>/v4/embed.html). */
+  function montarVturb(url){
+    var m=url.match(/converteai\.net\/([^/]+)\/players\/([^/]+)\//);
+    if(!m)return false;
+    var el=document.createElement("vturb-smartplayer");
+    el.id="vid-"+m[2];
+    vsl.appendChild(el);
+    var sc=document.createElement("script");
+    sc.src="https://scripts.converteai.net/"+m[1]+"/players/"+m[2]+"/v4/player.js";
+    sc.async=true;document.head.appendChild(sc);
+    asegurarSonido(el);
+    return true;
+  }
+
+  /* Reserva: cualquier otro proveedor (o si cambia la forma de la URL de
+     vturb) sigue entrando por iframe con autoplay, como antes. */
+  function montarIframe(url){
     var f=document.createElement("iframe");
-    if(url.indexOf("converteai.net")>-1){
-      /* ConverteAI/vturb: los MISMOS parámetros que su snippet oficial —
-         propaga los UTM de la página (location.search) y la URL en `vl`,
-         que es lo que usa su analítica— más su SDK, que recién aquí se carga.
-         OJO con `vl`: solo si la página vive en http(s). Abierta como archivo
-         o en una vista previa (data:), la "dirección" puede medir megabytes,
-         el query se infla y CloudFront responde 494. En esos contextos el
-         player carga igual, solo sin ese dato de analítica. */
-      var esWeb=location.protocol==="http:"||location.protocol==="https:";
-      var vl=esWeb?location.href.slice(0,1500):"";
-      f.src=url+(esWeb&&location.search?location.search:"?")+"&vl="+encodeURIComponent(vl);
-      var m=url.match(/players\/([a-z0-9]+)/i);
-      if(m)f.id="ifr_"+m[1];
-      f.setAttribute("referrerpolicy","origin");
-      var sc=document.createElement("script");
-      sc.src="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
-      sc.async=true;document.head.appendChild(sc);
-    }else{
-      f.src=url+(url.indexOf("?")>-1?"&":"?")+"autoplay=1";
-    }
+    f.src=url+(url.indexOf("?")>-1?"&":"?")+"autoplay=1";
     f.title="Video de presentación de Lead Master";
     f.allow="autoplay; fullscreen; picture-in-picture";
     f.setAttribute("allowfullscreen","");
     vsl.appendChild(f);
-    play.remove();
-    var p=vsl.querySelector(".vsl-poster");if(p)p.remove();
+  }
+
+  if(play)play.addEventListener("click",function(){
+    var url=vsl.getAttribute("data-vsl");
+    if(!url||url.charAt(0)==="{"){console.warn("[Lead Master] Falta la URL del VSL");return}
+    if(url.indexOf("converteai.net")===-1||!montarVturb(url))montarIframe(url);
+    taparPortada();
   });
 
   /* 2 · Calendario GHL (SOLO ESCRITORIO). En móvil el contenedor está en
