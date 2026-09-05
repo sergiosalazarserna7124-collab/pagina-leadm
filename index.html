@@ -14,7 +14,9 @@
      el clic, pero la conexión ya queda caliente. -->
 <link rel="preconnect" href="https://scripts.converteai.net">
 <link rel="preconnect" href="https://cdn.converteai.net">
-<!-- El calendario (GHL) carga lazy; esto solo adelanta DNS y TLS.
+<!-- El calendario (GHL) no carga en el primer pintado; esto solo adelanta DNS y
+     TLS. En móvil el widget se abre en pestaña nueva, y estas conexiones siguen
+     sirviendo: el DNS y el pool de conexiones se comparten en todo el perfil.
      Medido el 2026-09-02: el widget dispara 101 peticiones —92 a su propio
      CDN— y sus llamadas de fondo (free-slots 2,4s · forms/data 1,9s) mandan
      sobre el total. No podemos acelerar su iframe, pero sí llegar con las
@@ -215,23 +217,38 @@ h2{font-size:24px;font-weight:700}
 
 /* ── 8 · Agendar ───────────────────────────────────────────────────────── */
 .agendar{text-align:center}
-.cal-frame{
-  /* Altura RESERVADA antes de que el iframe exista: sin esto la página pega un
-     salto cuando el calendario entra al viewport. En móvil el widget de GHL
-     se apila (fecha arriba, horas abajo) y necesita bastante más alto. */
-  position:relative;max-width:900px;margin:28px auto 0;min-height:900px;
-  border-radius:var(--radius);border:var(--borde);overflow:hidden;
-  background:var(--card);
+/* En MÓVIL el calendario NO se incrusta. El widget de GHL dispara ~102
+   peticiones (94 chunks de JS): en fibra tarda ~12 s y en datos móviles decenas
+   de segundos, así que el visitante ve un recuadro vacío donde debería estar el
+   calendario y se va. En móvil va un botón que lo abre en su propia pestaña,
+   con todo el ancho de banda para él. En escritorio sí se incrusta: ahí monta
+   en 2-3 s y no vale la pena sacar a nadie de la página. */
+.cal-frame{display:none}
+.cal-btn{margin-top:26px}
+.cal-nota{margin-top:14px;font-size:13px;color:var(--ink-2)}
+@media (min-width:820px){
+  .cal-btn,.cal-nota{display:none}
+  .cal-frame{
+    display:block;position:relative;max-width:900px;margin:36px auto 0;min-height:700px;
+    border-radius:var(--radius);border:var(--borde);overflow:hidden;
+    background:var(--card);
+  }
+  /* Esqueleto detrás del iframe: se ve hasta que el widget pinta encima. */
+  .cal-frame::before{
+    content:"Cargando el calendario…";
+    position:absolute;inset:0;padding:0 24px;
+    display:grid;place-items:center;text-align:center;
+    color:var(--ink-2);font-size:14px;
+  }
+  .cal-frame iframe{position:relative;width:100%;height:700px;border:0;display:block}
 }
-@media (min-width:820px){.cal-frame{min-height:700px;margin-top:36px}}
-.cal-frame::before{
-  content:"Cargando el calendario… puede tardar unos segundos";
-  position:absolute;inset:0;padding:0 24px;
-  display:grid;place-items:center;text-align:center;
-  color:var(--ink-2);font-size:14px;
+
+/* Conmutador móvil/escritorio para el CTA principal (ver sección 3). */
+.solo-escritorio{display:none}
+@media (min-width:820px){
+  .solo-movil{display:none}
+  .solo-escritorio{display:inline-block}
 }
-.cal-frame iframe{position:relative;width:100%;height:900px;border:0;display:block}
-@media (min-width:820px){.cal-frame iframe{height:700px}}
 
 
 /* ── Footer ────────────────────────────────────────────────────────────── */
@@ -297,7 +314,12 @@ h2{font-size:24px;font-weight:700}
 
 <!-- ═══ 3 · CTA PRINCIPAL ═══ -->
 <div class="cta-box container">
-  <a class="btn" href="#agendar">QUIERO AGENDAR MI DEMO →</a>
+  <!-- Dos botones, uno visible por tamaño (CSS, sin JS: si el JS falla igual
+       funcionan). Móvil: al calendario directo, en pestaña nueva — una sola
+       pulsación y la landing queda abierta detrás. Escritorio: baja a la
+       sección donde el calendario está incrustado. -->
+  <a class="btn solo-movil" href="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjUA" target="_blank" rel="noopener">QUIERO AGENDAR MI DEMO →</a>
+  <a class="btn solo-escritorio" href="#agendar">QUIERO AGENDAR MI DEMO →</a>
 </div>
 
 <!-- ═══ 4 · PRUEBA SOCIAL ═══
@@ -382,6 +404,8 @@ h2{font-size:24px;font-weight:700}
     <h2>Agenda una llamada de 30 minutos</h2>
     <p class="sub">Te muestro con tus propios números qué está pasando con tus leads. Estás a una llamada de dejar de operar a ciegas.</p>
     <div class="cal-frame" id="cal" data-cal="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjUA"></div>
+    <a class="btn cal-btn" href="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjUA" target="_blank" rel="noopener">VER HORARIOS DISPONIBLES →</a>
+    <p class="cal-nota">Se abre el calendario en una pestaña nueva.</p>
   </div>
 </section>
 
@@ -429,10 +453,17 @@ h2{font-size:24px;font-weight:700}
     var p=vsl.querySelector(".vsl-poster");if(p)p.remove();
   });
 
-  /* 2 · Calendario GHL: iframe + form_embed.js (auto-altura), solo al acercarse. */
+  /* 2 · Calendario GHL (SOLO ESCRITORIO). En móvil el contenedor está en
+        display:none por CSS y el visitante usa el botón que abre el link:
+        ni un byte del widget se descarga en el celular. */
   var cal=document.getElementById("cal");
+  function calVisible(){
+    /* offsetParent === null ⇒ está en display:none (móvil). Comprobar esto y no
+       el ancho de pantalla mantiene UNA sola fuente de verdad: el CSS. */
+    return !!cal && cal.offsetParent !== null;
+  }
   function cargarCal(){
-    if(!cal||cal.dataset.listo)return;
+    if(!cal||cal.dataset.listo||!calVisible())return;
     var url=cal.getAttribute("data-cal");
     if(!url||url.charAt(0)==="{"){console.warn("[Lead Master] Falta la URL del calendario");return}
     cal.dataset.listo="1";
@@ -441,7 +472,9 @@ h2{font-size:24px;font-weight:700}
     f.id=url.split("/").pop()+"_"+Date.now(); /* el id que espera form_embed.js */
     f.setAttribute("allow","payment");
     f.setAttribute("scrolling","no");
-    f.loading="lazy";
+    /* SIN loading="lazy": nosotros ya decidimos cuándo nace el iframe, y el lazy
+       del navegador lo volvería a aplazar hasta tenerlo casi en pantalla —
+       justo la demora que estamos tratando de evitar. */
     cal.appendChild(f);
     /* El script de auto-altura de GHL entra async y SOLO aquí: en el <head>
        bloquearía el primer pintado de una página que ni siquiera lo necesita
@@ -463,18 +496,17 @@ h2{font-size:24px;font-weight:700}
     },{rootMargin:"600px"});
     io.observe(cal);
   }
-  /* Red 2 — al PRIMER scroll, sin esperar a llegar a la sección.
-     El widget de GHL tarda ~12 s en terminar de montarse (101 peticiones
-     suyas), así que arrancarlo cuando el usuario ya está mirando el
-     calendario es llegar tarde. Cualquier scroll indica intención de seguir
-     bajando: se le da esa ventaja. Sigue sin cargar en el primer pintado,
-     que es lo que protege el LCP. */
+  /* Red 2 — al PRIMER scroll, sin esperar a llegar a la sección: el widget
+     tarda ~12 s en montarse (102 peticiones suyas), así que arrancarlo cuando
+     el usuario ya está mirando el calendario es llegar tarde. Sigue sin cargar
+     en el primer pintado, que es lo que protege el LCP. */
   function porScroll(){ cargarCal(); pararVigilancia(); }
   window.addEventListener("scroll",porScroll,{passive:true,once:true});
   if(!("IntersectionObserver" in window))cargarCal();
 
-  /* Red 3 — al pulsar el CTA: el botón salta al calendario, así que empieza a
-     cargarlo YA en vez de esperar a que el scroll suave termine. */
+  /* Red 3 — al pulsar el CTA de escritorio: el botón salta al calendario, así
+     que empieza a cargarlo YA en vez de esperar a que el scroll suave termine.
+     El CTA de móvil es un link externo y no pasa por aquí. */
   var irAAgendar=document.querySelector('a.btn[href="#agendar"]');
   if(irAAgendar)irAAgendar.addEventListener("click",cargarCal);
 
