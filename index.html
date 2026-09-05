@@ -227,21 +227,28 @@ h2{font-size:24px;font-weight:700}
   background:var(--card);
 }
 @media (min-width:820px){.cal-frame{min-height:700px;margin-top:36px}}
-/* Esqueleto: se ve DETRÁS del iframe hasta que el widget pinta encima. Con
-   giro, para que se note que está trabajando y no parezca un hueco muerto. */
+/* Esqueleto: giro + texto, los dos DEBAJO del iframe.
+   OJO con el orden de pintado: un ::after se dibuja como último hijo, o sea
+   ENCIMA del iframe — el texto quedaba flotando sobre el calendario ya
+   cargado. Por eso el giro va en ::before (primer hijo) y el texto en un
+   <span> real que está en el HTML ANTES de que se inyecte el iframe: los dos
+   quedan por debajo y el widget los tapa solo al pintar. */
 .cal-frame::before{
   content:"";position:absolute;top:50%;left:50%;
   width:34px;height:34px;margin:-40px 0 0 -17px;border-radius:50%;
   border:3px solid rgba(255,255,255,.16);border-top-color:var(--azul);
   animation:girar .9s linear infinite;
 }
-.cal-frame::after{
-  content:"Cargando el calendario…";
+.cal-msg{
   position:absolute;top:50%;left:0;right:0;margin-top:10px;padding:0 24px;
   text-align:center;color:var(--ink-2);font-size:14px;
 }
 @keyframes girar{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.cal-frame::before{animation:none}}
+/* Refuerzo: en cuanto el iframe carga, el esqueleto se apaga de raíz — así no
+   depende solo del orden de pintado. */
+.cal-frame[data-cargado] .cal-msg{display:none}
+.cal-frame[data-cargado]::before{display:none}
 .cal-frame iframe{position:relative;width:100%;height:900px;border:0;display:block}
 @media (min-width:820px){.cal-frame iframe{height:700px}}
 
@@ -393,7 +400,7 @@ h2{font-size:24px;font-weight:700}
   <div class="container">
     <h2>Agenda una llamada de 30 minutos</h2>
     <p class="sub">Te muestro con tus propios números qué está pasando con tus leads. Estás a una llamada de dejar de operar a ciegas.</p>
-    <div class="cal-frame" id="cal" data-cal="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjUA"></div>
+    <div class="cal-frame" id="cal" data-cal="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjUA"><span class="cal-msg">Cargando el calendario…</span></div>
   </div>
 </section>
 
@@ -493,6 +500,13 @@ h2{font-size:24px;font-weight:700}
     /* SIN loading="lazy": nosotros ya decidimos cuándo nace el iframe, y el lazy
        del navegador lo aplazaría otra vez hasta tenerlo casi en pantalla —
        justo la demora que estamos tratando de evitar. */
+    /* El load del iframe llega a ~0,8 s, pero el widget recién PINTA a los ~3 s:
+       apagar el esqueleto en el load dejaría dos segundos de caja muda. Se le
+       da un margen y así el giro acompaña hasta que hay algo que mirar. De
+       todos modos el orden de pintado ya lo tapa; esto es solo el refuerzo. */
+    f.addEventListener("load",function(){
+      setTimeout(function(){cal.setAttribute("data-cargado","1")},1200);
+    });
     cal.appendChild(f);
     /* El script de auto-altura de GHL entra async y SOLO aquí: en el <head>
        bloquearía el primer pintado de una página que ni siquiera lo necesita
