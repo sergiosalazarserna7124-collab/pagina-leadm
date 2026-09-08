@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead Master — Qué hacemos y con quién trabajamos</title>
+<meta name="description" content="Lead Master escucha cada llamada, chat y cita de tu equipo comercial y te dice qué pasa con cada lead. Trabajamos con inmobiliarias y equipos de ventas en México, Colombia y Estados Unidos.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="Lead Master — Qué hacemos y con quién trabajamos">
+<meta property="og:description" content="No es un CRM. Es lo que te dice quién está quemando los leads que pagaste — y qué hacer hoy con cada uno.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://www.loom.com">
+<link rel="dns-prefetch" href="https://cdn.loom.com">
+<link rel="canonical" href="https://leadmaster.com.co/web/">
+
+<style>
+/* ── Mismos tokens que index.html: la página vive en el mismo sitio ─────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+img,svg{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+:root{
+  --bg:#000;--ink:#fff;--ink-2:#a8b0c0;--amarillo:#e8d44d;--azul:#4f7fe8;--violeta:#7b5cf0;
+  --grad:linear-gradient(135deg,var(--azul),var(--violeta));
+  --borde:1px solid rgba(255,255,255,.08);--card:rgba(255,255,255,.03);--radius:12px;
+  --sec-pad:48px;--container:1100px;
+}
+@media (min-width:820px){:root{--sec-pad:80px}}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden}
+.container{max-width:var(--container);margin:0 auto;padding:0 20px}
+section{padding:var(--sec-pad) 0}
+h1,h2,h3{text-wrap:balance;line-height:1.15}
+h2{font-size:24px;font-weight:700}
+@media (min-width:820px){h2{font-size:32px}}
+.sub{color:var(--ink-2);max-width:640px;margin:14px auto 0}
+.centro{text-align:center}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+
+/* ── Nav ────────────────────────────────────────────────────────────────── */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.nav .logo{font-weight:800;letter-spacing:-.01em;text-decoration:none;font-size:18px}
+.nav .logo b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav ul{display:flex;gap:22px;list-style:none;font-size:14px}
+.nav ul a{text-decoration:none;color:var(--ink-2)}
+.nav ul a:hover,.nav ul a[aria-current]{color:var(--ink)}
+@media (max-width:640px){.nav ul{display:none}}
+
+/* ── Botón ──────────────────────────────────────────────────────────────── */
+.btn{display:inline-block;padding:14px 28px;border-radius:999px;background:var(--grad);color:#fff;font-weight:700;text-decoration:none;box-shadow:0 8px 28px rgba(123,92,240,.35);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(123,92,240,.45)}
+.btn:focus-visible{outline:2px solid var(--amarillo);outline-offset:3px}
+.btn-sec{display:inline-block;padding:13px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.18);text-decoration:none;font-weight:600;color:var(--ink)}
+.btn-sec:hover{border-color:rgba(255,255,255,.4)}
+.acciones{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+
+/* ── Hero ───────────────────────────────────────────────────────────────── */
+.hero{position:relative;text-align:center;padding-top:40px}
+@media (min-width:820px){.hero{padding-top:64px}}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto;height:120%;pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(79,127,232,.16),transparent 70%),radial-gradient(ellipse 40% 40% at 62% 8%,rgba(123,92,240,.12),transparent 70%)}
+.badge{display:inline-block;font-size:13px;letter-spacing:.02em;padding:7px 16px;border-radius:999px;border:1px solid transparent;background:linear-gradient(#0a0c13,#0a0c13) padding-box,var(--grad) border-box}
+.hero h1{font-size:30px;font-weight:800;letter-spacing:-.01em;max-width:900px;margin:22px auto 0}
+.hero .amarillo{color:var(--amarillo);font-size:16px;max-width:680px;margin:18px auto 0}
+@media (min-width:820px){.hero h1{font-size:44px}.hero .amarillo{font-size:18px}}
+
+/* ── Qué hacemos: tres pasos ────────────────────────────────────────────── */
+.pasos{display:grid;gap:16px;margin-top:36px}
+@media (min-width:820px){.pasos{grid-template-columns:repeat(3,1fr);gap:20px}}
+.paso{position:relative;background:var(--card);border:var(--borde);border-radius:var(--radius);padding:26px 22px;text-align:left}
+.paso .num{position:absolute;top:18px;right:20px;font-size:40px;font-weight:800;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.55}
+.paso h3{font-size:18px;margin-bottom:8px;padding-right:56px}
+.paso p{color:var(--ink-2);font-size:15px}
+
+/* ── Qué ves cada día: tarjetas ─────────────────────────────────────────── */
+.cards{display:grid;gap:16px;margin-top:36px}
+@media (min-width:820px){.cards{grid-template-columns:repeat(3,1fr);gap:20px}}
+.card{background:var(--card);border:var(--borde);border-radius:var(--radius);padding:24px 22px;text-align:left;transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-2px);border-color:rgba(123,92,240,.35)}
+.card .icon{width:40px;height:40px;border-radius:10px;background:rgba(79,127,232,.12);display:grid;place-items:center;margin-bottom:14px}
+.card .icon svg{width:20px;height:20px;stroke:var(--azul);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-size:17px;margin-bottom:8px}
+.card p{color:var(--ink-2);font-size:15px}
+
+/* ── Con quién trabajamos ───────────────────────────────────────────────── */
+.perfil{display:grid;gap:16px;margin-top:32px}
+@media (min-width:820px){.perfil{grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}}
+.lista{list-style:none;display:grid;gap:12px}
+.lista li{display:flex;gap:12px;align-items:flex-start;color:var(--ink-2);font-size:15px}
+.lista li::before{content:"";flex:0 0 8px;height:8px;margin-top:9px;border-radius:50%;background:var(--grad)}
+.lista li b{color:var(--ink)}
+.no{background:var(--card);border:var(--borde);border-radius:var(--radius);padding:22px}
+.no h3{font-size:16px;margin-bottom:10px;color:var(--amarillo)}
+.no p{color:var(--ink-2);font-size:15px}
+.clientes{margin-top:44px;text-align:center}
+.clientes .grid{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 28px;margin-top:18px}
+.cliente{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);opacity:.85;padding:10px 14px;border-radius:10px;border:var(--borde);background:var(--card)}
+.cliente:hover{opacity:1;border-color:rgba(123,92,240,.35)}
+.cliente .ig{font-size:12px;color:var(--ink-2);display:inline-flex;align-items:center;gap:4px}
+.cliente .ig svg{width:13px;height:13px;stroke:currentColor;fill:none}
+.metricas{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin-top:34px}
+.metricas div{text-align:center;min-width:120px}
+.metricas b{display:block;font-size:34px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.metricas span{color:var(--ink-2);font-size:14px}
+
+/* ── Testimonios ────────────────────────────────────────────────────────── */
+.testimonios{display:grid;gap:16px;margin-top:36px}
+@media (min-width:820px){.testimonios{grid-template-columns:repeat(3,1fr);gap:20px}}
+.testimonio{background:var(--card);border:var(--borde);border-radius:var(--radius);padding:26px 22px;text-align:left;display:flex;flex-direction:column;gap:16px}
+.testimonio blockquote{font-size:16px;line-height:1.55;position:relative;padding-top:22px}
+.testimonio blockquote::before{content:"“";position:absolute;top:-10px;left:-4px;font-size:54px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.7}
+.testimonio .quien{display:flex;align-items:center;gap:12px;margin-top:auto}
+.testimonio .avatar{width:42px;height:42px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-weight:800;font-size:15px;flex:0 0 42px}
+.testimonio .quien b{display:block;font-size:14px}
+.testimonio .quien span{font-size:13px;color:var(--ink-2)}
+
+/* ── Cómo trabajamos contigo ────────────────────────────────────────────── */
+.timeline{display:grid;gap:14px;margin-top:32px;max-width:760px;margin-left:auto;margin-right:auto}
+.tl{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;text-align:left}
+.tl .dia{font-size:12px;font-weight:700;color:var(--azul);padding-top:4px}
+.tl h3{font-size:16px;margin-bottom:4px}
+.tl p{color:var(--ink-2);font-size:15px}
+
+
+/* ── Texto + video (Loom), responsive ───────────────────────────────────── */
+.split{display:grid;gap:22px;margin-top:36px;align-items:center;text-align:left}
+@media (min-width:820px){.split{grid-template-columns:1fr 1.15fr;gap:40px}.split.inv .texto{order:2}.split.inv .video{order:1}}
+.split h3{font-size:20px;margin-bottom:10px}
+@media (min-width:820px){.split h3{font-size:24px}}
+.split p{color:var(--ink-2);font-size:15px}
+.split p+p{margin-top:10px}
+.video{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;border:var(--borde);background:#0a0c13;box-shadow:0 12px 40px rgba(0,0,0,.45)}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video-nota{margin-top:10px;font-size:13px;color:var(--ink-2);text-align:center}
+.testimonio.destacado{grid-column:1/-1}
+@media (min-width:820px){.testimonio.destacado{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:center}.testimonio.destacado .cuerpo{display:flex;flex-direction:column;gap:16px}}
+.testimonio.destacado .video{box-shadow:none}
+.ventas{margin-top:26px;padding:22px 24px;border-radius:var(--radius);border:1px solid transparent;background:linear-gradient(#0a0c13,#0a0c13) padding-box,var(--grad) border-box;text-align:center}
+.ventas b{display:block;font-size:34px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media (min-width:820px){.ventas b{font-size:44px}}
+.ventas span{color:var(--ink);font-size:15px}
+.ventas small{display:block;margin-top:6px;color:var(--ink-2);font-size:13px}
+
+/* ── CTA final ──────────────────────────────────────────────────────────── */
+.cta{text-align:center;position:relative}
+.cta::before{content:"";position:absolute;inset:auto -10% -20%;height:120%;pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(123,92,240,.14),transparent 70%)}
+.cta .amarillo{color:var(--amarillo);margin-top:14px}
+.footer{padding:28px 0 40px;text-align:center;color:var(--ink-2);font-size:13px;border-top:var(--borde)}
+.footer a{color:var(--ink-2);text-decoration:none}
+.footer a:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header class="container">
+  <nav class="nav" aria-label="Principal">
+    <a class="logo" href="/">Lead<b>Master</b></a>
+    <ul>
+      <li><a href="#que-hacemos">Qué hacemos</a></li>
+      <li><a href="#con-quien">Con quién trabajamos</a></li>
+      <li><a href="#testimonios">Testimonios</a></li>
+      <li><a href="/#agendar">Agendar</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ── 1 · HERO ─────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <span class="badge">Para inmobiliarias y equipos comerciales con 5 asesores o más</span>
+    <h1>Tu equipo habla con cientos de leads a la semana. Nosotros escuchamos cada conversación y te decimos qué pasa con cada uno.</h1>
+    <p class="amarillo">No es un CRM. Es lo que te dice quién está quemando los leads que pagaste — y qué hacer hoy con cada uno.</p>
+    <div class="acciones">
+      <a class="btn" href="/#agendar">Agenda una llamada de 30 minutos</a>
+      <a class="btn-sec" href="#que-hacemos">Ver cómo funciona</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── 2 · QUÉ HACEMOS ──────────────────────────────────────────────────── -->
+<section id="que-hacemos" class="centro">
+  <div class="container">
+    <p class="eyebrow">Qué hacemos</p>
+    <h2>Convertimos cada llamada, chat y cita en información que el dueño puede usar</h2>
+    <p class="sub">Lead Master se conecta a tu CRM y a los canales por los que tu equipo habla con los leads. A partir de ahí, la IA lee, resume y califica cada conversación.</p>
+
+    <div class="split">
+      <div class="texto">
+        <h3>Cómo hacer que tu CRM realmente ayude a tus asesores</h3>
+        <p>Un CRM guarda lo que el asesor decide anotar. Lead Master parte de lo que de verdad pasó en cada llamada y cada chat, y con eso le dice al asesor qué lead atender ahora, a quién volver a marcar y qué cita quedó sin agendar.</p>
+        <p>En este video te muestro, con una operación real, cómo se ve eso en el día a día del equipo.</p>
+      </div>
+      <div class="video"><iframe src="https://www.loom.com/embed/1a773418bbaa42ffa3aeba4f8f90f60a" title="Cómo hacer que tu CRM realmente ayude a tus asesores" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+    </div>
+
+    <div class="pasos">
+      <div class="paso">
+        <span class="num">1</span>
+        <h3>Escuchamos todo</h3>
+        <p>Cada llamada se transcribe, cada chat de WhatsApp, Instagram o Facebook se lee, y cada cita (incluidas las videollamadas) queda registrada. Nada depende de que el asesor lo anote.</p>
+      </div>
+      <div class="paso">
+        <span class="num">2</span>
+        <h3>La IA entiende qué pasó</h3>
+        <p>Qué quiere el lead, cuánto puede invertir, qué objeción puso, si pactó una cita, si dijo que no. Y también qué hizo tu asesor: si contestó a tiempo, si insistió, si lo dejó ir.</p>
+      </div>
+      <div class="paso">
+        <span class="num">3</span>
+        <h3>Te lo decimos en un panel</h3>
+        <p>Leads que están por cerrar y nadie atiende. Asesores que descartan sin trabajar. Citas habladas que nunca se agendaron. Todo con el nombre, el teléfono y la conversación al lado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3 · QUÉ VES CADA DÍA ─────────────────────────────────────────────── -->
+<section class="centro" style="padding-top:0">
+  <div class="container">
+    <h2>Lo que ves cada mañana</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg></div>
+        <h3>Panel ejecutivo</h3>
+        <p>Cuántos leads entraron, cuántos se atendieron, cuántos tienen cita y cuántos se están perdiendo — por asesor y por origen.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+        <h3>Ranking de asesores</h3>
+        <p>Quién responde rápido y quién no. Quién agenda y quién descarta. Con las conversaciones que lo demuestran, no con opiniones.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Leads en riesgo</h3>
+        <p>El lead que preguntó precio y nadie le contestó. El que dijo "sí" y lleva tres días esperando. El que iba a comprar y lo dejaron colgado.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></div>
+        <h3>Citas y tareas</h3>
+        <p>Las citas que se pactaron por chat y no se agendaron. Las promesas del asesor ("te marco el martes") convertidas en tareas con fecha.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg></div>
+        <h3>Pipeline automático</h3>
+        <p>Cada lead colocado en la etapa que le corresponde según lo que dijo, no según lo que alguien recordó mover. Tú defines las reglas en tus palabras.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>La voz del lead</h3>
+        <p>Qué buscan, qué presupuesto tienen, qué objeciones se repiten y de qué ciudad escriben. Lo que tus leads dicen, agregado y sin sesgo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3b · CRM vs LEAD MASTER ───────────────────────────────────────────── -->
+<section class="centro" style="padding-top:0">
+  <div class="container">
+    <h2>La diferencia entre un CRM y Lead Master</h2>
+    <p class="sub">No reemplazamos tu CRM: lo escuchamos. El CRM sigue siendo donde tu equipo trabaja; Lead Master es lo que te dice qué está pasando ahí adentro.</p>
+    <div class="split inv">
+      <div class="texto">
+        <h3>El CRM te muestra lo que anotaron. Nosotros, lo que pasó.</h3>
+        <p>Un CRM depende de que cada asesor mueva la tarjeta, escriba la nota y actualice la etapa. Cuando no lo hace —y casi nunca lo hace a tiempo— el dueño decide con información vieja o incompleta.</p>
+        <p>Lead Master lee la conversación real, califica al lead, coloca la etapa y avisa cuando algo se está perdiendo. El asesor no tiene que anotar nada para que tú lo sepas.</p>
+      </div>
+      <div class="video"><iframe src="https://www.loom.com/embed/137d116c11e84b80b1f82a134b69d0c3" title="La diferencia entre un CRM y Lead Master" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4 · CON QUIÉN TRABAJAMOS ─────────────────────────────────────────── -->
+<section id="con-quien" class="centro">
+  <div class="container">
+    <p class="eyebrow">Con quién trabajamos</p>
+    <h2>Equipos comerciales que ya pagan por leads y quieren saber qué pasa con ellos</h2>
+
+    <div class="perfil">
+      <ul class="lista">
+        <li><span><b>Inmobiliarias y desarrolladoras</b> con 5 asesores o más, que invierten en pauta y reciben decenas o cientos de leads por semana.</span></li>
+        <li><span><b>Equipos que venden por WhatsApp y teléfono</b>, con GoHighLevel como CRM. Nos conectamos directo: sin instalar nada en los celulares de los asesores.</span></li>
+        <li><span><b>Dueños y gerentes comerciales</b> que hoy dependen de lo que el equipo les cuenta y quieren ver la conversación real.</span></li>
+        <li><span><b>Operaciones en México, Colombia y Estados Unidos</b>: preventa, terrenos, vivienda, inversión en el Caribe mexicano y también equipos de ventas fuera del sector inmobiliario.</span></li>
+      </ul>
+      <div class="no">
+        <h3>Con quién no somos la mejor opción</h3>
+        <p>Si tu equipo son una o dos personas y tú mismo hablas con cada lead, ya sabes lo que pasa con ellos. Lead Master empieza a valer cuando la operación deja de caber en tu cabeza.</p>
+      </div>
+    </div>
+
+    <div class="clientes">
+      <p class="eyebrow">Inmobiliarias que ya operan con Lead Master</p>
+      <div class="grid">
+        <a class="cliente" href="https://www.instagram.com/shark_realtor/" target="_blank" rel="noopener"><b>SHARK REALTORS</b><span class="ig"><svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@shark_realtor</span></a>
+        <a class="cliente" href="https://www.instagram.com/imexicorealestate/" target="_blank" rel="noopener"><b><i>iMexico</i></b><span class="ig"><svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@imexicorealestate</span></a>
+        <a class="cliente" href="https://www.instagram.com/dkdelkaribe/" target="_blank" rel="noopener"><b>DK DEL KARIBE</b><span class="ig"><svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@dkdelkaribe</span></a>
+        <a class="cliente" href="https://www.instagram.com/grupo_daxi/" target="_blank" rel="noopener"><b>GRUPO DAXI</b><span class="ig"><svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@grupo_daxi</span></a>
+        <a class="cliente" href="https://www.instagram.com/marlenecortesg/" target="_blank" rel="noopener"><b>ZIBAHOME</b><span class="ig"><svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@marlenecortesg</span></a>
+        <a class="cliente" href="https://www.instagram.com/remaxcenote/" target="_blank" rel="noopener"><b>RE/MAX CENOTE</b><span class="ig"><svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@remaxcenote</span></a>
+        <a class="cliente" href="https://www.instagram.com/urbanza/" target="_blank" rel="noopener"><b>URBANZA</b><span class="ig"><svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@urbanza</span></a>
+      </div>
+      <!-- {METRICAS}: los mismos números que index.html; cámbialos en los dos. -->
+      <div class="metricas">
+        <div><b>+15</b><span>inmobiliarias operando</span></div>
+        <div><b>+1M</b><span>conversaciones analizadas</span></div>
+        <div><b>3</b><span>países</span></div>
+      </div>
+      <div class="ventas">
+        <b>+10 millones de dólares</b>
+        <span>en ventas cerradas por nuestros clientes este año con el apoyo de nuestros sistemas</span>
+        <small>Suma de las ventas reportadas por las inmobiliarias que operan con Lead Master en 2026.</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 5 · TESTIMONIOS ──────────────────────────────────────────────────── -->
+<section id="testimonios" class="centro">
+  <div class="container">
+    <p class="eyebrow">Testimonios</p>
+    <h2>Lo que dicen los dueños que ya lo usan</h2>
+    <p class="sub">Sin frases de catálogo: lo que cambió en su operación desde que ven lo que pasa con cada lead.</p>
+
+    <div class="testimonios">
+      <div class="testimonio destacado">
+        <div class="video"><iframe src="https://www.loom.com/embed/7988ee1ac27d4fcfaa5df8d6f895c5a9" title="Testimonio de Max Sánchez, Shark Realtors" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="cuerpo">
+          <blockquote>Siempre me decían que debía mover mi CRM a mano, que la única forma de saber qué hacía mi equipo era revisar lead por lead en el CRM. Hasta que conocí a Sergio y el proceso ya era automático.</blockquote>
+          <div class="quien"><div class="avatar">MS</div><div><b>Max Sánchez</b><span>Shark Realtors · Cancún, Tulum y Playa del Carmen</span></div></div>
+        </div>
+      </div>
+      <div class="testimonio">
+        <blockquote>Gracias a los indicadores que nos dio el sistema empezamos a hacer las llamadas en el horario que nos recomendó, y aumentaron las personas que nos contestan.</blockquote>
+        <div class="quien"><div class="avatar">DK</div><div><b>DK del Caribe</b><span>Inmobiliaria · Caribe mexicano</span></div></div>
+      </div>
+      <div class="testimonio">
+        <blockquote>Teníamos leads perdidos en nuestro CRM. Gracias a una automatización que Sergio hizo, recuperamos más de 5 millones de pesos mexicanos en leads que se consideraban perdidos.</blockquote>
+        <div class="quien"><div class="avatar">GD</div><div><b>Grupo Daxi</b><span>Desarrolladora inmobiliaria</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 6 · CÓMO TRABAJAMOS CONTIGO ──────────────────────────────────────── -->
+<section class="centro" style="padding-top:0">
+  <div class="container">
+    <h2>Cómo empezamos</h2>
+    <p class="sub">Sin migraciones ni capacitaciones de semanas. Tu equipo sigue trabajando igual; lo que cambia es lo que tú ves.</p>
+    <div class="timeline">
+      <div class="tl"><span class="dia">DÍA 0</span><div><h3>Llamada de 30 minutos</h3><p>Vemos tu operación con tus propios números: cuántos leads entran, por dónde, y qué se está perdiendo.</p></div></div>
+      <div class="tl"><span class="dia">DÍA 1</span><div><h3>Conexión a tu CRM</h3><p>Instalamos Lead Master en tu GoHighLevel. Desde ese momento cada llamada, chat y cita entra al panel. Los asesores no instalan nada.</p></div></div>
+      <div class="tl"><span class="dia">SEMANA 1</span><div><h3>Reglas en tus palabras</h3><p>Definimos contigo qué es un lead calificado, cuándo un asesor lo dejó ir y en qué etapa va cada uno. Lo escribes tú; la IA lo entiende.</p></div></div>
+      <div class="tl"><span class="dia">SIEMPRE</span><div><h3>Acompañamiento</h3><p>Revisamos contigo lo que el panel muestra y ajustamos la lógica con tu equipo. No te dejamos con un software: trabajamos la operación.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 7 · CTA ──────────────────────────────────────────────────────────── -->
+<section class="cta">
+  <div class="container">
+    <h2>¿Quieres ver qué está pasando con tus leads?</h2>
+    <p class="amarillo">Agenda 30 minutos. Te lo mostramos con tus propios números, sin compromiso.</p>
+    <div class="acciones">
+      <a class="btn" href="/#agendar">Agendar mi llamada</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">© <span id="anio">2026</span> Lead Master · Gestión comercial para inmobiliarias · <a href="/">Inicio</a></div>
+</footer>
+<script>document.getElementById("anio").textContent=new Date().getFullYear();</script>
+</body>
+</html>
