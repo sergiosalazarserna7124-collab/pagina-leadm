@@ -83,15 +83,6 @@ h2{font-size:24px;font-weight:700}
 .card p{color:var(--ink-2);font-size:15px}
 
 /* ── Con quién trabajamos ───────────────────────────────────────────────── */
-.perfil{display:grid;gap:16px;margin-top:32px}
-@media (min-width:820px){.perfil{grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}}
-.lista{list-style:none;display:grid;gap:12px}
-.lista li{display:flex;gap:12px;align-items:flex-start;color:var(--ink-2);font-size:15px}
-.lista li::before{content:"";flex:0 0 8px;height:8px;margin-top:9px;border-radius:50%;background:var(--grad)}
-.lista li b{color:var(--ink)}
-.no{background:var(--card);border:var(--borde);border-radius:var(--radius);padding:22px}
-.no h3{font-size:16px;margin-bottom:10px;color:var(--amarillo)}
-.no p{color:var(--ink-2);font-size:15px}
 .clientes{margin-top:44px;text-align:center}
 .clientes .grid{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 28px;margin-top:18px}
 .cliente{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);opacity:.85;padding:10px 14px;border-radius:10px;border:var(--borde);background:var(--card)}
@@ -273,23 +264,8 @@ h2{font-size:24px;font-weight:700}
 <section id="con-quien" class="centro">
   <div class="container">
     <p class="eyebrow">Con quién trabajamos</p>
-    <h2>Equipos comerciales que ya pagan por leads y quieren saber qué pasa con ellos</h2>
-
-    <div class="perfil">
-      <ul class="lista">
-        <li><span><b>Inmobiliarias y desarrolladoras</b> con 5 asesores o más, que invierten en pauta y reciben decenas o cientos de leads por semana.</span></li>
-        <li><span><b>Equipos que venden por WhatsApp y teléfono</b>, con GoHighLevel como CRM. Nos conectamos directo: sin instalar nada en los celulares de los asesores.</span></li>
-        <li><span><b>Dueños y gerentes comerciales</b> que hoy dependen de lo que el equipo les cuenta y quieren ver la conversación real.</span></li>
-        <li><span><b>Operaciones en México, Colombia y Estados Unidos</b>: preventa, terrenos, vivienda, inversión en el Caribe mexicano y también equipos de ventas fuera del sector inmobiliario.</span></li>
-      </ul>
-      <div class="no">
-        <h3>Con quién no somos la mejor opción</h3>
-        <p>Si tu equipo son una o dos personas y tú mismo hablas con cada lead, ya sabes lo que pasa con ellos. Lead Master empieza a valer cuando la operación deja de caber en tu cabeza.</p>
-      </div>
-    </div>
-
-    <div class="clientes">
-      <p class="eyebrow">Inmobiliarias que ya operan con Lead Master</p>
+    <div class="clientes" style="margin-top:18px">
+      <h2>Inmobiliarias que ya operan con Lead Master</h2>
       <div class="grid">
         <a class="cliente" href="https://www.instagram.com/shark_realtor/" target="_blank" rel="noopener"><b>SHARK REALTORS</b><span class="ig"><svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@shark_realtor</span></a>
         <a class="cliente" href="https://www.instagram.com/imexicorealestate/" target="_blank" rel="noopener"><b><i>iMexico</i></b><span class="ig"><svg viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@imexicorealestate</span></a>
