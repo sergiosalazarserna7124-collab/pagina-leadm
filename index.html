@@ -3,33 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lead Master — Gestión comercial para inmobiliarias</title>
-<meta name="description" content="Lead Master escucha cada llamada y cada chat de tu equipo y te dice qué asesor está quemando los leads que pagaste. Para inmobiliarias con más de 5 asesores.">
-<meta name="theme-color" content="#000000">
-<meta property="og:title" content="Lead Master — Gestión comercial para inmobiliarias">
-<meta property="og:description" content="Cada lead que entra te costó dinero. Descubre cuáles se están perdiendo por cómo los trabaja tu equipo.">
+<title>Lead Master — El control de tu equipo comercial en 5 días</title>
+<meta name="description" content="Lead Master escucha cada llamada y cada chat de tus asesores y te muestra qué está pasando con los leads de tu inmobiliaria. Funcionando en 5 días.">
+<meta name="theme-color" content="#07090d">
+<meta property="og:title" content="Lead Master — El control de tu equipo comercial en 5 días">
+<meta property="og:description" content="Mira qué hace tu equipo con cada lead de tu inmobiliaria. Agenda una llamada y en 5 días lo tienes funcionando.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://leadmaster.com.co/">
+<meta property="og:image" content="https://leadmaster.com.co/portada-vsl.jpg">
+<link rel="canonical" href="https://leadmaster.com.co/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='none'%3E%3ClinearGradient id='g' x1='0' y1='0' x2='512' y2='512' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%237C3AED'/%3E%3Cstop offset='1' stop-color='%2306B6D4'/%3E%3C/linearGradient%3E%3Crect width='512' height='512' rx='116' fill='url(%23g)'/%3E%3Cpath d='M138 126V376H226L276 256L322 326L357 232' stroke='%23fff' stroke-width='58' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='388' cy='150' r='44' fill='%23fff'/%3E%3C/svg%3E">
 
-<!-- Preconnect al player del VSL (ConverteAI/vturb): el video no carga hasta
-     el clic, pero la conexión ya queda caliente. -->
+<!-- Lo único que se ve arriba además del texto es la portada del video: se
+     pide ya, en WebP y al tamaño de la pantalla (11 a 15 KB en celular, 24 KB
+     en escritorio; el JPG de 45 KB queda de respaldo). -->
+<link rel="preload" as="image" type="image/webp" fetchpriority="high"
+      href="portada-vsl.webp"
+      imagesrcset="portada-vsl-640.webp 640w, portada-vsl-800.webp 800w, portada-vsl.webp 1120w"
+      imagesizes="(min-width:1184px) 1120px, calc(100vw - 40px)">
+
+<!-- Conexiones que se van a usar después: el formulario (API de Lead Master)
+     y el player del video, que no existe hasta el clic. -->
+<link rel="preconnect" href="https://tracker-v1-mhx6.onrender.com" crossorigin>
 <link rel="preconnect" href="https://scripts.converteai.net">
-<link rel="preconnect" href="https://cdn.converteai.net">
-<!-- El calendario (GHL) no carga en el primer pintado; esto solo adelanta DNS y
-     TLS. En móvil el widget se abre en pestaña nueva, y estas conexiones siguen
-     sirviendo: el DNS y el pool de conexiones se comparten en todo el perfil.
-     Medido el 2026-09-02: el widget dispara 101 peticiones —92 a su propio
-     CDN— y sus llamadas de fondo (free-slots 2,4s · forms/data 1,9s) mandan
-     sobre el total. No podemos acelerar su iframe, pero sí llegar con las
-     conexiones ya abiertas. -->
-<link rel="preconnect" href="https://api.leadconnectorhq.com" crossorigin>
-<link rel="preconnect" href="https://backend.leadconnectorhq.com" crossorigin>
-<link rel="preconnect" href="https://stcdn.leadconnectorhq.com" crossorigin>
-<link rel="dns-prefetch" href="https://link.msgsndr.com">
+<link rel="dns-prefetch" href="https://cdn.converteai.net">
 <link rel="preconnect" href="https://connect.facebook.net">
 
-<!-- Meta Pixel — id 1263262645964599. Tal cual lo entrega Meta: fbevents.js
-     entra async (t.async=!0), así que no bloquea el pintado, y el PageView se
-     dispara de inmediato para no perder atribución de quien rebota rápido. -->
+<!-- Meta Pixel — id 1263262645964599. fbevents.js entra async: no bloquea el
+     pintado. Eventos: PageView aquí; Lead al dejar el WhatsApp y Schedule al
+     agendar (los dispara el formulario, más abajo). Antes el Schedule lo
+     mandaba el widget de GHL desde su iframe; ahora sale de esta página. -->
 <script>
 !function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -47,342 +50,520 @@ src="https://www.facebook.com/tr?id=1263262645964599&ev=PageView&noscript=1"
 alt=""/></noscript>
 
 <style>
-/* ── Reset mínimo ──────────────────────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-img,svg,iframe{display:block;max-width:100%}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-a{color:inherit}
+/* Todo el CSS va aquí dentro: cero archivos que esperar antes de pintar.
+   Tipografía del sistema (San Francisco / Roboto / Segoe): no se descarga
+   ninguna fuente, así que el texto aparece de inmediato y no salta. */
 
-/* ── Tokens ────────────────────────────────────────────────────────────── */
+/* ── Reset ─────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:76px}
+img,svg,iframe{display:block;max-width:100%}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+[hidden]{display:none!important}
+
+/* ── Colores ───────────────────────────────────────────────────────────────
+   Un solo color de acento (el celeste del logo) sobre negro azulado; el
+   violeta del logo solo aparece en el logo y en el resplandor del fondo. */
 :root{
-  --bg:#000;
-  --ink:#fff;
-  --ink-2:#a8b0c0;
-  --amarillo:#e8d44d;
-  --azul:#4f7fe8;
-  --violeta:#7b5cf0;
-  --grad:linear-gradient(135deg,var(--azul),var(--violeta));
-  --borde:1px solid rgba(255,255,255,.08);
-  --card:rgba(255,255,255,.03);
-  --radius:12px;
-  --sec-pad:48px;      /* móvil */
-  --container:1100px;
+  --bg:#07090d;
+  --surface:#0d1016;
+  --surface-2:#131722;
+  --border:rgba(255,255,255,.08);
+  --border-strong:rgba(255,255,255,.16);
+  --text:#f5f7fa;
+  --muted:#9ba5b6;
+  --faint:#7c8698;
+  --accent:#4cc9f0;
+  --accent-hover:#7ad7f5;
+  --accent-soft:rgba(76,201,240,.12);
+  --accent-ink:#04141b;
+  --violet:#7c3aed;
+  --danger:#ff8a93;
+  --ok:#43d9a0;
+  --r-lg:22px;
+  --r-md:14px;
+  --ease:cubic-bezier(.32,.72,0,1);
 }
-@media (min-width:820px){:root{--sec-pad:80px}}
 
 body{
-  background:var(--bg);
-  color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  font-size:16px;line-height:1.6;
+  background:var(--bg);color:var(--text);
+  font-family:ui-sans-serif,system-ui,-apple-system,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
+.wrap{max-width:1168px;margin:0 auto;padding:0 20px}
+@media (min-width:768px){.wrap{padding:0 32px}}
+h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
+.accent{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
 
-.container{max-width:var(--container);margin:0 auto;padding:0 20px}
-section{padding:var(--sec-pad) 0}
-h1,h2{text-wrap:balance;line-height:1.15}
-h2{font-size:24px;font-weight:700}
-@media (min-width:820px){h2{font-size:32px}}
-.sub{color:var(--ink-2);max-width:640px;margin:14px auto 0}
+/* ── Barra superior ────────────────────────────────────────────────────── */
+.top{
+  position:sticky;top:0;z-index:30;
+  background:rgba(7,9,13,.82);-webkit-backdrop-filter:saturate(1.5) blur(18px);backdrop-filter:saturate(1.5) blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.top .wrap{display:flex;align-items:center;justify-content:center;height:52px}
+@media (min-width:768px){.top .wrap{height:62px}}
+.logo{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:16px;letter-spacing:-.03em}
+.logo svg{width:24px;height:24px}
+@media (min-width:768px){.logo{font-size:19px}.logo svg{width:28px;height:28px}}
 
-/* ── 1 · HERO ──────────────────────────────────────────────────────────── */
-/* padding-bottom:0 a propósito: `section` ya pone --sec-pad arriba y abajo,
-   y encima .vsl sumaba el suyo → 84px en móvil y 152px en escritorio de negro
-   entre el texto y el video. El aire entre bloques lo pone UNO solo. */
-.hero{position:relative;text-align:center;padding-top:48px;padding-bottom:0}
-@media (min-width:820px){.hero{padding-top:72px}}
-/* Glow radial azul/violeta, CSS puro — sin imágenes */
+/* ── Hero ──────────────────────────────────────────────────────────────── */
+.hero{position:relative;text-align:center;padding:20px 0 0}
+.hero .mas{display:none}
 .hero::before{
-  content:"";position:absolute;inset:-20% -10% auto;height:120%;
+  content:"";position:absolute;z-index:-1;inset:-60px 0 auto;height:520px;pointer-events:none;
   background:
-    radial-gradient(ellipse 60% 50% at 50% 0%,rgba(79,127,232,.16),transparent 70%),
-    radial-gradient(ellipse 40% 40% at 62% 8%,rgba(123,92,240,.12),transparent 70%);
-  pointer-events:none;z-index:-1;
+    radial-gradient(ellipse 55% 55% at 50% 0%,rgba(76,201,240,.13),transparent 70%),
+    radial-gradient(ellipse 38% 42% at 68% 6%,rgba(124,58,237,.12),transparent 70%);
 }
-.badge{
-  display:inline-block;font-size:13px;letter-spacing:.02em;color:var(--ink);
-  padding:7px 16px;border-radius:999px;border:1px solid transparent;
-  background:linear-gradient(#0a0c13,#0a0c13) padding-box,var(--grad) border-box;
-}
-.hero h1{
-  font-size:30px;font-weight:800;letter-spacing:-.01em;
-  max-width:900px;margin:22px auto 0;
-}
-.hero .amarillo{color:var(--amarillo);font-size:16px;max-width:680px;margin:18px auto 0}
-@media (min-width:820px){
-  .hero h1{font-size:44px}
-  .hero .amarillo{font-size:18px}
-}
+.hero h1{font-size:clamp(1.75rem,6.4vw,3.4rem);line-height:1.07;max-width:880px;margin:0 auto}
+.hero p{color:var(--muted);font-size:clamp(1rem,2.3vw,1.25rem);line-height:1.5;max-width:640px;margin:14px auto 0;text-wrap:pretty}
+.hero p{margin-top:10px}
+@media (min-width:640px){.hero .mas{display:inline}}
+@media (min-width:768px){.hero{padding-top:56px}.hero p{margin-top:22px}}
 
-/* ── 2 · VSL (facade: el player se inyecta solo al hacer clic) ────────── */
-.vsl{padding-top:24px;padding-bottom:0}
-@media (min-width:820px){.vsl{padding-top:32px}}
-.vsl-frame{
-  position:relative;max-width:900px;margin:0 auto;aspect-ratio:16/9;
-  border-radius:var(--radius);border:var(--borde);overflow:hidden;
-  background:
-    radial-gradient(ellipse 80% 90% at 50% 110%,rgba(79,127,232,.22),transparent 65%),
-    linear-gradient(160deg,#0d1017,#07080c);
-  box-shadow:0 0 70px rgba(79,127,232,.22),0 0 24px rgba(123,92,240,.12);
+/* ── Video ─────────────────────────────────────────────────────────────── */
+.video{padding-top:16px}
+@media (min-width:768px){.video{padding-top:36px}}
+.vsl{
+  position:relative;aspect-ratio:16/9;width:100%;max-width:1120px;margin:0 auto;overflow:hidden;
+  border-radius:18px;border:1px solid var(--border);background:#000;
 }
-.vsl-frame iframe,.vsl-frame vturb-smartplayer{position:absolute;inset:0;width:100%;height:100%;border:0}
-.vsl-frame vturb-smartplayer video{width:100%;height:100%;object-fit:contain}
-.vsl-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.vsl-play{
-  position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:14px;width:100%;
-  transition:opacity .2s;
-  /* Velo oscuro: sin él, el texto gris del botón se pierde sobre la portada
-     (que es clara) y el play deja de leerse. */
-  background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(0,0,0,.55),rgba(0,0,0,.30));
+@media (min-width:768px){.vsl{border-radius:var(--r-lg)}}
+.vsl picture,.vsl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vsl img{transition:transform .7s var(--ease)}
+.vsl-play{position:absolute;inset:0;width:100%;display:flex;align-items:center;justify-content:center}
+.vsl-play::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),transparent 45%,rgba(0,0,0,.12))}
+.vsl-play span{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  width:66px;height:66px;border-radius:50%;background:var(--accent);color:var(--accent-ink);
+  box-shadow:0 14px 36px rgba(0,0,0,.45);transition:transform .45s var(--ease);
 }
-.vsl-play span:last-child{text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.vsl-play:hover .vsl-play-btn{transform:scale(1.06)}
-.vsl-play-btn{
-  width:62px;height:62px;border-radius:50%;display:grid;place-items:center;
-  background:var(--grad);box-shadow:0 8px 32px rgba(79,127,232,.45);
-  transition:transform .2s;
-}
-.vsl-play span{font-size:14px;color:#e8ecf4}
-@media (min-width:820px){.vsl-play-btn{width:76px;height:76px}}
+.vsl-play svg{width:26px;height:26px;margin-left:4px}
+@media (min-width:768px){.vsl-play span{width:104px;height:104px}.vsl-play svg{width:38px;height:38px;margin-left:6px}}
+@media (hover:hover){.vsl:hover img{transform:scale(1.03)}.vsl-play:hover span{transform:scale(1.08)}}
+.vsl iframe,.vsl vturb-smartplayer{position:absolute;inset:0;width:100%;height:100%;border:0}
 
-/* ── 3 · CTA ───────────────────────────────────────────────────────────── */
-.cta-box{text-align:center;padding-top:24px}
-@media (min-width:820px){.cta-box{padding-top:32px}}
-.btn{
-  display:inline-block;text-decoration:none;text-align:center;
-  background:var(--grad);color:#fff;font-weight:700;font-size:17px;
-  letter-spacing:.02em;padding:17px 38px;border-radius:var(--radius);
-  box-shadow:0 8px 30px rgba(79,127,232,.35);
-  transition:transform .18s,box-shadow .18s;
+/* ── Botón principal ───────────────────────────────────────────────────── */
+.pill{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:52px;
+  padding:14px 26px;border-radius:999px;background:var(--accent);color:var(--accent-ink);
+  font-weight:650;font-size:16px;transition:background-color .3s,transform .35s var(--ease);
 }
-.btn:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(123,92,240,.45)}
-.btn:focus-visible,.vsl-play:focus-visible{
-  outline:2px solid var(--azul);outline-offset:3px;border-radius:var(--radius);
+.pill i{
+  display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+  background:rgba(4,20,27,.14);font-style:normal;font-size:14px;line-height:1;transition:transform .35s var(--ease);
 }
+@media (hover:hover){.pill:hover{background:var(--accent-hover);transform:translateY(-2px)}.pill:hover i{transform:translate(2px,-1px)}}
+.pill:active{transform:scale(.98)}
+@media (min-width:768px){.pill{padding:16px 34px}}
 
-/* ── 4 · Prueba social ─────────────────────────────────────────────────── */
-.logos{text-align:center;padding-top:56px;padding-bottom:0}
-.logos p{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
-/* Marquesina: dos copias idénticas de la lista y un translateX(-50%) en bucle.
-   Es solo transform (composición en GPU), dentro de las reglas de velocidad.
-   Se pausa al pasar el mouse y se apaga con prefers-reduced-motion. */
-.marquee{
-  overflow:hidden;margin-top:26px;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+/* ── Prueba social ─────────────────────────────────────────────────────── */
+.trust{padding-top:44px;text-align:center}
+@media (min-width:768px){.trust{padding-top:88px}}
+.datos{color:var(--muted);font-size:14.5px;line-height:1.7;text-wrap:balance}
+.datos li{display:inline;white-space:nowrap}
+/* El punto va al final de cada dato (no al inicio del siguiente): así nunca
+   queda un punto suelto abriendo un renglón. */
+.datos li:not(:last-child)::after{content:"·";margin:0 .55em;color:var(--faint)}
+@media (min-width:768px){
+  .datos{display:flex;justify-content:center;gap:36px;font-size:15.5px}
+  .datos li{display:flex;align-items:center;gap:36px}
+  .datos li:not(:last-child)::after{content:"";margin:0;width:4px;height:4px;border-radius:50%;background:var(--border-strong)}
 }
-.marquee-track{display:flex;width:max-content;animation:marquee 32s linear infinite}
-.marquee:hover .marquee-track{animation-play-state:paused}
-@keyframes marquee{to{transform:translateX(-50%)}}
-.marquee-grupo{display:flex;align-items:center;gap:56px;padding-right:56px}
-.cliente{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  text-decoration:none;opacity:.6;filter:grayscale(1);transition:opacity .2s;
-}
-.cliente:hover{opacity:1;filter:none}
-.cliente svg,.cliente img{height:20px;width:auto}
-.cliente .ig{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-2)}
-.cliente .ig svg{height:12px;width:12px;stroke:var(--ink-2)}
-@media (prefers-reduced-motion:reduce){
-  .marquee{mask-image:none;-webkit-mask-image:none}
-  .marquee-track{animation:none;width:auto;flex-wrap:wrap;justify-content:center}
-  .marquee-grupo[aria-hidden]{display:none}
-  .marquee-grupo{flex-wrap:wrap;justify-content:center;padding-right:0}
-}
-.metricas{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 56px;margin-top:44px}
-.metricas div b{display:block;font-size:30px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.metricas div span{font-size:13px;color:var(--ink-2)}
+.clientes{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;margin-top:26px}
+.clientes small{flex-basis:100%;color:var(--faint);font-size:12.5px}
+.clientes a{color:var(--muted);font-weight:650;font-size:15px;letter-spacing:-.01em;transition:color .25s}
+@media (hover:hover){.clientes a:hover{color:var(--text)}}
+@media (min-width:768px){.clientes{gap:14px 34px;margin-top:34px}.clientes small{font-size:13px;margin-bottom:2px}.clientes a{font-size:18px}}
 
-/* ── 5 · Gestión comercial ─────────────────────────────────────────────── */
-.gestion{text-align:center}
-.cards{
-  display:grid;grid-template-columns:1fr;gap:16px;
-  margin-top:40px;text-align:left;
-}
-@media (min-width:720px){.cards{grid-template-columns:1fr 1fr;gap:20px}}
+/* ── Qué hace ──────────────────────────────────────────────────────────── */
+.que{padding-top:56px}
+@media (min-width:768px){.que{padding-top:104px}}
+.titulo{text-align:center;max-width:760px;margin:0 auto}
+.titulo h2{font-size:clamp(1.6rem,5vw,2.75rem);line-height:1.1}
+.titulo p{color:var(--muted);font-size:clamp(1rem,2vw,1.15rem);margin-top:14px;text-wrap:pretty}
+.cards{display:grid;gap:12px;margin-top:28px}
+@media (min-width:640px){.cards{grid-template-columns:1fr 1fr}}
+@media (min-width:1024px){.cards{grid-template-columns:repeat(4,1fr);gap:16px;margin-top:44px}}
+.cardi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:20px}
+.cardi b{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);margin-bottom:14px}
+.cardi b svg{width:19px;height:19px}
+.cardi h3{font-size:16.5px;font-weight:700;letter-spacing:-.02em;line-height:1.25}
+.cardi p{color:var(--muted);font-size:14.5px;margin-top:6px}
+
+/* ── Agenda ────────────────────────────────────────────────────────────── */
+.agenda{padding-top:14px}
+@media (min-width:768px){.agenda{padding-top:24px}}
 .card{
-  background:var(--card);border:var(--borde);border-radius:var(--radius);
-  padding:26px;transition:transform .18s,border-color .18s;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:22px 18px;min-height:430px;max-width:1120px;margin:0 auto;
 }
-.card:hover{transform:translateY(-2px);border-color:rgba(123,92,240,.35)}
-.card .icon{
-  width:44px;height:44px;border-radius:10px;display:grid;place-items:center;
-  background:rgba(79,127,232,.12);margin-bottom:16px;
-}
-.card .icon svg{stroke:var(--azul)}
-.card h3{font-size:18px;margin-bottom:8px}
-.card p{color:var(--ink-2);font-size:15px}
+@media (min-width:768px){.card{padding:40px 44px}}
+.inner{max-width:480px;margin:0 auto}
+.inner.ancho{max-width:640px}
 
+.pasos{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:26px;color:var(--faint);font-size:14.5px;font-weight:500}
+.pasos li{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.pasos b{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:1px solid var(--border-strong);font-size:13px;font-weight:650}
+.pasos .on{color:var(--text)}
+.pasos .on b{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pasos .raya{width:34px;height:1px;background:var(--border-strong)}
+.pasos .ok{color:var(--muted)}
+.pasos .ok b{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
 
-/* ── 8 · Agendar ───────────────────────────────────────────────────────── */
-.agendar{text-align:center}
-.cal-frame{
-  /* Altura RESERVADA antes de que el iframe exista: sin esto la página pega un
-     salto cuando el calendario entra al viewport. En móvil el widget de GHL
-     se apila (fecha arriba, horas abajo) y necesita bastante más alto. */
-  position:relative;max-width:900px;margin:28px auto 0;min-height:900px;
-  border-radius:var(--radius);border:var(--borde);overflow:hidden;
-  background:var(--card);
-}
-@media (min-width:820px){.cal-frame{min-height:700px;margin-top:36px}}
-/* Esqueleto: giro + texto, los dos DEBAJO del iframe.
-   OJO con el orden de pintado: un ::after se dibuja como último hijo, o sea
-   ENCIMA del iframe — el texto quedaba flotando sobre el calendario ya
-   cargado. Por eso el giro va en ::before (primer hijo) y el texto en un
-   <span> real que está en el HTML ANTES de que se inyecte el iframe: los dos
-   quedan por debajo y el widget los tapa solo al pintar. */
-.cal-frame::before{
-  content:"";position:absolute;top:50%;left:50%;
-  width:34px;height:34px;margin:-40px 0 0 -17px;border-radius:50%;
-  border:3px solid rgba(255,255,255,.16);border-top-color:var(--azul);
-  animation:girar .9s linear infinite;
-}
-.cal-msg{
-  position:absolute;top:50%;left:0;right:0;margin-top:10px;padding:0 24px;
-  text-align:center;color:var(--ink-2);font-size:14px;
-}
-@keyframes girar{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.cal-frame::before{animation:none}}
-/* Refuerzo: en cuanto el iframe carga, el esqueleto se apaga de raíz — así no
-   depende solo del orden de pintado. */
-.cal-frame[data-cargado] .cal-msg{display:none}
-.cal-frame[data-cargado]::before{display:none}
-.cal-frame iframe{position:relative;width:100%;height:900px;border:0;display:block}
-@media (min-width:820px){.cal-frame iframe{height:700px}}
+.card h2{font-size:17px;font-weight:700;letter-spacing:-.02em;line-height:1.3}
+.barra{display:flex;align-items:center;gap:12px;margin:14px 0 24px;color:var(--faint);font-size:12.5px;white-space:nowrap}
+.barra div{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.barra i{display:block;height:100%;width:6%;border-radius:4px;background:var(--accent);transition:width .5s var(--ease)}
 
+.q{animation:entra .4s var(--ease)}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.q label,.q .pregunta{display:block;font-size:15.5px;font-weight:600;margin-bottom:10px}
+.q label em{color:var(--accent);font-style:normal}
+.campo{
+  width:100%;height:50px;padding:0 16px;border-radius:12px;background:var(--bg);
+  border:1px solid var(--border-strong);font-size:17px;outline:0;transition:border-color .2s,box-shadow .2s;
+}
+.campo::placeholder{color:var(--faint)}
+.campo:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.hint{color:var(--muted);font-size:13.5px;margin-top:10px}
+.hint.sm{color:var(--faint);font-size:12.5px;margin-top:6px}
+.hint a{text-decoration:underline;text-underline-offset:2px}
+.err{color:var(--danger);font-size:13.5px;margin-top:10px;min-height:0}
+.err:empty{display:none}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* ── Footer ────────────────────────────────────────────────────────────── */
-.footer{
-  border-top:var(--borde);padding:28px 0;text-align:center;
-  font-size:13px;color:var(--ink-2);
+/* WhatsApp con selector de país */
+.tel{
+  position:relative;display:flex;height:50px;border-radius:12px;background:var(--bg);
+  border:1px solid var(--border-strong);transition:border-color .2s,box-shadow .2s;
+}
+.tel:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.pais-btn{
+  display:flex;align-items:center;gap:8px;padding:0 12px 0 14px;border-right:1px solid var(--border);
+  border-radius:12px 0 0 12px;font-size:16px;white-space:nowrap;
+}
+.pais-btn:focus-visible{outline-offset:-2px}
+.pais-btn svg{width:12px;height:12px;color:var(--muted);transition:transform .25s}
+.pais-btn[aria-expanded=true] svg{transform:rotate(180deg)}
+.flag{font-size:20px;line-height:1}
+.flag.iso{font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 5px;border-radius:5px;background:var(--surface-2);color:var(--muted)}
+.tel input{flex:1;min-width:0;height:100%;padding:0 14px;background:none;border:0;outline:0;font-size:17px;border-radius:0 12px 12px 0}
+.tel input::placeholder{color:var(--faint)}
+.pais-pop{
+  position:absolute;z-index:20;top:calc(100% + 8px);left:0;width:min(340px,100%);
+  background:var(--surface-2);border:1px solid var(--border-strong);border-radius:14px;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);overflow:hidden;animation:entra .2s var(--ease);
+}
+.pais-pop input{width:100%;height:46px;padding:0 14px;background:none;border:0;border-bottom:1px solid var(--border);outline:0;font-size:16px}
+.pais-pop input::placeholder{color:var(--faint)}
+.pais-pop ul{max-height:264px;overflow-y:auto;overscroll-behavior:contain;padding:6px}
+.pais-pop li{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;font-size:15px;cursor:pointer}
+.pais-pop li span:nth-child(2){flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pais-pop li span:last-child{color:var(--muted);font-variant-numeric:tabular-nums}
+.pais-pop li.act,.pais-pop li:hover{background:rgba(255,255,255,.07)}
+.pais-pop li[aria-selected=true] span:nth-child(2){color:var(--accent)}
+.pais-pop .sep{height:1px;margin:6px 4px;padding:0;background:var(--border);cursor:default}
+.pais-pop .nada{color:var(--faint);cursor:default}
+.pais-pop .nada:hover{background:none}
+
+/* Opciones tipo quiz */
+.opts{display:grid;gap:10px}
+@media (min-width:480px){.opts{grid-template-columns:1fr 1fr}}
+.opt{
+  height:52px;padding:0 16px;border-radius:12px;background:var(--bg);border:1px solid var(--border-strong);
+  font-size:16px;font-weight:550;text-align:left;transition:border-color .2s,background-color .2s,transform .2s;
+}
+@media (hover:hover){.opt:hover{border-color:var(--accent)}}
+.opt:active{transform:scale(.985)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+
+.acciones{display:flex;align-items:center;gap:16px;margin-top:22px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:8px 26px;line-height:1.25;text-align:center;
+  border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:650;font-size:16px;
+  transition:background-color .25s,transform .25s var(--ease),opacity .2s;
+}
+@media (hover:hover){.btn:hover{background:var(--accent-hover)}}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.55;cursor:default}
+.btn.full{width:100%}
+.atras{color:var(--muted);font-size:14.5px;padding:8px 2px;white-space:nowrap}
+@media (max-width:559px){#paso2 .acciones{flex-direction:column;align-items:stretch;gap:8px}#paso2 .atras{align-self:center}}
+@media (hover:hover){.atras:hover{color:var(--text)}}
+
+/* Día y hora */
+.zona{color:var(--faint);font-size:13px;margin:6px 0 18px}
+.dias{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px;scrollbar-width:thin;scroll-snap-type:x proximity}
+.dia{
+  flex:0 0 auto;min-width:66px;padding:9px 10px;border-radius:12px;background:var(--bg);border:1px solid var(--border-strong);
+  text-align:center;line-height:1.2;scroll-snap-align:start;transition:border-color .2s,background-color .2s;
+}
+.dia small{display:block;color:var(--muted);font-size:12px;text-transform:capitalize}
+.dia strong{display:block;font-size:19px;font-weight:700;letter-spacing:-.02em}
+.dia.sel{border-color:var(--accent);background:var(--accent-soft)}
+.dia.sel small,.dia.sel strong{color:var(--accent)}
+.horas{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px;margin-top:8px}
+@media (min-width:560px){.horas{grid-template-columns:repeat(4,1fr)}}
+.hora{
+  height:46px;border-radius:11px;background:var(--bg);border:1px solid var(--border-strong);
+  font-size:15px;font-weight:550;font-variant-numeric:tabular-nums;white-space:nowrap;transition:border-color .2s,background-color .2s;
+}
+@media (hover:hover){.hora:hover,.dia:hover{border-color:var(--accent)}}
+.hora.sel{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.cargando{display:flex;align-items:center;justify-content:center;gap:10px;min-height:150px;color:var(--muted);font-size:14.5px}
+.cargando::before{content:"";width:18px;height:18px;border-radius:50%;border:2px solid var(--border-strong);border-top-color:var(--accent);animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.aviso{color:var(--muted);font-size:15px;text-align:center;padding:26px 0}
+.aviso a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+
+/* Listo */
+.listo{text-align:center;padding:14px 0 6px}
+.listo .check{display:flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;margin:0 auto 18px;background:rgba(67,217,160,.14);color:var(--ok)}
+.listo .check svg{width:28px;height:28px}
+.listo h2{font-size:clamp(1.4rem,4.5vw,1.9rem);font-weight:800;letter-spacing:-.03em;line-height:1.15}
+.listo .cuando{margin:14px auto 0;padding:14px 18px;max-width:380px;border-radius:14px;background:var(--bg);border:1px solid var(--border);font-size:16.5px;font-weight:600}
+.listo .cuando small{display:block;color:var(--muted);font-size:13px;font-weight:400;margin-top:2px}
+.listo p{color:var(--muted);font-size:15px;margin:16px auto 0;max-width:400px}
+.listo .cal{display:inline-block;margin-top:18px;color:var(--accent);font-size:14.5px;text-decoration:underline;text-underline-offset:3px}
+
+/* ── Cierre ────────────────────────────────────────────────────────────── */
+.cierre{padding:56px 0 0}
+@media (min-width:768px){.cierre{padding-top:104px}}
+.cierre .caja{
+  display:flex;flex-direction:column;gap:22px;align-items:flex-start;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px 22px;
+}
+.cierre h2{font-size:clamp(1.5rem,4.6vw,2.4rem);line-height:1.1;max-width:520px}
+.cierre p{color:var(--muted);margin-top:10px;max-width:520px}
+@media (min-width:860px){.cierre .caja{flex-direction:row;align-items:center;justify-content:space-between;padding:56px 64px}}
+
+/* ── Pie ───────────────────────────────────────────────────────────────── */
+.pie{margin-top:64px;padding:26px 0 34px;border-top:1px solid var(--border);color:var(--faint);font-size:13.5px}
+.pie .wrap{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;justify-content:space-between}
+.pie a{text-decoration:underline;text-underline-offset:2px}
+.pie nav{display:flex;gap:18px}
+@media (min-width:768px){.pie{margin-top:104px}}
+
+@media (max-width:380px){
+  .wrap{padding:0 14px}
+  .card{padding:20px 14px}
+  .pasos{gap:7px;font-size:13.5px;margin-bottom:22px}
+  .pasos li{gap:7px}
+  .pasos b{width:26px;height:26px}
+  .pasos .raya{width:18px}
+  .pais-btn{padding:0 9px 0 11px;gap:6px}
+  .tel input{padding:0 11px}
+  .opt{padding:0 14px}
+  .dia{min-width:60px}
+  #confirmar{font-size:15px;padding:8px 16px}
 }
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  *,*::before,*::after{transition:none!important}
-}
-/* Móvil (Sergio 2026-09-02: "se ve muy grande"). A 30px el H1 ocupaba 5
-   líneas y empujaba el video fuera de la primera pantalla. Escala fluida:
-   crece con el ancho en vez de saltar de golpe. */
-@media (max-width:819px){
-  .hero{padding-top:32px}
-  .badge{font-size:12px;padding:6px 13px}
-  .hero h1{font-size:clamp(22px,6.2vw,29px);line-height:1.14;margin-top:16px}
-  .hero .amarillo{font-size:clamp(14px,3.8vw,16px);margin-top:12px}
-  .vsl{padding-top:18px}
-  .cta-box{padding-top:18px}
-  .btn{font-size:15px;padding:15px 24px}
-  .vsl-play span{font-size:13px}
-  h2{font-size:21px}
-  .sub{font-size:14.5px}
-  /* El rótulo partía "LEAD / MASTER" en dos líneas a 390px. */
-  .logos p{font-size:11px;letter-spacing:.09em}
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ 1 · HERO ═══ -->
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#inicio" aria-label="Lead Master">
+      <svg viewBox="0 0 512 512" fill="none" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#06B6D4"/></linearGradient></defs><rect width="512" height="512" rx="116" fill="url(#lg)"/><path d="M138 126V376H226L276 256L322 326L357 232" stroke="#fff" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/><circle cx="386" cy="152" r="38" fill="#fff"/><circle cx="386" cy="152" r="16" fill="#7C3AED"/></svg>
+      Lead Master
+    </a>
+  </div>
+</header>
+
+<main id="inicio">
+
+<!-- ═══ 1 · TITULAR ═══ -->
 <section class="hero">
-  <div class="container">
-    <span class="badge">Solo para inmobiliarias con más de 5 asesores</span>
-    <h1>No necesitas más herramientas. Necesitas saber qué hace tu equipo con cada lead de tu inmobiliaria.</h1>
-    <p class="amarillo">Tu problema no es la herramienta. Es que no tienes control de lo que pasa después de que el lead entra.</p>
+  <div class="wrap">
+    <h1>Toma el control de tu equipo comercial en <span class="accent">5&nbsp;días</span></h1>
+    <p>Lead Master escucha cada llamada y cada chat de tus asesores y te muestra qué está pasando con los leads de tu inmobiliaria.<span class="mas"> Agenda la llamada y en 5 días lo tienes funcionando.</span></p>
   </div>
 </section>
 
-<!-- ═══ 2 · VSL ═══
-     Facade sobre el player de ConverteAI (vturb): ni el iframe ni su SDK
-     existen hasta que el usuario hace clic. La portada es el cover REAL del
-     video (bajado de images.converteai.net/.../cover.jpg y recomprimido a
-     1120px/44 KB); si cambias el video, vuelve a bajarlo de ahí. -->
-<section class="vsl" aria-label="Video de presentación">
-  <div class="container">
-    <div class="vsl-frame" id="vsl" data-vsl="https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6a0550a3993552b8596a362a/v4/embed.html">
-      <img class="vsl-poster" src="portada-vsl.jpg" width="1120" height="630"
-           alt="Portada del video de Lead Master" fetchpriority="high" decoding="async"
-           onerror="this.remove()">
-      <button class="vsl-play" id="vsl-play" aria-label="Reproducir el video">
-        <span class="vsl-play-btn" aria-hidden="true">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5.5v13l11-6.5z"/></svg>
-        </span>
-        <span>Ver el video (3 min)</span>
+<!-- ═══ 2 · VIDEO ═══
+     El player (ConverteAI / vturb) no existe hasta el clic: lo que se ve es
+     la portada real del video. Para cambiar de video: cambia data-vsl y las
+     portadas (portada-vsl.jpg y .webp a 1120 px, -800.webp y -640.webp). -->
+<section class="video" aria-label="Video de presentación">
+  <div class="wrap">
+    <div class="vsl" id="vsl" data-vsl="https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6a0550a3993552b8596a362a/v4/embed.html">
+      <picture>
+        <source type="image/webp" srcset="portada-vsl-640.webp 640w, portada-vsl-800.webp 800w, portada-vsl.webp 1120w" sizes="(min-width:1184px) 1120px, calc(100vw - 40px)">
+        <img src="portada-vsl.jpg" width="1120" height="630" alt="Sergio, de Lead Master, explicando cómo funciona" fetchpriority="high" decoding="async">
+      </picture>
+      <button class="vsl-play" id="vsl-play" type="button" aria-label="Reproducir el video">
+        <span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14z"/></svg></span>
       </button>
     </div>
   </div>
 </section>
 
-<!-- ═══ 3 · CTA PRINCIPAL ═══ -->
-<div class="cta-box container">
-  <a class="btn" href="#agendar">QUIERO AGENDAR MI DEMO →</a>
-</div>
+<!-- ═══ 3 · FORMULARIO, justo debajo del video ═══
+     Formulario propio en dos pasos (antes era el widget de GHL, que disparaba
+     ~100 peticiones). Habla con el backend de Lead Master (/embudo-landing):
+       · al dejar el WhatsApp, el contacto se crea en GHL — agende o no;
+       · cada respuesta se le suma al contacto;
+       · los horarios salen del calendario de GHL y la cita se crea ahí;
+       · al agendar sale la confirmación por WhatsApp. -->
+<section class="agenda" id="agenda">
+  <div class="wrap">
+    <div class="card" id="embudo">
+      <ol class="pasos" aria-label="Progreso">
+        <li class="on" id="pa1"><b>1</b> Tus datos</li>
+        <li class="raya" aria-hidden="true"></li>
+        <li id="pa2"><b>2</b> Día y hora</li>
+      </ol>
 
-<!-- ═══ 4 · PRUEBA SOCIAL ═══
-     Marquesina con los clientes reales y su Instagram (cada uno linkea a su
-     perfil). Son wordmarks SVG inline: cero requests extra. Cuando tengas el
-     ARCHIVO del logo de alguno, sustituye su <svg> por
-     <img src="logos/nombre.webp" height="20" loading="lazy" alt="Nombre">
-     — el CSS lo pone en gris y con hover igual. OJO: la lista está DUPLICADA
-     (segundo grupo aria-hidden) para el bucle; cambia los dos. -->
-<section class="logos" aria-label="Clientes">
-  <div class="container">
-    <p>Inmobiliarias que ya operan con Lead Master</p>
-    <div class="marquee">
-      <div class="marquee-track">
-        <div class="marquee-grupo">
-        <a class="cliente" href="https://www.instagram.com/shark_realtor/" target="_blank" rel="noopener"><svg viewBox="0 0 195 22" role="img" aria-label="SHARK REALTORS"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="800" letter-spacing="1" fill="#fff">SHARK REALTORS</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@shark_realtor</span></a>
-        <a class="cliente" href="https://www.instagram.com/imexicorealestate/" target="_blank" rel="noopener"><svg viewBox="0 0 72 22" role="img" aria-label="iMexico"><text x="0" y="17" font-family="inherit" font-size="16" font-style="italic" font-weight="700" fill="#fff">iMexico</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@imexicorealestate</span></a>
-        <a class="cliente" href="https://www.instagram.com/dkdelkaribe/" target="_blank" rel="noopener"><svg viewBox="0 0 160 22" role="img" aria-label="DK DEL KARIBE"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="300" letter-spacing="2" fill="#fff">DK DEL KARIBE</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@dkdelkaribe</span></a>
-        <a class="cliente" href="https://www.instagram.com/grupo_daxi/" target="_blank" rel="noopener"><svg viewBox="0 0 132 22" role="img" aria-label="GRUPO DAXI"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="300" letter-spacing="3" fill="#fff">GRUPO DAXI</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@grupo_daxi</span></a>
-        <a class="cliente" href="https://www.instagram.com/marlenecortesg/" target="_blank" rel="noopener"><svg viewBox="0 0 122 22" role="img" aria-label="ZIBAHOME"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="600" letter-spacing="2" fill="#fff">ZIBAHOME</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@marlenecortesg</span></a>
-        <a class="cliente" href="https://www.instagram.com/remaxcenote/" target="_blank" rel="noopener"><svg viewBox="0 0 150 22" role="img" aria-label="RE/MAX CENOTE"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="800" fill="#fff">RE/MAX CENOTE</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@remaxcenote</span></a>
-        <a class="cliente" href="https://www.instagram.com/urbanza/" target="_blank" rel="noopener"><svg viewBox="0 0 110 22" role="img" aria-label="URBANZA"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="700" letter-spacing="2" fill="#fff">URBANZA</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@urbanza</span></a>
+      <!-- Paso 1: una pregunta a la vez -->
+      <div class="inner" id="paso1">
+        <h2>Empecemos por tus datos</h2>
+        <div class="barra"><div><i id="barra"></i></div><span id="cuenta">0 de 5</span></div>
+
+        <form class="q" data-q="telefono" novalidate>
+          <label for="tel">WhatsApp <em>*</em></label>
+          <div class="tel">
+            <button type="button" class="pais-btn" id="pais-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="pais-pop">
+              <span class="sr" id="pais-sr">País: México</span><span class="flag" id="pais-flag" aria-hidden="true">🇲🇽</span><span id="pais-dial">+52</span>
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg>
+            </button>
+            <input id="tel" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="55 1234 5678" aria-describedby="tel-hint tel-err">
+            <div class="pais-pop" id="pais-pop" hidden>
+              <input id="pais-q" type="text" inputmode="search" placeholder="Buscar país o código" autocomplete="off" aria-label="Buscar país o código">
+              <ul id="pais-list" role="listbox" aria-label="Países"></ul>
+            </div>
+          </div>
+          <p class="hint" id="tel-hint">Ahí te confirmamos la llamada. No lo compartimos con nadie.</p>
+          <p class="hint sm">Si no alcanzas a terminar, te escribimos por WhatsApp a este número para ayudarte a agendar. <a href="https://login.leadmaster.com.co/privacidad" target="_blank" rel="noopener">Privacidad</a></p>
+          <p class="err" id="tel-err" role="alert"></p>
+          <input class="hp" id="sitio" name="sitio" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="acciones"><button class="btn" type="submit">Continuar →</button></div>
+        </form>
+
+        <form class="q" data-q="nombre" novalidate hidden>
+          <label for="nombre">¿Cómo te llamas? <em>*</em></label>
+          <input class="campo" id="nombre" type="text" autocomplete="name" autocapitalize="words" placeholder="Tu nombre y apellido" maxlength="80">
+          <p class="err" role="alert"></p>
+          <div class="acciones"><button class="btn" type="submit">Continuar →</button><button class="atras" type="button" data-atras>← Atrás</button></div>
+        </form>
+
+        <div class="q" data-q="leads_mes" hidden>
+          <p class="pregunta" id="q-leads">¿Cuántos leads manejan al mes? <em class="accent">*</em></p>
+          <div class="opts" role="group" aria-labelledby="q-leads">
+            <button class="opt" type="button">Menos de 100</button>
+            <button class="opt" type="button">100 a 500</button>
+            <button class="opt" type="button">500 a 1.000</button>
+            <button class="opt" type="button">Más de 1.000</button>
+          </div>
+          <div class="acciones"><button class="atras" type="button" data-atras>← Atrás</button></div>
         </div>
-        <div class="marquee-grupo" aria-hidden="true">
-        <a class="cliente" href="https://www.instagram.com/shark_realtor/" target="_blank" rel="noopener"><svg viewBox="0 0 195 22" role="img" aria-label="SHARK REALTORS"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="800" letter-spacing="1" fill="#fff">SHARK REALTORS</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@shark_realtor</span></a>
-        <a class="cliente" href="https://www.instagram.com/imexicorealestate/" target="_blank" rel="noopener"><svg viewBox="0 0 72 22" role="img" aria-label="iMexico"><text x="0" y="17" font-family="inherit" font-size="16" font-style="italic" font-weight="700" fill="#fff">iMexico</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@imexicorealestate</span></a>
-        <a class="cliente" href="https://www.instagram.com/dkdelkaribe/" target="_blank" rel="noopener"><svg viewBox="0 0 160 22" role="img" aria-label="DK DEL KARIBE"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="300" letter-spacing="2" fill="#fff">DK DEL KARIBE</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@dkdelkaribe</span></a>
-        <a class="cliente" href="https://www.instagram.com/grupo_daxi/" target="_blank" rel="noopener"><svg viewBox="0 0 132 22" role="img" aria-label="GRUPO DAXI"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="300" letter-spacing="3" fill="#fff">GRUPO DAXI</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@grupo_daxi</span></a>
-        <a class="cliente" href="https://www.instagram.com/marlenecortesg/" target="_blank" rel="noopener"><svg viewBox="0 0 122 22" role="img" aria-label="ZIBAHOME"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="600" letter-spacing="2" fill="#fff">ZIBAHOME</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@marlenecortesg</span></a>
-        <a class="cliente" href="https://www.instagram.com/remaxcenote/" target="_blank" rel="noopener"><svg viewBox="0 0 150 22" role="img" aria-label="RE/MAX CENOTE"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="800" fill="#fff">RE/MAX CENOTE</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@remaxcenote</span></a>
-        <a class="cliente" href="https://www.instagram.com/urbanza/" target="_blank" rel="noopener"><svg viewBox="0 0 110 22" role="img" aria-label="URBANZA"><text x="0" y="17" font-family="inherit" font-size="16" font-weight="700" letter-spacing="2" fill="#fff">URBANZA</text></svg><span class="ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>@urbanza</span></a>
+
+        <div class="q" data-q="asesores" hidden>
+          <p class="pregunta" id="q-ases">¿Cuántos asesores tiene tu equipo? <em class="accent">*</em></p>
+          <div class="opts" role="group" aria-labelledby="q-ases">
+            <button class="opt" type="button">1 a 5</button>
+            <button class="opt" type="button">6 a 15</button>
+            <button class="opt" type="button">16 a 30</button>
+            <button class="opt" type="button">Más de 30</button>
+          </div>
+          <div class="acciones"><button class="atras" type="button" data-atras>← Atrás</button></div>
+        </div>
+
+        <form class="q" data-q="instagram_web" novalidate hidden>
+          <label for="igweb">¿Cuál es el Instagram o la página web de tu inmobiliaria? <em>*</em></label>
+          <input class="campo" id="igweb" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@tuinmobiliaria o tuinmobiliaria.com" maxlength="200">
+          <p class="err" role="alert"></p>
+          <div class="acciones"><button class="btn" type="submit">Ver horarios →</button><button class="atras" type="button" data-atras>← Atrás</button></div>
+        </form>
+      </div>
+
+      <!-- Paso 2: día y hora -->
+      <div class="inner ancho" id="paso2" hidden>
+        <h2>¿Cuándo te queda bien?</h2>
+        <p class="zona" id="zona"></p>
+        <div id="horarios"><div class="cargando">Buscando horarios libres…</div></div>
+        <p class="err" id="res-err" role="alert"></p>
+        <div class="acciones">
+          <button class="btn" id="confirmar" type="button" hidden>Agendar</button>
+          <button class="atras" type="button" id="a-datos">← Cambiar mis datos</button>
         </div>
       </div>
-    </div>
-    <!-- {METRICAS}: ajusta los números; estos salen de la operación real. -->
-    <div class="metricas">
-      <div><b>+15</b><span>inmobiliarias operando</span></div>
-      <div><b>+1M</b><span>conversaciones analizadas</span></div>
-      <div><b>3</b><span>países</span></div>
+
+      <!-- Listo -->
+      <div class="inner listo" id="listo" hidden tabindex="-1">
+        <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h2 id="listo-h">Tu llamada quedó agendada</h2>
+        <div class="cuando"><span id="listo-dia"></span><small id="listo-zona"></small></div>
+        <p id="listo-p"></p>
+        <a class="cal" id="listo-cal" target="_blank" rel="noopener">Agregar a Google Calendar</a>
+      </div>
+
+      <noscript>
+        <p class="aviso">Para agendar desde aquí necesitas activar JavaScript. También puedes <a href="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjUA">abrir el calendario directamente</a>.</p>
+      </noscript>
     </div>
   </div>
 </section>
 
-<!-- ═══ 5 · GESTIÓN COMERCIAL ═══ -->
-<section class="gestion">
-  <div class="container">
-    <h2>No es un CRM. Es lo que te dice quién está quemando los leads que pagaste.</h2>
-    <p class="sub">Cada lead que entra te costó dinero. Lead Master escucha todas las llamadas y todos los chats, y te muestra cuáles se están perdiendo por cómo los trabajó tu equipo.</p>
+<!-- ═══ 4 · PRUEBA SOCIAL ═══
+     Solo datos reales. Los clientes linkean a su Instagram. -->
+<section class="trust">
+  <div class="wrap">
+    <ul class="datos">
+      <li>+20 inmobiliarias lo usan</li>
+      <li>Funcionando en 5 días</li>
+      <li>Para equipos de más de 5 asesores</li>
+    </ul>
+    <div class="clientes">
+      <small>Confían en nosotros</small>
+      <a href="https://www.instagram.com/shark_realtor/" target="_blank" rel="noopener">SHARK REALTORS</a>
+      <a href="https://www.instagram.com/imexicorealestate/" target="_blank" rel="noopener">iMexico</a>
+      <a href="https://www.instagram.com/dkdelkaribe/" target="_blank" rel="noopener">DK DEL KARIBE</a>
+      <a href="https://www.instagram.com/grupo_daxi/" target="_blank" rel="noopener">GRUPO DAXI</a>
+      <a href="https://www.instagram.com/marlenecortesg/" target="_blank" rel="noopener">ZIBAHOME</a>
+      <a href="https://www.instagram.com/remaxcenote/" target="_blank" rel="noopener">RE/MAX CENOTE</a>
+      <a href="https://www.instagram.com/urbanza/" target="_blank" rel="noopener">URBANZA</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5 · QUÉ HACE ═══ -->
+<section class="que">
+  <div class="wrap">
+    <div class="titulo">
+      <h2>No es otro CRM. Es saber qué hace tu equipo con cada lead.</h2>
+      <p>Cada lead que entra te costó dinero. Lead Master te muestra cuáles se están perdiendo por cómo los trabajó tu equipo.</p>
+    </div>
     <div class="cards">
-      <div class="card">
-        <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M3 12h2l2-6 3 12 3-9 2 5 2-2h4"/></svg></span>
+      <div class="cardi">
+        <b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></b>
         <h3>Cada llamada y chat, analizado</h3>
         <p>La IA escucha, clasifica y lo deja escrito sin que el asesor toque nada.</p>
       </div>
-      <div class="card">
-        <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 20v-6M12 20V6M19 20v-10"/></svg></span>
+      <div class="cardi">
+        <b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></b>
         <h3>Sabes quién quema tus leads</h3>
         <p>Por asesor y con nombre: a quién se le mueren, cuántos y por qué.</p>
       </div>
-      <div class="card">
-        <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></span>
+      <div class="cardi">
+        <b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></b>
         <h3>Ningún lead se queda sin tocar</h3>
         <p>El mismo día ves a quién nadie llamó, quién quedó colgado y quién se está enfriando.</p>
       </div>
-      <div class="card">
-        <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg></span>
+      <div class="cardi">
+        <b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></b>
         <h3>Reportes que sí lees</h3>
         <p>Diario, semanal y mensual: qué entró, qué se trabajó y qué se perdió.</p>
       </div>
@@ -390,160 +571,502 @@ h2{font-size:24px;font-weight:700}
   </div>
 </section>
 
-
-
-<!-- ═══ 8 · AGENDAR ═══
-     Widget de booking de GHL (LeadConnector). NO carga en el primer paint:
-     el iframe y su script de auto-altura (form_embed.js) se inyectan cuando
-     la sección entra al viewport (IntersectionObserver, margen de 600px). -->
-<section class="agendar" id="agendar">
-  <div class="container">
-    <h2>Agenda una llamada de 30 minutos</h2>
-    <p class="sub">Te muestro con tus propios números qué está pasando con tus leads. Estás a una llamada de dejar de operar a ciegas.</p>
-    <div class="cal-frame" id="cal" data-cal="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjUA"><span class="cal-msg">Cargando el calendario…</span></div>
+<!-- ═══ 6 · CIERRE ═══ -->
+<section class="cierre">
+  <div class="wrap">
+    <div class="caja">
+      <div>
+        <h2>Agenda y en 5 días tienes el control de tu equipo</h2>
+        <p>Una llamada de <span id="dur">30</span> minutos. Te muestro con tus propios números qué está pasando con tus leads.</p>
+      </div>
+      <a class="pill" href="#agenda" data-ir>Agendar mi llamada <i aria-hidden="true">↗</i></a>
+    </div>
   </div>
 </section>
 
+</main>
 
-<footer class="footer">
-  <div class="container">© <span id="anio">2026</span> Lead Master · Gestión comercial para inmobiliarias</div>
+<footer class="pie">
+  <div class="wrap">
+    <span>© <span id="anio">2026</span> Lead Master · Gestión comercial para inmobiliarias</span>
+    <nav aria-label="Legal"><a href="https://login.leadmaster.com.co/privacidad">Privacidad</a><a href="https://login.leadmaster.com.co/terminos">Términos</a></nav>
+  </div>
 </footer>
 
 <script>
-/* ── JS total < 2 KB. Solo dos trabajos: facade del VSL y lazy del calendario. ── */
 (function(){
-  "use strict";
+"use strict";
 
-  /* 1 · VSL facade: el player nace al hacer clic, nunca antes. */
-  var vsl=document.getElementById("vsl"),play=document.getElementById("vsl-play");
+/* ═══ Configuración ═══════════════════════════════════════════════════════
+   API      backend de Lead Master (rutas /embudo-landing/*).
+   RESPALDO calendario de GHL, por si el formulario no puede cargar horarios. */
+var API="https://tracker-v1-mhx6.onrender.com/embudo-landing";
+var RESPALDO="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjUA";
+var CLAVE="lm_embudo_v1";
 
-  /* Quitar la portada y el botón: el player ya ocupa su lugar. */
-  function taparPortada(){
-    if(play)play.remove();
-    var p=vsl.querySelector(".vsl-poster");if(p)p.remove();
-  }
+var $=function(id){return document.getElementById(id)};
+function pixel(ev,datos){try{if(window.fbq)window.fbq("track",ev,datos||{})}catch(e){}}
 
-  /* UN SOLO CLIC. El player de vturb trae "Smart Autoplay" activo: dentro de
-     un iframe arrancaba MUDO y ponía su propio aviso de "clic para el sonido"
-     — ese era el segundo clic. Montado como componente NATIVO en esta página,
-     el clic del usuario vale como activación aquí mismo y el player arranca
-     reproduciendo CON sonido (verificado: paused=false, volume=1,
-     inSmartAutoPlay=false).
+/* ═══ 1 · Video: el player nace al hacer clic, nunca antes ════════════════ */
+var vsl=$("vsl"),play=$("vsl-play");
+function quitarPortada(){if(play)play.remove();var p=vsl.querySelector("picture");if(p)p.remove()}
+/* Red por si algún navegador arranca el video en mudo: se le sube el volumen
+   (la única palanca de su API). Nunca lo pausa ni lo reinicia. */
+function asegurarSonido(el){
+  var t0=Date.now(),iv=setInterval(function(){
+    if(Date.now()-t0>8000){clearInterval(iv);return}
+    if(el.inSmartAutoPlay===true){if(typeof el.setVolume==="function"){try{el.setVolume(1)}catch(e){}}clearInterval(iv)}
+    else if(el.alreadyPlayed===true){clearInterval(iv)}
+  },250);
+}
+/* Player NATIVO de vturb (no iframe): así el clic del visitante vale como
+   activación y el video arranca con sonido de una. */
+function montarVturb(url){
+  var m=url.match(/converteai\.net\/([^/]+)\/players\/([^/]+)\//);
+  if(!m)return false;
+  var el=document.createElement("vturb-smartplayer");
+  el.id="vid-"+m[2];vsl.appendChild(el);
+  var sc=document.createElement("script");
+  sc.src="https://scripts.converteai.net/"+m[1]+"/players/"+m[2]+"/v4/player.js";
+  sc.async=true;document.head.appendChild(sc);
+  asegurarSonido(el);
+  return true;
+}
+function montarIframe(url){
+  var f=document.createElement("iframe");
+  f.src=url+(url.indexOf("?")>-1?"&":"?")+"autoplay=1";
+  f.title="Video de presentación de Lead Master";
+  f.allow="autoplay; fullscreen; picture-in-picture";
+  f.setAttribute("allowfullscreen","");
+  vsl.appendChild(f);
+}
+if(play)play.addEventListener("click",function(){
+  var url=vsl.getAttribute("data-vsl");
+  if(!url)return;
+  if(url.indexOf("converteai.net")===-1||!montarVturb(url))montarIframe(url);
+  quitarPortada();
+});
 
-     Este vigilante es solo una red por si algún navegador lo mandara igual al
-     modo mudo: se le sube el volumen, que es la única palanca que expone su
-     API (no hay play/unmute públicos). Nunca lo pausa ni lo reinicia. */
-  function asegurarSonido(el){
-    var t0=Date.now();
-    var iv=setInterval(function(){
-      if(Date.now()-t0>8000){clearInterval(iv);return}          /* se rinde solo */
-      if(el.inSmartAutoPlay===true){
-        if(typeof el.setVolume==="function"){try{el.setVolume(1)}catch(e){}}
-        clearInterval(iv);
-      }else if(el.alreadyPlayed===true){clearInterval(iv)}      /* ya sonaba: nada que hacer */
-    },250);
-  }
+/* ═══ 2 · Países: indicativo y cuántos dígitos lleva el número ════════════
+   "MX52:10" = México, +52, 10 dígitos. Los nombres salen del propio
+   navegador (Intl.DisplayNames), en español. */
+var PAISES={};
+"AC247:5,AD376:6-9,AE971:9,AF93:9,AG1:10,AI1:10,AL355:9,AM374:8,AO244:9,AR54:10-11,AS1:10,AT43:7-13,AU61:9,AW297:7,AX358:6-10,AZ994:9,BA387:8-9,BB1:10,BD880:10,BE32:9,BF226:8,BG359:8-9,BH973:8,BI257:8,BJ229:10,BL590:9,BM1:10,BN673:7,BO591:8,BQ599:7,BR55:10-11,BS1:10,BT975:8,BW267:8,BY375:9,BZ501:7,CA1:10,CC61:9,CD243:7-9,CF236:8,CG242:9,CH41:9,CI225:10,CK682:5,CL56:9,CM237:9,CN86:11,CO57:10,CR506:8,CU53:8,CV238:7,CW599:7-8,CX61:9,CY357:8,CZ420:9,DE49:10-11,DJ253:8,DK45:8,DM1:10,DO1:10,DZ213:9,EC593:9,EE372:7-8,EG20:10,EH212:9,ER291:7,ES34:9,ET251:9,FI358:6-10,FJ679:7,FK500:5,FM691:7,FO298:6,FR33:9,GA241:7-8,GB44:10,GD1:10,GE995:9,GF594:9,GG44:10,GH233:9,GI350:8,GL299:6,GM220:7-9,GN224:9,GP590:9,GQ240:9,GR30:10,GT502:8,GU1:10,GW245:9,GY592:7,HK852:8,HN504:8,HR385:8-9,HT509:8,HU36:9,ID62:9-12,IE353:9,IL972:9,IM44:10,IN91:10,IO246:7,IQ964:10,IR98:10,IS354:7-9,IT39:9-10,JE44:10,JM1:10,JO962:9,JP81:10,KE254:9,KG996:9,KH855:8-9,KI686:8,KM269:7,KN1:10,KP850:10,KR82:9-10,KW965:8,KY1:10,KZ7:10,LA856:9-10,LB961:7-8,LC1:10,LI423:7-9,LK94:9,LR231:7-9,LS266:8,LT370:8,LU352:9,LV371:8,LY218:9,MA212:9,MC377:8-9,MD373:8,ME382:8,MF590:9,MG261:9,MH692:7,MK389:8,ML223:8,MM95:7-10,MN976:8,MO853:8,MP1:10,MQ596:9,MR222:8,MS1:10,MT356:8,MU230:8,MV960:7,MW265:9,MX52:10,MY60:9-10,MZ258:9,NA264:9,NC687:6,NE227:8,NF672:6,NG234:10,NI505:8,NL31:9-11,NO47:8,NP977:10,NR674:7,NU683:4-7,NZ64:8-10,OM968:8,PA507:7-8,PE51:9,PF689:8,PG675:8,PH63:10,PK92:10,PL48:9,PM508:6-9,PR1:10,PS970:9,PT351:9,PW680:7,PY595:9,QA974:8,RE262:9,RO40:9,RS381:8-10,RU7:10,RW250:9,SA966:9,SB677:5-7,SC248:7,SD249:9,SE46:9,SG65:8,SH290:5,SI386:8,SJ47:8,SK421:9,SL232:8,SM378:8,SN221:9,SO252:7-9,SR597:7,SS211:9,ST239:7,SV503:8,SX1:10,SY963:9,SZ268:8,TA290:4,TC1:10,TD235:8,TG228:8,TH66:9,TJ992:9,TK690:4-7,TL670:8,TM993:8,TN216:8,TO676:7,TR90:10,TT1:10,TV688:6-7,TW886:9,TZ255:9,UA380:9,UG256:9,US1:10,UY598:8,UZ998:9,VA39:9-10,VC1:10,VE58:10,VG1:10,VI1:10,VN84:9,VU678:7,WF681:6,WS685:7-10,XK383:8,YE967:9,YT262:9,ZA27:5-9,ZM260:9,ZW263:9".split(",").forEach(function(x){
+  var m=/^([A-Z]{2})(\d+):(\d+)(?:-(\d+))?$/.exec(x);
+  if(m)PAISES[m[1]]={d:m[2],min:+m[3],max:+(m[4]||m[3])};
+});
+/* Arriba de la lista, los países desde donde nos escriben. */
+var PRIMEROS=["MX","CO","US","CL","PE","EC","AR","ES","PA","CR","GT","DO","SV","HN","VE","BO","PY","UY","PR"];
+var EJEMPLOS={MX:"55 1234 5678",CO:"300 123 4567",US:"305 555 0123",CA:"416 555 0123",CL:"9 1234 5678",PE:"912 345 678",EC:"99 123 4567",AR:"11 2345 6789",ES:"612 345 678",PA:"6123 4567",CR:"8312 3456",GT:"5123 4567",DO:"809 234 5678",PR:"787 234 5678",SV:"7012 3456",HN:"9123 4567",VE:"412 123 4567",BO:"7123 4567",PY:"961 456 789",UY:"94 231 234",BR:"11 96123 4567"};
+var ZONAS={"America/Mexico_City":"MX","America/Cancun":"MX","America/Monterrey":"MX","America/Merida":"MX","America/Tijuana":"MX","America/Hermosillo":"MX","America/Chihuahua":"MX","America/Mazatlan":"MX","America/Matamoros":"MX","America/Ciudad_Juarez":"MX","America/Bahia_Banderas":"MX","America/Ojinaga":"MX","America/Bogota":"CO","America/Santiago":"CL","America/Punta_Arenas":"CL","America/Lima":"PE","America/Guayaquil":"EC","America/Panama":"PA","America/Costa_Rica":"CR","America/Guatemala":"GT","America/El_Salvador":"SV","America/Tegucigalpa":"HN","America/Managua":"NI","America/Santo_Domingo":"DO","America/Puerto_Rico":"PR","America/Caracas":"VE","America/La_Paz":"BO","America/Asuncion":"PY","America/Montevideo":"UY","America/Sao_Paulo":"BR","Europe/Madrid":"ES","Atlantic/Canary":"ES","America/New_York":"US","America/Chicago":"US","America/Denver":"US","America/Los_Angeles":"US","America/Phoenix":"US","America/Detroit":"US","America/Toronto":"CA","America/Vancouver":"CA"};
 
-  /* Player NATIVO de ConverteAI/vturb: de la URL del embed salen la cuenta y
-     el id del player (.../<cuenta>/players/<id>/v4/embed.html). */
-  function montarVturb(url){
-    var m=url.match(/converteai\.net\/([^/]+)\/players\/([^/]+)\//);
-    if(!m)return false;
-    var el=document.createElement("vturb-smartplayer");
-    el.id="vid-"+m[2];
-    vsl.appendChild(el);
-    var sc=document.createElement("script");
-    sc.src="https://scripts.converteai.net/"+m[1]+"/players/"+m[2]+"/v4/player.js";
-    sc.async=true;document.head.appendChild(sc);
-    asegurarSonido(el);
-    return true;
-  }
+var ZONA="";try{ZONA=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
+var nombres=null;try{nombres=new Intl.DisplayNames(["es"],{type:"region"})}catch(e){}
+function nombrePais(c){try{return nombres?nombres.of(c):c}catch(e){return c}}
+/* Windows no dibuja banderas emoji: ahí va el código del país en una pastilla. */
+var SIN_BANDERAS=/Windows/.test(navigator.userAgent);
+function bandera(c){return SIN_BANDERAS?c:String.fromCodePoint(127397+c.charCodeAt(0),127397+c.charCodeAt(1))}
+function sinTildes(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}
 
-  /* Reserva: cualquier otro proveedor (o si cambia la forma de la URL de
-     vturb) sigue entrando por iframe con autoplay, como antes. */
-  function montarIframe(url){
-    var f=document.createElement("iframe");
-    f.src=url+(url.indexOf("?")>-1?"&":"?")+"autoplay=1";
-    f.title="Video de presentación de Lead Master";
-    f.allow="autoplay; fullscreen; picture-in-picture";
-    f.setAttribute("allowfullscreen","");
-    vsl.appendChild(f);
-  }
+/* País de arranque: por la zona horaria del equipo; si no, por el idioma. */
+function paisInicial(){
+  if(ZONAS[ZONA])return ZONAS[ZONA];
+  if(ZONA.indexOf("America/Argentina/")===0)return "AR";
+  var langs=navigator.languages||[navigator.language||""];
+  for(var i=0;i<langs.length;i++){var m=/[-_]([A-Za-z]{2})$/.exec(langs[i]||"");if(m&&PAISES[m[1].toUpperCase()])return m[1].toUpperCase()}
+  return "MX";
+}
 
-  if(play)play.addEventListener("click",function(){
-    var url=vsl.getAttribute("data-vsl");
-    if(!url||url.charAt(0)==="{"){console.warn("[Lead Master] Falta la URL del VSL");return}
-    if(url.indexOf("converteai.net")===-1||!montarVturb(url))montarIframe(url);
-    taparPortada();
+/* ═══ 3 · Estado del formulario (se guarda para retomar si recarga) ═══════ */
+var ORDEN=["telefono","nombre","leads_mes","asesores","instagram_web"];
+var S={pais:paisInicial(),tel:"",nombre:"",r:{},lead:null,q:0,cita:null};
+try{
+  var g=JSON.parse(localStorage.getItem(CLAVE)||"null");
+  if(g&&g.t&&Date.now()-g.t<7*864e5&&PAISES[g.pais]){S.pais=g.pais;S.tel=g.tel||"";S.nombre=g.nombre||"";S.r=g.r||{};S.lead=g.lead||null;S.q=g.q||0;S.cita=g.cita||null}
+}catch(e){}
+function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify({t:Date.now(),pais:S.pais,tel:S.tel,nombre:S.nombre,r:S.r,lead:S.lead,q:S.q,cita:S.cita}))}catch(e){}}
+
+/* De dónde vino la visita (se guarda la primera vez: el anuncio que la trajo). */
+function origen(){
+  var o={};
+  try{
+    o=JSON.parse(sessionStorage.getItem(CLAVE+"_o")||"null")||{};
+    if(!o.pagina){
+      var p=new URLSearchParams(location.search);
+      ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","fbclid","gclid"].forEach(function(k){var v=p.get(k);if(v)o[k]=v.slice(0,300)});
+      o.pagina=(location.origin+location.pathname).slice(0,300);
+      if(document.referrer)o.referrer=document.referrer.slice(0,300);
+      sessionStorage.setItem(CLAVE+"_o",JSON.stringify(o));
+    }
+  }catch(e){}
+  return o;
+}
+
+function api(ruta,cuerpo){
+  /* keepalive: la petición termina aunque el visitante cierre la pestaña
+     justo después de dejar su número. */
+  return fetch(API+ruta,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(cuerpo),keepalive:true})
+    .then(function(r){return r.json().catch(function(){return {}}).then(function(j){
+      if(!r.ok||!j.ok){var e=new Error(j.error||"No pudimos completar el paso. Intenta de nuevo en un momento.");e.delVisitante=r.status===400;throw e}
+      return j;
+    })});
+}
+
+/* ═══ 4 · Selector de país ════════════════════════════════════════════════ */
+var btnPais=$("pais-btn"),pop=$("pais-pop"),lista=$("pais-list"),buscar=$("pais-q"),tel=$("tel"),errTel=$("tel-err");
+var todos=null,activo=-1;
+
+function pintarPais(){
+  var p=PAISES[S.pais];
+  var f=$("pais-flag");f.textContent=bandera(S.pais);f.className="flag"+(SIN_BANDERAS?" iso":"");
+  $("pais-dial").textContent="+"+p.d;
+  $("pais-sr").textContent="País: "+nombrePais(S.pais)+", indicativo";
+  tel.placeholder=EJEMPLOS[S.pais]||agrupar("1234567890123".slice(0,p.min));
+}
+function elegirPais(c,enfocar){
+  if(!PAISES[c])return;
+  S.pais=c;pintarPais();cerrarPop();guardar();
+  tel.value=agrupar(soloDigitos(tel.value));
+  if(enfocar)tel.focus();
+}
+function armarLista(){
+  if(todos)return;
+  var resto=Object.keys(PAISES).filter(function(c){return PRIMEROS.indexOf(c)<0})
+    .sort(function(a,b){return nombrePais(a).localeCompare(nombrePais(b),"es")});
+  todos=PRIMEROS.concat(resto).map(function(c){var n=nombrePais(c);return {c:c,n:n,k:sinTildes(n)+" "+c.toLowerCase(),d:PAISES[c].d}});
+}
+function pintarLista(){
+  var q=sinTildes(buscar.value.trim()),dig=q.replace(/\D/g,"");
+  var hay=todos.filter(function(p){return !q||p.k.indexOf(q)>-1||(dig&&p.d.indexOf(dig)===0)});
+  lista.textContent="";
+  if(!hay.length){var v=document.createElement("li");v.className="nada";v.textContent="No encontramos ese país";lista.appendChild(v);activo=-1;return}
+  hay.forEach(function(p,i){
+    if(!q&&i===PRIMEROS.length){var s=document.createElement("li");s.className="sep";s.setAttribute("aria-hidden","true");lista.appendChild(s)}
+    var li=document.createElement("li");
+    li.setAttribute("role","option");li.setAttribute("data-c",p.c);li.id="pais-"+p.c;
+    li.setAttribute("aria-selected",p.c===S.pais?"true":"false");
+    var b=document.createElement("span");b.className="flag"+(SIN_BANDERAS?" iso":"");b.textContent=bandera(p.c);
+    var n=document.createElement("span");n.textContent=p.n;
+    var d=document.createElement("span");d.textContent="+"+p.d;
+    li.appendChild(b);li.appendChild(n);li.appendChild(d);lista.appendChild(li);
   });
+  marcar(q?0:-1);
+}
+function opciones(){return lista.querySelectorAll("li[data-c]")}
+function marcar(i){
+  var ops=opciones();
+  for(var k=0;k<ops.length;k++)ops[k].classList.toggle("act",k===i);
+  activo=i;
+  if(i>-1&&ops[i]){ops[i].scrollIntoView({block:"nearest"});buscar.setAttribute("aria-activedescendant",ops[i].id)}
+}
+function abrirPop(){
+  armarLista();buscar.value="";pintarLista();
+  pop.hidden=false;btnPais.setAttribute("aria-expanded","true");
+  var sel=lista.querySelector('[aria-selected="true"]');if(sel)sel.scrollIntoView({block:"center"});
+  buscar.focus({preventScroll:true});
+}
+function cerrarPop(){pop.hidden=true;btnPais.setAttribute("aria-expanded","false")}
+btnPais.addEventListener("click",function(){pop.hidden?abrirPop():cerrarPop()});
+buscar.addEventListener("input",pintarLista);
+buscar.addEventListener("keydown",function(e){
+  var ops=opciones();
+  if(e.key==="ArrowDown"){e.preventDefault();marcar(Math.min(ops.length-1,activo+1))}
+  else if(e.key==="ArrowUp"){e.preventDefault();marcar(Math.max(0,activo-1))}
+  else if(e.key==="Enter"){e.preventDefault();var o=ops[activo>-1?activo:0];if(o)elegirPais(o.getAttribute("data-c"),true)}
+  else if(e.key==="Escape"){e.preventDefault();cerrarPop();btnPais.focus()}
+});
+lista.addEventListener("click",function(e){var li=e.target.closest("li[data-c]");if(li)elegirPais(li.getAttribute("data-c"),true)});
+document.addEventListener("click",function(e){if(!pop.hidden&&!e.target.closest(".tel"))cerrarPop()});
 
-  /* 2 · Calendario GHL: iframe + form_embed.js (auto-altura).
-        El widget de GHL dispara 102 peticiones —94 de ellas chunks de JS de su
-        propio CDN—: es latencia, no peso. Medido: ~12 s en fibra con caché
-        fría, y en datos móviles bastante más. Contra eso solo hay una palanca
-        de nuestro lado: EMPEZAR ANTES. Antes arrancaba al primer scroll y en
-        móvil el visitante llegaba a la sección con el widget a medio montar.
-        Ahora arranca en cuanto la página queda libre —después del primer
-        pintado, sin robarle nada al LCP— así que mientras se lee el hero o se
-        mira el video, el calendario ya se está armando solo. */
-  var cal=document.getElementById("cal");
-  function cargarCal(){
-    if(!cal||cal.dataset.listo)return;
-    var url=cal.getAttribute("data-cal");
-    if(!url||url.charAt(0)==="{"){console.warn("[Lead Master] Falta la URL del calendario");return}
-    cal.dataset.listo="1";
-    var f=document.createElement("iframe");
-    f.src=url;f.title="Calendario para agendar la demo";
-    f.id=url.split("/").pop()+"_"+Date.now(); /* el id que espera form_embed.js */
-    f.setAttribute("allow","payment");
-    f.setAttribute("scrolling","no");
-    /* SIN loading="lazy": nosotros ya decidimos cuándo nace el iframe, y el lazy
-       del navegador lo aplazaría otra vez hasta tenerlo casi en pantalla —
-       justo la demora que estamos tratando de evitar. */
-    /* El load del iframe llega a ~0,8 s, pero el widget recién PINTA a los ~3 s:
-       apagar el esqueleto en el load dejaría dos segundos de caja muda. Se le
-       da un margen y así el giro acompaña hasta que hay algo que mirar. De
-       todos modos el orden de pintado ya lo tapa; esto es solo el refuerzo. */
-    f.addEventListener("load",function(){
-      setTimeout(function(){cal.setAttribute("data-cargado","1")},1200);
+/* ═══ 5 · El número ═══════════════════════════════════════════════════════ */
+function soloDigitos(s){return String(s||"").replace(/\D/g,"")}
+function agrupar(d){
+  if(d.length<=4)return d;
+  if(d.length===8)return d.slice(0,4)+" "+d.slice(4);
+  if(d.length===9)return d.slice(0,3)+" "+d.slice(3,6)+" "+d.slice(6);
+  if(d.length===10)return d.slice(0,3)+" "+d.slice(3,6)+" "+d.slice(6);
+  return d.replace(/(\d{3})(?=\d)/g,"$1 ").trim();
+}
+/* Si pega o escribe el número completo ("+57 300…" o "0057…"), se reconoce
+   el país por el indicativo y se cambia solo. */
+function paisPorIndicativo(d){
+  for(var n=4;n>=1;n--){
+    var pre=d.slice(0,n),cands=Object.keys(PAISES).filter(function(c){return PAISES[c].d===pre});
+    if(!cands.length)continue;
+    if(cands.indexOf(S.pais)>-1)return S.pais;
+    for(var i=0;i<PRIMEROS.length;i++)if(cands.indexOf(PRIMEROS[i])>-1)return PRIMEROS[i];
+    return cands[0];
+  }
+  return null;
+}
+function leerTelefono(){
+  var crudo=tel.value.trim(),d=soloDigitos(crudo);
+  if(/^(\+|00)/.test(crudo)){
+    if(crudo.indexOf("00")===0)d=d.slice(2);
+    var c=paisPorIndicativo(d);
+    if(c){if(c!==S.pais){S.pais=c;pintarPais()}d=d.slice(PAISES[c].d.length)}
+  }
+  var p=PAISES[S.pais];
+  /* Escribió el indicativo sin el "+": se le quita si lo que queda es un número válido. */
+  if(d.length>p.max&&d.indexOf(p.d)===0&&d.length-p.d.length>=p.min)d=d.slice(p.d.length);
+  d=d.replace(/^0+/,"");
+  /* México: el "1" viejo de los celulares (+52 1 …) ya no va. */
+  if(S.pais==="MX"&&d.length===11&&d.charAt(0)==="1")d=d.slice(1);
+  return d;
+}
+tel.addEventListener("input",function(){
+  errTel.textContent="";
+  var v=tel.value;
+  if(/^(\+|00)/.test(v.trim())){
+    var d=soloDigitos(v);if(v.trim().indexOf("00")===0)d=d.slice(2);
+    var c=paisPorIndicativo(d);
+    /* Con el indicativo completo y algo más escrito ya se sabe el país. */
+    if(c&&d.length>PAISES[c].d.length+2){if(c!==S.pais){S.pais=c;pintarPais()}tel.value=agrupar(d.slice(PAISES[c].d.length))}
+    return;
+  }
+  /* Solo se reacomoda si está escribiendo al final (no se le mueve el cursor a media edición). */
+  if(tel.selectionStart===v.length)tel.value=agrupar(soloDigitos(v));
+});
+
+/* ═══ 6 · Paso 1: una pregunta a la vez ═══════════════════════════════════ */
+var paso1=$("paso1"),paso2=$("paso2"),listo=$("listo");
+var bloques={};
+Array.prototype.forEach.call(paso1.querySelectorAll("[data-q]"),function(el){bloques[el.getAttribute("data-q")]=el});
+
+function contestadas(){
+  var n=0;
+  if(S.lead||S.tel)n++;
+  if(S.nombre)n++;
+  ["leads_mes","asesores","instagram_web"].forEach(function(k){if(S.r[k])n++});
+  return n;
+}
+function progreso(){
+  var n=contestadas();
+  $("cuenta").textContent=n+" de 5";
+  $("barra").style.width=Math.max(6,n*20)+"%";
+}
+function mostrar(i,enfocar){
+  S.q=i;guardar();
+  ORDEN.forEach(function(k,j){bloques[k].hidden=j!==i});
+  progreso();
+  if(enfocar){var c=bloques[ORDEN[i]].querySelector("input:not(.hp),.opt");if(c)c.focus({preventScroll:true})}
+}
+function irPaso(n){
+  paso1.hidden=n!==1;paso2.hidden=n!==2;listo.hidden=n!==3;
+  $("pa1").classList.toggle("on",n===1);$("pa1").classList.toggle("ok",n>=2);$("pa2").classList.toggle("on",n>=2);
+  document.querySelector(".pasos").hidden=n===3;
+}
+
+/* El lead se crea al dejar el WhatsApp. Si esa petición falla por red, se
+   reintenta sola antes de guardar la siguiente respuesta. */
+var pidiendo=null;
+function asegurarLead(){
+  if(S.lead)return Promise.resolve(S.lead);
+  if(pidiendo)return pidiendo;
+  var p=PAISES[S.pais];
+  pidiendo=api("/telefono",{telefono:"+"+p.d+S.tel,pais:S.pais,origen:origen(),sitio:$("sitio").value})
+    .then(function(j){S.lead=j.lead;guardar();pidiendo=null;return j.lead})
+    .catch(function(e){pidiendo=null;throw e});
+  return pidiendo;
+}
+var yaEnviado="";
+function enviarDatos(){
+  return asegurarLead().then(function(lead){
+    var foto=JSON.stringify([lead,S.nombre,S.r]);
+    if(foto===yaEnviado)return null;            /* nada nuevo que guardar */
+    return api("/datos",{lead:lead,nombre:S.nombre||undefined,respuestas:S.r}).then(function(j){yaEnviado=foto;return j});
+  });
+}
+function enSegundoPlano(p){p.catch(function(){})}
+
+bloques.telefono.addEventListener("submit",function(e){
+  e.preventDefault();
+  var d=leerTelefono(),p=PAISES[S.pais];
+  if(!d){errTel.textContent="Escribe tu número de WhatsApp.";tel.focus();return}
+  if(d.length<p.min||d.length>p.max){
+    errTel.textContent="Revisa el número: en "+nombrePais(S.pais)+" lleva "+(p.min===p.max?p.min:"entre "+p.min+" y "+p.max)+" dígitos.";
+    tel.focus();return;
+  }
+  var cambio=S.tel!==d;
+  S.tel=d;tel.value=agrupar(d);
+  if(cambio){S.lead=null;pixel("Lead")}
+  guardar();
+  /* Se avanza de una; el número se guarda mientras tanto. Si el servidor lo
+     rechaza (número imposible), se vuelve aquí con el motivo. */
+  asegurarLead().catch(function(err){
+    if(err.delVisitante){mostrar(0,true);errTel.textContent=err.message}
+  });
+  cargarHorarios();
+  mostrar(1,true);
+});
+
+bloques.nombre.addEventListener("submit",function(e){
+  e.preventDefault();
+  var inp=$("nombre"),v=inp.value.replace(/\s+/g," ").trim(),err=bloques.nombre.querySelector(".err");
+  if(v.length<2){err.textContent="Escribe tu nombre.";inp.focus();return}
+  err.textContent="";S.nombre=v;guardar();
+  enSegundoPlano(enviarDatos());
+  mostrar(2,true);
+});
+
+["leads_mes","asesores"].forEach(function(k,idx){
+  bloques[k].addEventListener("click",function(e){
+    var b=e.target.closest(".opt");if(!b)return;
+    Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){o.classList.toggle("sel",o===b);o.setAttribute("aria-pressed",o===b?"true":"false")});
+    S.r[k]=b.textContent.trim();guardar();
+    enSegundoPlano(enviarDatos());
+    setTimeout(function(){mostrar(3+idx,true)},170);
+  });
+});
+
+bloques.instagram_web.addEventListener("submit",function(e){
+  e.preventDefault();
+  var inp=$("igweb"),v=inp.value.trim(),err=bloques.instagram_web.querySelector(".err");
+  if(v.length<3){err.textContent="Escribe el Instagram o la página web de tu inmobiliaria.";inp.focus();return}
+  err.textContent="";S.r.instagram_web=v;guardar();
+  enSegundoPlano(enviarDatos());
+  progreso();
+  abrirHorarios();
+});
+
+Array.prototype.forEach.call(paso1.querySelectorAll("[data-atras]"),function(b){
+  b.addEventListener("click",function(){mostrar(Math.max(0,S.q-1),true)});
+});
+$("a-datos").addEventListener("click",function(){irPaso(1);mostrar(0,true)});
+
+/* ═══ 7 · Paso 2: día y hora ══════════════════════════════════════════════ */
+var H=null,Hcuando=0,Hpidiendo=null,diaSel=null,horaSel=null;
+var cajaH=$("horarios"),btnOk=$("confirmar"),errRes=$("res-err");
+
+var LUGARES={Mexico_City:"Ciudad de México",Bogota:"Bogotá",Cancun:"Cancún",Merida:"Mérida",Mazatlan:"Mazatlán",Panama:"Panamá",Asuncion:"Asunción",Los_Angeles:"Los Ángeles",New_York:"Nueva York",Sao_Paulo:"São Paulo",Bahia_Banderas:"Bahía de Banderas",Ciudad_Juarez:"Ciudad Juárez"};
+function lugar(z){var c=String(z||"").split("/").pop();return LUGARES[c]||c.replace(/_/g," ")}
+function fmt(op){try{return new Intl.DateTimeFormat("es",op)}catch(e){delete op.timeZone;return new Intl.DateTimeFormat("es",op)}}
+function zonaDe(){return (H&&H.zona)||ZONA||"America/Bogota"}
+function hora(iso){return fmt({hour:"numeric",minute:"2-digit",hour12:true,timeZone:zonaDe()}).format(new Date(iso))}
+function diaLargo(iso){return fmt({weekday:"long",day:"numeric",month:"long",timeZone:zonaDe()}).format(new Date(iso))}
+
+function cargarHorarios(){
+  if(Hpidiendo)return Hpidiendo;
+  if(H&&Date.now()-Hcuando<60000)return Promise.resolve(H);
+  Hpidiendo=api("/horarios",{tz:ZONA})
+    .then(function(j){H=j;Hcuando=Date.now();Hpidiendo=null;if(j.duracionMin)$("dur").textContent=j.duracionMin;return j})
+    .catch(function(e){Hpidiendo=null;throw e});
+  Hpidiendo.catch(function(){});
+  return Hpidiendo;
+}
+function abrirHorarios(){
+  irPaso(2);errRes.textContent="";
+  if(!H)cajaH.innerHTML='<div class="cargando">Buscando horarios libres…</div>';
+  cargarHorarios().then(pintarHorarios,function(){
+    cajaH.innerHTML='<p class="aviso">No pudimos cargar los horarios. <a href="#" id="reintentar">Volver a intentar</a> o <a href="'+RESPALDO+'" target="_blank" rel="noopener">abrir el calendario</a>.</p>';
+    $("reintentar").addEventListener("click",function(e){e.preventDefault();abrirHorarios()});
+  });
+  var c=$("embudo");if(c.getBoundingClientRect().top<0)c.scrollIntoView({block:"start"});
+}
+function pintarHorarios(){
+  var z=zonaDe();
+  $("zona").textContent="Horarios en tu hora local ("+lugar(z)+").";
+  if(!H.dias||!H.dias.length){
+    cajaH.innerHTML='<p class="aviso">No hay horarios libres en los próximos días. Ya tenemos tu WhatsApp: te escribimos para coordinar la llamada.</p>';
+    btnOk.hidden=true;return;
+  }
+  if(!diaSel||!H.dias.some(function(d){return d.fecha===diaSel}))diaSel=H.dias[0].fecha;
+  cajaH.textContent="";
+  var tira=document.createElement("div");tira.className="dias";tira.setAttribute("role","group");tira.setAttribute("aria-label","Día");
+  H.dias.forEach(function(d){
+    var f=new Date(d.slots[0]),b=document.createElement("button");
+    b.type="button";b.className="dia"+(d.fecha===diaSel?" sel":"");b.setAttribute("data-f",d.fecha);
+    b.setAttribute("aria-pressed",d.fecha===diaSel?"true":"false");
+    var a=document.createElement("small");a.textContent=fmt({weekday:"short",timeZone:z}).format(f).replace(".","");
+    var n=document.createElement("strong");n.textContent=fmt({day:"numeric",timeZone:z}).format(f);
+    var m=document.createElement("small");m.textContent=fmt({month:"short",timeZone:z}).format(f).replace(".","");
+    b.appendChild(a);b.appendChild(n);b.appendChild(m);tira.appendChild(b);
+  });
+  var grid=document.createElement("div");grid.className="horas";grid.setAttribute("role","group");grid.setAttribute("aria-label","Hora");
+  var dia=H.dias.filter(function(d){return d.fecha===diaSel})[0];
+  dia.slots.forEach(function(s){
+    var b=document.createElement("button");b.type="button";b.className="hora"+(s===horaSel?" sel":"");
+    b.setAttribute("data-s",s);b.setAttribute("aria-pressed",s===horaSel?"true":"false");b.textContent=hora(s);
+    grid.appendChild(b);
+  });
+  cajaH.appendChild(tira);cajaH.appendChild(grid);
+  pintarBoton();
+}
+function pintarBoton(){
+  var ok=horaSel&&H.dias.some(function(d){return d.slots.indexOf(horaSel)>-1});
+  btnOk.hidden=!ok;
+  if(ok)btnOk.textContent="Agendar: "+fmt({weekday:"short",day:"numeric",month:"short",timeZone:zonaDe()}).format(new Date(horaSel)).replace(/[.,]/g,"")+" · "+hora(horaSel).replace(/\s/g,"\u00a0");
+}
+cajaH.addEventListener("click",function(e){
+  var d=e.target.closest(".dia"),h=e.target.closest(".hora");
+  if(d){diaSel=d.getAttribute("data-f");horaSel=null;errRes.textContent="";pintarHorarios()}
+  else if(h){horaSel=h.getAttribute("data-s");errRes.textContent="";pintarHorarios();btnOk.focus({preventScroll:true})}
+});
+
+btnOk.addEventListener("click",function(){
+  if(!horaSel||btnOk.disabled)return;
+  var texto=btnOk.textContent;
+  btnOk.disabled=true;btnOk.textContent="Agendando…";errRes.textContent="";
+  enviarDatos()
+    .then(function(){return api("/reservar",{lead:S.lead,inicio:horaSel,tz:ZONA})})
+    .then(function(j){
+      S.cita={inicio:j.inicio,zona:j.zona,dur:j.duracionMin||30};guardar();
+      pixel("Schedule");
+      mostrarListo(true);
+    })
+    .catch(function(err){
+      btnOk.disabled=false;btnOk.textContent=texto;
+      errRes.textContent=err.message;
+      /* Si el horario se ocupó mientras elegía, se traen los que quedan. */
+      if(err.delVisitante){H=null;horaSel=null;cargarHorarios().then(pintarHorarios,function(){})}
     });
-    cal.appendChild(f);
-    /* El script de auto-altura de GHL entra async y SOLO aquí: en el <head>
-       bloquearía el primer pintado de una página que ni siquiera lo necesita
-       todavía. */
-    var sc=document.createElement("script");
-    sc.src="https://link.msgsndr.com/js/form_embed.js";
-    sc.async=true;
-    document.body.appendChild(sc);
-  }
-  var io=null;
-  function pararVigilancia(){
-    if(io){io.disconnect();io=null}
-    window.removeEventListener("scroll",porScroll);
-  }
+});
 
-  /* ARRANQUE PRINCIPAL — en el primer hueco libre tras pintar la página.
-     El timeout de 2,5 s es el tope: si el hilo nunca se desocupa, va igual. */
-  function arrancarYa(){cargarCal();pararVigilancia()}
-  if("requestIdleCallback" in window){requestIdleCallback(arrancarYa,{timeout:2500})}
-  else{setTimeout(arrancarYa,1200)}
+/* ═══ 8 · Listo ═══════════════════════════════════════════════════════════ */
+function mostrarListo(enfocar){
+  var c=S.cita,z=c.zona||ZONA||"America/Bogota",f=new Date(c.inicio);
+  var nombre=(S.nombre||"").split(" ")[0];
+  $("listo-h").textContent=(nombre?"Listo, "+nombre+". ":"")+"Tu llamada quedó agendada";
+  var dia=fmt({weekday:"long",day:"numeric",month:"long",timeZone:z}).format(f).replace(",","");
+  $("listo-dia").textContent=dia.charAt(0).toUpperCase()+dia.slice(1)+" · "+fmt({hour:"numeric",minute:"2-digit",hour12:true,timeZone:z}).format(f);
+  $("listo-zona").textContent="Hora de "+lugar(z);
+  $("listo-p").textContent="Te escribo por WhatsApp al +"+PAISES[S.pais].d+" "+agrupar(S.tel)+" con la confirmación. Si no te llega en unos minutos, revisa que el número esté bien.";
+  var iso=function(d){return d.toISOString().replace(/[-:]|\.\d{3}/g,"")};
+  $("listo-cal").href="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("Llamada con Lead Master")+
+    "&dates="+iso(f)+"/"+iso(new Date(f.getTime()+c.dur*60000))+"&details="+encodeURIComponent("Llamada con Sergio, de Lead Master. Si necesitas mover la hora, escríbele por WhatsApp.");
+  irPaso(3);
+  if(enfocar){listo.focus({preventScroll:true});var card=$("embudo");if(card.getBoundingClientRect().top<0)card.scrollIntoView({block:"start"})}
+}
 
-  /* Redes de seguridad, por si el arranque de arriba no llegó a correr
-     (pestaña en segundo plano, navegador viejo). cargarCal es idempotente. */
-  function porScroll(){cargarCal();pararVigilancia()}
-  window.addEventListener("scroll",porScroll,{passive:true,once:true});
-  if("IntersectionObserver" in window && cal){
-    io=new IntersectionObserver(function(es){
-      es.forEach(function(e){if(e.isIntersecting){cargarCal();pararVigilancia()}});
-    },{rootMargin:"600px"});
-    io.observe(cal);
-  }
-  var irAAgendar=document.querySelector('a.btn[href="#agendar"]');
-  if(irAAgendar)irAAgendar.addEventListener("click",cargarCal);
+/* ═══ 9 · Arranque ════════════════════════════════════════════════════════ */
+pintarPais();
+if(S.tel)tel.value=agrupar(S.tel);
+if(S.nombre)$("nombre").value=S.nombre;
+if(S.r.instagram_web)$("igweb").value=S.r.instagram_web;
+["leads_mes","asesores"].forEach(function(k){
+  Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){var s=o.textContent.trim()===S.r[k];o.classList.toggle("sel",s);o.setAttribute("aria-pressed",s?"true":"false")});
+});
+if(S.cita&&new Date(S.cita.inicio).getTime()>Date.now()){mostrarListo(false)}
+else{
+  S.cita=null;
+  /* Retoma en la primera pregunta sin contestar. */
+  var falta=!S.tel?0:!S.nombre?1:!S.r.leads_mes?2:!S.r.asesores?3:!S.r.instagram_web?4:5;
+  if(falta===5){mostrar(4,false);abrirHorariosSinMover()}
+  else mostrar(Math.min(falta,S.q||falta),false);
+}
+function abrirHorariosSinMover(){
+  irPaso(2);
+  cargarHorarios().then(pintarHorarios,function(){irPaso(1)});
+}
 
+/* El botón "Agendar mi llamada" del cierre lleva al formulario y deja el cursor en el WhatsApp. */
+Array.prototype.forEach.call(document.querySelectorAll("[data-ir]"),function(a){
+  a.addEventListener("click",function(){
+    if(!paso1.hidden&&S.q===0)setTimeout(function(){tel.focus({preventScroll:true})},650);
+  });
+});
 
-  var anio=document.getElementById("anio");
-  if(anio)anio.textContent=(new Date).getFullYear();
+$("anio").textContent=(new Date).getFullYear();
 })();
 </script>
 </body>
