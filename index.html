@@ -166,15 +166,13 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 /* ── Prueba social ─────────────────────────────────────────────────────── */
 .trust{padding-top:44px;text-align:center}
 @media (min-width:768px){.trust{padding-top:88px}}
-.datos{color:var(--muted);font-size:14.5px;line-height:1.7;text-wrap:balance}
-.datos li{display:inline;white-space:nowrap}
-/* El punto va al final de cada dato (no al inicio del siguiente): así nunca
-   queda un punto suelto abriendo un renglón. */
-.datos li:not(:last-child)::after{content:"·";margin:0 .55em;color:var(--faint)}
+.datos{color:var(--muted);font-size:14.5px;line-height:1.75}
+.datos li{white-space:nowrap}
+/* En celular, un dato por renglón; desde tablet, en una fila separados por un punto. */
 @media (min-width:768px){
   .datos{display:flex;justify-content:center;gap:36px;font-size:15.5px}
   .datos li{display:flex;align-items:center;gap:36px}
-  .datos li:not(:last-child)::after{content:"";margin:0;width:4px;height:4px;border-radius:50%;background:var(--border-strong)}
+  .datos li:not(:last-child)::after{content:"";width:4px;height:4px;border-radius:50%;background:var(--border-strong)}
 }
 .clientes{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;margin-top:26px}
 .clientes small{flex-basis:100%;color:var(--faint);font-size:12.5px}
