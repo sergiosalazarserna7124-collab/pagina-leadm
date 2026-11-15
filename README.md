@@ -9,7 +9,7 @@ Página de captación de **leadmaster.com.co**: titular, video, formulario para 
   1. *Tus datos*: WhatsApp con selector de país, nombre, leads al mes, cantidad de asesores e Instagram o página web.
   2. *Día y hora*: horarios libres del calendario de GHL.
 - El formulario habla con el backend de Lead Master (`/embudo-landing/*` en `tracker_v1`). Ahí se crea el contacto en GHL apenas se escribe el WhatsApp, se agenda la cita y sale la confirmación por WhatsApp. Ver `docs/embudo-landing/README.md` en ese repo.
-- **Pixel de Meta:** `PageView` al cargar, `Lead` al dejar el WhatsApp y `Schedule` al agendar.
+- **Pixel de Meta:** `PageView` al cargar, `Lead` al dejar el WhatsApp y `Schedule` al agendar, pero solo si la agenda califica (100 leads al mes o más): lo decide el backend y manda el mismo evento por la API de conversiones con el mismo id (`lm-agenda-<id>`), así Meta lo cuenta una vez. Ver «Qué agenda le cuenta a Meta» en `docs/embudo-landing/README.md` de `tracker_v1`.
 
 ## Archivos
 
