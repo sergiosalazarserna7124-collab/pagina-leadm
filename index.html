@@ -14,13 +14,61 @@
 <link rel="canonical" href="https://leadmaster.com.co/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='none'%3E%3ClinearGradient id='g' x1='0' y1='0' x2='512' y2='512' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%237C3AED'/%3E%3Cstop offset='1' stop-color='%2306B6D4'/%3E%3C/linearGradient%3E%3Crect width='512' height='512' rx='116' fill='url(%23g)'/%3E%3Cpath d='M138 126V376H226L276 256L322 326L357 232' stroke='%23fff' stroke-width='58' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='388' cy='150' r='44' fill='%23fff'/%3E%3C/svg%3E">
 
-<!-- Lo único que se ve arriba además del texto es la portada del video: se
+<!-- ═══ VERSIONES DE LA PÁGINA (prueba A/B) ═══
+     Cada versión es la misma página con otro video. La primera vez que alguien
+     entra se le sortea una según el peso y se le queda en ese navegador, así
+     las dos reciben el mismo tráfico de los mismos anuncios. El backend mide
+     en cada una: visitas, clic al video, retención, teléfonos, agendas y
+     confirmaciones (docs/embudo-landing en tracker_v1).
+
+       peso     cuánta gente le toca. 0 = apagada (solo se ve con ?v=b).
+       video    nombre con el que sale en el reporte.
+       mp4      video alojado aquí (carpeta videos/). Usa el reproductor propio,
+                que mide la retención completa.
+       vturb    player de vturb; se usa solo si no hay mp4.
+       portada  nombre base de las cuatro imágenes de portada
+                (portada-vsl → portada-vsl.jpg, .webp, -800.webp y -640.webp).
+       alt      texto alternativo de la portada, si no es el de la versión A.
+
+     Para prender la prueba: peso 1 en las dos (reparte mitad y mitad).
+     Ver una versión a propósito: ?v=a o ?v=b. Marcar este navegador como del
+     equipo (no cuenta en el reporte): ?interno=1; desmarcar: ?interno=0. -->
+<script>
+(function(w,d){
+  var V={
+    /* A: el video nuevo, «Lead Master explicado fácil» (el que está publicado). */
+    a:{peso:1,video:"explicado-nuevo",mp4:"",vturb:"https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6af91a0f543894d6d3f7d2a8/v4/embed.html",portada:"portada-vsl"},
+    /* B: el video anterior, el de Sergio a cámara. Prendida el 15-nov-2026: mitad y mitad con la A. */
+    b:{peso:1,video:"sergio-anterior",mp4:"",vturb:"https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6a0550a3993552b8596a362a/v4/embed.html",portada:"portada-anterior",alt:"Sergio, de Lead Master, explicando cómo funciona"}
+  };
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){}return null}
+  function id(){var x="";while(x.length<16)x+=Math.random().toString(36).slice(2);return x.slice(0,16)}
+  var q=new URLSearchParams(location.search),v=(q.get("v")||"").toLowerCase(),g=ls("lm_var"),k;
+  if(!V[v]){
+    if(V[g]&&V[g].peso>0)v=g;
+    else{
+      var t=0;for(k in V)t+=V[k].peso;
+      var r=Math.random()*t;v="a";
+      for(k in V){if(V[k].peso<=0)continue;if(r<V[k].peso){v=k;break}r-=V[k].peso}
+    }
+  }
+  ls("lm_var",v);
+  var i=q.get("interno");if(i==="1")ls("lm_int","1");else if(i==="0")ls("lm_int",null);
+  var p=ls("lm_vid");if(!p){p=id();ls("lm_vid",p)}
+  w.LM={v:v,cfg:V[v],visitante:p,visita:id(),interno:ls("lm_int")==="1"};
+  d.documentElement.setAttribute("data-v",v);
+
+  /* Lo único que se ve arriba además del texto es la portada del video: se
      pide ya, en WebP y al tamaño de la pantalla (11 a 15 KB en celular, 24 KB
-     en escritorio; el JPG de 45 KB queda de respaldo). -->
-<link rel="preload" as="image" type="image/webp" fetchpriority="high"
-      href="portada-vsl.webp"
-      imagesrcset="portada-vsl-640.webp 640w, portada-vsl-800.webp 800w, portada-vsl.webp 1120w"
-      imagesizes="(min-width:1184px) 1120px, calc(100vw - 40px)">
+     en escritorio; el JPG queda de respaldo). Es la de la versión que tocó. */
+  var b=V[v].portada,l=d.createElement("link");
+  l.rel="preload";l.as="image";l.type="image/webp";l.setAttribute("fetchpriority","high");
+  l.href=b+".webp";
+  l.setAttribute("imagesrcset",b+"-640.webp 640w, "+b+"-800.webp 800w, "+b+".webp 1120w");
+  l.setAttribute("imagesizes","(min-width:1184px) 1120px, calc(100vw - 40px)");
+  d.head.appendChild(l);
+})(window,document);
+</script>
 
 <!-- Conexiones que se van a usar después: el formulario (API de Lead Master)
      y el player del video, que no existe hasta el clic. -->
@@ -147,7 +195,8 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 .vsl-play svg{width:26px;height:26px;margin-left:4px}
 @media (min-width:768px){.vsl-play span{width:104px;height:104px}.vsl-play svg{width:38px;height:38px;margin-left:6px}}
 @media (hover:hover){.vsl:hover img{transform:scale(1.03)}.vsl-play:hover span{transform:scale(1.08)}}
-.vsl iframe,.vsl vturb-smartplayer{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vsl iframe,.vsl vturb-smartplayer,.vsl video{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vsl video{background:#000;object-fit:contain}
 
 /* ── Botón principal ───────────────────────────────────────────────────── */
 .pill{
@@ -405,16 +454,18 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 </section>
 
 <!-- ═══ 2 · VIDEO ═══
-     El player (ConverteAI / vturb) no existe hasta el clic: lo que se ve es
-     la portada real del video. Para cambiar de video: cambia data-vsl y las
-     portadas (portada-vsl.jpg y .webp a 1120 px, -800.webp y -640.webp). -->
+     El player no existe hasta el clic: lo que se ve es la portada del video.
+     Qué video y qué portada lleva cada versión de la página está arriba, en
+     el bloque VERSIONES DE LA PÁGINA del <head>. -->
 <section class="video" aria-label="Video de presentación">
   <div class="wrap">
-    <div class="vsl" id="vsl" data-vsl="https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6af91a0f543894d6d3f7d2a8/v4/embed.html">
+    <div class="vsl" id="vsl">
       <picture>
         <source type="image/webp" srcset="portada-vsl-640.webp 640w, portada-vsl-800.webp 800w, portada-vsl.webp 1120w" sizes="(min-width:1184px) 1120px, calc(100vw - 40px)">
         <img src="portada-vsl.jpg" width="1120" height="630" alt="Lead Master explicado fácil, para tu inmobiliaria" fetchpriority="high" decoding="async">
       </picture>
+      <!-- Si a esta visita le tocó una versión con otra portada, se cambia aquí mismo, antes de pintarla. -->
+      <script>(function(){var b=window.LM&&LM.cfg.portada;if(!b||b==="portada-vsl")return;var p=document.querySelector("#vsl picture");p.querySelector("source").srcset=b+"-640.webp 640w, "+b+"-800.webp 800w, "+b+".webp 1120w";var i=p.querySelector("img");i.src=b+".jpg";if(LM.cfg.alt)i.alt=LM.cfg.alt})();</script>
       <button class="vsl-play" id="vsl-play" type="button" aria-label="Reproducir el video">
         <span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14z"/></svg></span>
       </button>
@@ -640,9 +691,99 @@ var CLAVE="lm_embudo_v1";
 var $=function(id){return document.getElementById(id)};
 function pixel(ev,datos){try{if(window.fbq)window.fbq("track",ev,datos||{})}catch(e){}}
 
+/* ═══ 0 · Seguimiento: la visita, el clic al video y cuánto se ve ═════════
+   LM lo deja el <head>: la versión de la página que le tocó a esta visita
+   (LM.v), su video (LM.cfg) y los identificadores de la visita y del
+   navegador. Cada evento va a /embudo-landing/evento; si falla, no pasa nada:
+   medir nunca le estorba al visitante. */
+var LM=window.LM||{v:"a",cfg:{},visitante:null,visita:null,interno:false};
+function evento(tipo,datos){
+  if(!LM.visita)return;
+  var c={tipo:tipo,visita:LM.visita,visitante:LM.visitante,variante:LM.v,video:LM.cfg.video||null},k;
+  if(LM.interno)c.interno=true;
+  for(k in datos)c[k]=datos[k];
+  /* keepalive: sale aunque el visitante cierre la pestaña en ese momento. */
+  try{fetch(API+"/evento",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(c),keepalive:true}).catch(function(){})}catch(e){}
+}
+/* La visita cuenta cuando la página se ve de verdad: una pestaña abierta en
+   segundo plano o precargada por el navegador todavía no es una visita. */
+function alVerse(fn){
+  if(document.prerendering){document.addEventListener("prerenderingchange",function(){alVerse(fn)},{once:true});return}
+  if(document.visibilityState==="hidden"){
+    var h=function(){if(document.visibilityState==="visible"){document.removeEventListener("visibilitychange",h);fn()}};
+    document.addEventListener("visibilitychange",h);return;
+  }
+  fn();
+}
+/* Retención: el video se parte en 100 tramos iguales y se marca cada tramo
+   por el que pasa la reproducción (adelantar no marca lo que se saltó). Se
+   manda a los 3 segundos, después cada 10 segundos reproducidos, y al pausar,
+   terminar o salir de la página. */
+function seguirVideo(v){
+  var tr=[],visto=0,max=0,ult=null,prox=3,envS="",envV=-1,j;
+  for(j=0;j<100;j++)tr.push(0);
+  function marcar(){
+    var t=v.currentTime,d=v.duration;
+    if(!d||!isFinite(d)){ult=t;return}
+    if(ult!==null){
+      var dt=t-ult;
+      if(dt>0&&dt<2){
+        visto+=dt;if(t>max)max=t;
+        var a=Math.max(0,Math.floor(ult/d*100)),b=Math.min(99,Math.floor(t/d*100));
+        for(var n=a;n<=b;n++)tr[n]=1;
+      }
+    }
+    ult=t;
+  }
+  function mandar(ya){
+    var d=v.duration;
+    if(!d||!isFinite(d)||visto<=0)return;
+    if(!ya&&visto<prox)return;
+    var s=tr.join(""),vs=Math.round(visto);
+    if(s===envS&&vs===envV)return;
+    envS=s;envV=vs;prox=visto+10;
+    evento("video_progreso",{dur:Math.round(d),max:Math.round(max),visto:vs,tramos:s});
+  }
+  v.addEventListener("timeupdate",function(){marcar();mandar(false)});
+  v.addEventListener("seeking",function(){ult=null});
+  v.addEventListener("pause",function(){marcar();mandar(true)});
+  v.addEventListener("ended",function(){marcar();mandar(true)});
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"){marcar();mandar(true)}});
+  window.addEventListener("pagehide",function(){marcar();mandar(true)});
+}
+
 /* ═══ 1 · Video: el player nace al hacer clic, nunca antes ════════════════ */
 var vsl=$("vsl"),play=$("vsl-play");
 function quitarPortada(){if(play)play.remove();var p=vsl.querySelector("picture");if(p)p.remove()}
+/* Reproductor propio para el video alojado aquí (LM.cfg.mp4). El clic del
+   visitante vale como activación: arranca con sonido. Mientras baja el
+   primer tramo se sigue viendo la portada. */
+function montarPropio(src){
+  var v=document.createElement("video"),img=vsl.querySelector("img");
+  v.controls=true;v.playsInline=true;v.setAttribute("playsinline","");v.preload="auto";
+  v.setAttribute("controlslist","nodownload");
+  if(img)v.poster=img.currentSrc||img.src;
+  v.src=src;
+  vsl.appendChild(v);
+  seguirVideo(v);
+  var p=v.play();if(p&&p.catch)p.catch(function(){});
+}
+/* El player de vturb trae su propio <video>; si se deja alcanzar (no siempre:
+   depende de cómo lo arme vturb), se le mide la retención igual que al propio. */
+function buscarVideo(raiz){
+  var v=raiz.querySelector?raiz.querySelector("video"):null;
+  if(v)return v;
+  var n=raiz.querySelectorAll?raiz.querySelectorAll("*"):[];
+  for(var i=0;i<n.length;i++){if(n[i].shadowRoot){v=buscarVideo(n[i].shadowRoot);if(v)return v}}
+  return null;
+}
+function seguirVturb(){
+  var t0=Date.now(),iv=setInterval(function(){
+    var v=buscarVideo(vsl);
+    if(v){clearInterval(iv);seguirVideo(v)}
+    else if(Date.now()-t0>20000)clearInterval(iv);
+  },500);
+}
 /* Red por si algún navegador arranca el video en mudo: se le sube el volumen
    (la única palanca de su API). Nunca lo pausa ni lo reinicia. */
 function asegurarSonido(el){
@@ -663,6 +804,7 @@ function montarVturb(url){
   sc.src="https://scripts.converteai.net/"+m[1]+"/players/"+m[2]+"/v4/player.js";
   sc.async=true;document.head.appendChild(sc);
   asegurarSonido(el);
+  seguirVturb();
   return true;
 }
 function montarIframe(url){
@@ -674,9 +816,11 @@ function montarIframe(url){
   vsl.appendChild(f);
 }
 if(play)play.addEventListener("click",function(){
-  var url=vsl.getAttribute("data-vsl");
-  if(!url)return;
-  if(url.indexOf("converteai.net")===-1||!montarVturb(url))montarIframe(url);
+  var c=LM.cfg||{},url=c.vturb||"";
+  if(!c.mp4&&!url)return;
+  evento("video_play",{});
+  if(c.mp4)montarPropio(c.mp4);
+  else if(url.indexOf("converteai.net")===-1||!montarVturb(url))montarIframe(url);
   quitarPortada();
 });
 
@@ -726,7 +870,7 @@ function origen(){
     o=JSON.parse(sessionStorage.getItem(CLAVE+"_o")||"null")||{};
     if(!o.pagina){
       var p=new URLSearchParams(location.search);
-      ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","fbclid","gclid"].forEach(function(k){var v=p.get(k);if(v)o[k]=v.slice(0,300)});
+      ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","fbclid","gclid","ad_id","adset_id","campaign_id"].forEach(function(k){var v=p.get(k);if(v)o[k]=v.slice(0,300)});
       o.pagina=(location.origin+location.pathname).slice(0,300);
       if(document.referrer)o.referrer=document.referrer.slice(0,300);
       sessionStorage.setItem(CLAVE+"_o",JSON.stringify(o));
@@ -897,7 +1041,7 @@ function asegurarLead(){
   if(S.lead)return Promise.resolve(S.lead);
   if(pidiendo)return pidiendo;
   var p=PAISES[S.pais];
-  pidiendo=api("/telefono",{telefono:"+"+p.d+S.tel,pais:S.pais,origen:origen(),sitio:$("sitio").value})
+  pidiendo=api("/telefono",{telefono:"+"+p.d+S.tel,pais:S.pais,origen:origen(),visita:LM.visita||undefined,variante:LM.v,sitio:$("sitio").value})
     .then(function(j){S.lead=j.lead;guardar();pidiendo=null;return j.lead})
     .catch(function(e){pidiendo=null;throw e});
   return pidiendo;
@@ -1100,6 +1244,9 @@ Array.prototype.forEach.call(document.querySelectorAll("[data-ir]"),function(a){
 });
 
 $("anio").textContent=(new Date).getFullYear();
+
+/* La visita, con el anuncio que la trajo. Al final: no le quita tiempo a nada de lo de arriba. */
+alVerse(function(){evento("visita",{origen:origen(),tz:ZONA,ancho:window.innerWidth||0})});
 })();
 </script>
 </body>
