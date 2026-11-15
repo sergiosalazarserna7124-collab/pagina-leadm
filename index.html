@@ -38,8 +38,10 @@
   var V={
     /* A: el video nuevo, «Lead Master explicado fácil» (el que está publicado). */
     a:{peso:1,video:"explicado-nuevo",mp4:"",vturb:"https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6af91a0f543894d6d3f7d2a8/v4/embed.html",portada:"portada-vsl"},
-    /* B: el video anterior, el de Sergio a cámara. Prendida el 15-nov-2026: mitad y mitad con la A. */
-    b:{peso:1,video:"sergio-anterior",mp4:"",vturb:"https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6a0550a3993552b8596a362a/v4/embed.html",portada:"portada-anterior",alt:"Sergio, de Lead Master, explicando cómo funciona"}
+    /* B: Sergio a cámara, versión editada (animaciones y subtítulos nuevos). Prendida el
+       15-nov-2026, mitad y mitad con la A; desde la noche del 14-nov (hora de Colombia) con el
+       video editado en vez del original («sergio-anterior», vturb 6a0550a3…, portada-anterior*). */
+    b:{peso:1,video:"sergio-editado",mp4:"",vturb:"https://scripts.converteai.net/2d9f02fc-2754-459a-af6c-b95d8392eef5/players/6af91df2c0dfc35b8d3561e9/v4/embed.html",portada:"portada-editado",alt:"Sergio, de Lead Master, explicando cómo funciona"}
   };
   function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){}return null}
   function id(){var x="";while(x.length<16)x+=Math.random().toString(36).slice(2);return x.slice(0,16)}

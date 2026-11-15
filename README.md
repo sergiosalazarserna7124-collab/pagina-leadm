@@ -18,14 +18,15 @@ Página de captación de **leadmaster.com.co**: titular, video, formulario para 
 | `index.html` | La página completa: HTML, CSS y JS en un solo archivo (19 KB comprimido), sin dependencias. |
 | `portada-vsl.jpg` | Portada del video a 1120 px (respaldo y vista previa al compartir). |
 | `portada-vsl.webp`, `portada-vsl-800.webp`, `portada-vsl-640.webp` | La misma portada en WebP a 1120, 800 y 640 px; cada pantalla baja la que le corresponde. |
-| `portada-anterior.jpg`, `.webp`, `-800.webp`, `-640.webp` | La portada del video anterior, para la versión B de la página. |
+| `portada-editado.jpg`, `.webp`, `-800.webp`, `-640.webp` | La portada de la versión B: Sergio a cámara, video editado. |
+| `portada-anterior.jpg`, `.webp`, `-800.webp`, `-640.webp` | La portada del video original de Sergio (la B hasta el 14-nov); queda por si se vuelve a él. |
 | `videos/` | Los videos alojados aquí (MP4 H.264 + AAC, con el índice al inicio: `-movflags +faststart`). |
 | `web/` | Otra página, en `/web`. |
 
 ## Cambios frecuentes
 
 - **Cambiar el video de una versión:** en el bloque `VERSIONES DE LA PÁGINA` de `index.html`, el `mp4` (o el `vturb`) de esa versión, su `video` (el nombre con el que sale en el reporte) y su `portada` (nombre base de las cuatro imágenes: `.jpg` y `.webp` a 1120 px, `-800.webp` y `-640.webp`).
-- **Las dos versiones:** A es el video nuevo («Lead Master explicado fácil») y B el anterior (Sergio a cámara), con sus portadas `portada-anterior*`. Desde el 15-nov-2026 compiten mitad y mitad, las dos con el reproductor de vturb.
+- **Las dos versiones:** A es el video nuevo («Lead Master explicado fácil») y B Sergio a cámara en su versión editada (animaciones y subtítulos nuevos, `sergio-editado` en el reporte), con sus portadas `portada-editado*`. Compiten mitad y mitad, las dos con el reproductor de vturb. La B usó el video original (`sergio-anterior`) solo el 14-nov en la noche; para comparar, pedir el reporte `desde` el 15-nov.
 - **Prender o apagar la versión B:** el `peso` de cada versión. `peso:1` en las dos reparte mitad y mitad; `peso:0` la apaga (solo se ve con `?v=b`).
 - **Ver una versión a propósito:** `leadmaster.com.co/?v=a` o `?v=b`.
 - **Que las visitas del equipo no cuenten:** abrir una vez `leadmaster.com.co/?interno=1` en ese navegador (`?interno=0` lo desmarca).
