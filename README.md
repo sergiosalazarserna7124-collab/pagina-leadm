@@ -22,5 +22,5 @@ Página de captación de **leadmaster.com.co**: titular, video, formulario para 
 
 - **Cambiar el video:** en `index.html`, el atributo `data-vsl` del bloque `#vsl`, y reemplazar las cuatro portadas.
 - **Cambiar las opciones de las preguntas:** los botones `.opt` de los bloques `data-q="leads_mes"` y `data-q="asesores"`.
-- **Datos y clientes:** la sección "PRUEBA SOCIAL". Solo datos reales.
+- **Datos y clientes:** la sección "PRUEBA SOCIAL". Solo datos reales. Cada cliente es un `<span>` (texto, sin enlace).
 - **Backend del formulario:** la constante `API` al inicio del `<script>`.

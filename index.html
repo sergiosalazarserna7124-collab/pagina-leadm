@@ -176,9 +176,8 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 }
 .clientes{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;margin-top:26px}
 .clientes small{flex-basis:100%;color:var(--faint);font-size:12.5px}
-.clientes a{color:var(--muted);font-weight:650;font-size:15px;letter-spacing:-.01em;transition:color .25s}
-@media (hover:hover){.clientes a:hover{color:var(--text)}}
-@media (min-width:768px){.clientes{gap:14px 34px;margin-top:34px}.clientes small{font-size:13px;margin-bottom:2px}.clientes a{font-size:18px}}
+.clientes span{color:var(--muted);font-weight:650;font-size:15px;letter-spacing:-.01em}
+@media (min-width:768px){.clientes{gap:14px 34px;margin-top:34px}.clientes small{font-size:13px;margin-bottom:2px}.clientes span{font-size:18px}}
 
 /* ── Qué hace ──────────────────────────────────────────────────────────── */
 .que{padding-top:56px}
@@ -518,7 +517,8 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 </section>
 
 <!-- ═══ 4 · PRUEBA SOCIAL ═══
-     Solo datos reales. Los clientes linkean a su Instagram. -->
+     Solo datos reales. Los clientes van como texto, sin enlace: al tocarlos
+     no se sale de la página. -->
 <section class="trust">
   <div class="wrap">
     <ul class="datos">
@@ -528,13 +528,16 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
     </ul>
     <div class="clientes">
       <small>Confían en nosotros</small>
-      <a href="https://www.instagram.com/shark_realtor/" target="_blank" rel="noopener">SHARK REALTORS</a>
-      <a href="https://www.instagram.com/imexicorealestate/" target="_blank" rel="noopener">iMexico</a>
-      <a href="https://www.instagram.com/dkdelkaribe/" target="_blank" rel="noopener">DK DEL KARIBE</a>
-      <a href="https://www.instagram.com/grupo_daxi/" target="_blank" rel="noopener">GRUPO DAXI</a>
-      <a href="https://www.instagram.com/marlenecortesg/" target="_blank" rel="noopener">ZIBAHOME</a>
-      <a href="https://www.instagram.com/remaxcenote/" target="_blank" rel="noopener">RE/MAX CENOTE</a>
-      <a href="https://www.instagram.com/urbanza/" target="_blank" rel="noopener">URBANZA</a>
+      <span>SHARK REALTORS</span>
+      <span>iMexico</span>
+      <span>DK DEL KARIBE</span>
+      <span>GRUPO DAXI</span>
+      <span>ZIBAHOME</span>
+      <span>RE/MAX CENOTE</span>
+      <span>URBANZA</span>
+      <span>GRUPO RAISE</span>
+      <span>INVERTI PROPERTY GDL</span>
+      <span>AMAIA FRACTIONAL</span>
     </div>
   </div>
 </section>
