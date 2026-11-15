@@ -174,10 +174,24 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
   .datos li{display:flex;align-items:center;gap:36px}
   .datos li:not(:last-child)::after{content:"";width:4px;height:4px;border-radius:50%;background:var(--border-strong)}
 }
-.clientes{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;margin-top:26px}
-.clientes small{flex-basis:100%;color:var(--faint);font-size:12.5px}
-.clientes span{color:var(--muted);font-weight:650;font-size:15px;letter-spacing:-.01em}
-@media (min-width:768px){.clientes{gap:14px 34px;margin-top:34px}.clientes small{font-size:13px;margin-bottom:2px}.clientes span{font-size:18px}}
+.clientes{margin-top:26px;text-align:center}
+.clientes small{display:block;color:var(--faint);font-size:12.5px;margin-bottom:10px}
+/* Cinta: los clientes en una sola línea, moviéndose sin parar. La lista va dos
+   veces seguidas; al correr la mitad (-50%) empieza la copia y no se nota el
+   salto. Cada nombre lleva su espacio a la derecha (también el último), así
+   las dos mitades miden lo mismo. Se detiene al pasar el mouse. */
+.cinta{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+.cinta-pista{display:flex;width:max-content;animation:cinta 38s linear infinite}
+.cinta-pista span{flex:none;white-space:nowrap;margin-right:30px;color:var(--muted);font-weight:650;font-size:15px;letter-spacing:-.01em}
+@keyframes cinta{to{transform:translateX(-50%)}}
+@media (hover:hover){.cinta:hover .cinta-pista{animation-play-state:paused}}
+@media (min-width:768px){.clientes{margin-top:34px}.clientes small{font-size:13px;margin-bottom:14px}.cinta-pista span{font-size:18px;margin-right:46px}}
+/* Quien pidió menos movimiento: los nombres quietos, acomodados en filas. */
+@media (prefers-reduced-motion:reduce){
+  .cinta{-webkit-mask-image:none;mask-image:none}
+  .cinta-pista{animation:none;width:auto;flex-wrap:wrap;justify-content:center;gap:10px 0}
+  .cinta-pista span[aria-hidden]{display:none}
+}
 
 /* ── Qué hace ──────────────────────────────────────────────────────────── */
 .que{padding-top:56px}
@@ -518,7 +532,8 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 
 <!-- ═══ 4 · PRUEBA SOCIAL ═══
      Solo datos reales. Los clientes van como texto, sin enlace: al tocarlos
-     no se sale de la página. -->
+     no se sale de la página. Van en una cinta que se mueve (.cinta): para
+     agregar o quitar un cliente, hazlo en las DOS listas de .cinta-pista. -->
 <section class="trust">
   <div class="wrap">
     <ul class="datos">
@@ -528,16 +543,31 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
     </ul>
     <div class="clientes">
       <small>Confían en nosotros</small>
-      <span>SHARK REALTORS</span>
-      <span>iMexico</span>
-      <span>DK DEL KARIBE</span>
-      <span>GRUPO DAXI</span>
-      <span>ZIBAHOME</span>
-      <span>RE/MAX CENOTE</span>
-      <span>URBANZA</span>
-      <span>GRUPO RAISE</span>
-      <span>INVERTI PROPERTY GDL</span>
-      <span>AMAIA FRACTIONAL</span>
+      <div class="cinta">
+        <div class="cinta-pista">
+          <span>SHARK REALTORS</span>
+          <span>iMexico</span>
+          <span>DK DEL KARIBE</span>
+          <span>GRUPO DAXI</span>
+          <span>ZIBAHOME</span>
+          <span>RE/MAX CENOTE</span>
+          <span>URBANZA</span>
+          <span>GRUPO RAISE</span>
+          <span>INVERTI PROPERTY GDL</span>
+          <span>AMAIA FRACTIONAL</span>
+          <!-- La misma lista otra vez, para que la cinta dé la vuelta sin salto. -->
+          <span aria-hidden="true">SHARK REALTORS</span>
+          <span aria-hidden="true">iMexico</span>
+          <span aria-hidden="true">DK DEL KARIBE</span>
+          <span aria-hidden="true">GRUPO DAXI</span>
+          <span aria-hidden="true">ZIBAHOME</span>
+          <span aria-hidden="true">RE/MAX CENOTE</span>
+          <span aria-hidden="true">URBANZA</span>
+          <span aria-hidden="true">GRUPO RAISE</span>
+          <span aria-hidden="true">INVERTI PROPERTY GDL</span>
+          <span aria-hidden="true">AMAIA FRACTIONAL</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
