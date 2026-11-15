@@ -7,7 +7,7 @@ Página de captación de **leadmaster.com.co**: titular, video, formulario para 
 - **Seguimiento:** la página le avisa al backend la visita (con el anuncio que la trajo), el clic al video y cuánto se vio. Con eso y el formulario sale el embudo de cada versión: visitas, clic al video, retención, teléfonos, agendas y confirmaciones por WhatsApp. Ver `docs/embudo-landing/README.md` en `tracker_v1` (ahí está también cómo pedir el reporte).
 - **Formulario propio en dos pasos** (justo debajo del video), en lugar del calendario incrustado de GHL:
   1. *Tus datos*: WhatsApp con selector de país, nombre, a qué se dedica la inmobiliaria, leads al mes, cantidad de asesores e Instagram o página web.
-     Quien responde **Solo rentas** no califica: la página le agradece y no le muestra horarios (Lead Master es para inmobiliarias que venden: desarrollos, preventas y corretaje). El backend tampoco le agenda ni le escribe.
+     Quien responde **Solo rentas** (a qué se dedica) o **Solo yo** (asesores) no califica: la página le agradece y no le muestra horarios (Lead Master es para inmobiliarias que venden y tienen equipo). El backend tampoco le agenda ni le escribe.
   2. *Día y hora*: horarios libres del calendario de GHL.
 - El formulario habla con el backend de Lead Master (`/embudo-landing/*` en `tracker_v1`). Ahí se crea el contacto en GHL apenas se escribe el WhatsApp, se agenda la cita y sale la confirmación por WhatsApp. Ver `docs/embudo-landing/README.md` en ese repo.
 - **Pixel de Meta:** `PageView` al cargar, `Lead` al dejar el WhatsApp y `Schedule` al agendar.
@@ -32,6 +32,6 @@ Página de captación de **leadmaster.com.co**: titular, video, formulario para 
 - **Ver una versión a propósito:** `leadmaster.com.co/?v=a` o `?v=b`.
 - **Que las visitas del equipo no cuenten:** abrir una vez `leadmaster.com.co/?interno=1` en ese navegador (`?interno=0` lo desmarca).
 - **Enlace de los anuncios:** `https://leadmaster.com.co/` con `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content` y los ids `ad_id`, `adset_id` y `campaign_id`. La página los guarda con la visita y con el lead.
-- **Cambiar las opciones de las preguntas:** los botones `.opt` de los bloques `data-q="tipo_inmobiliaria"`, `data-q="leads_mes"` y `data-q="asesores"`. En `tipo_inmobiliaria`, la opción que no califica lleva `data-no-califica`; si se le cambia el texto, revisar `soloRentas` en `tracker_v1` (`services/embudo-landing/textos.ts`), que reconoce «rentas» sin «venta», «desarrollos», «corretaje» ni «todo».
+- **Cambiar las opciones de las preguntas:** los botones `.opt` de los bloques `data-q="tipo_inmobiliaria"`, `data-q="leads_mes"` y `data-q="asesores"`. La opción que no califica lleva `data-no-califica` («Solo rentas» y «Solo yo»), y el texto que se le muestra está en `#no-califica` (un `data-motivo` por pregunta). Si se le cambia el texto a esas opciones, revisar `soloRentas` y `trabajaSolo` en `tracker_v1` (`services/embudo-landing/textos.ts`), que son los que las reconocen en el servidor.
 - **Datos y clientes:** la sección "PRUEBA SOCIAL". Solo datos reales. Cada cliente es un `<span>` (texto, sin enlace) dentro de la cinta que se mueve; al agregar o quitar uno, hazlo en las dos listas de `.cinta-pista` (la segunda es la copia que da la vuelta).
 - **Backend del formulario:** la constante `API` al inicio del `<script>`.

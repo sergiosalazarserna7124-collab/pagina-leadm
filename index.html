@@ -347,6 +347,7 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 .opt:active{transform:scale(.985)}
 .opt.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .opts.lista{grid-template-columns:1fr}
+.opt.ancho{grid-column:1/-1}
 
 .acciones{display:flex;align-items:center;gap:16px;margin-top:22px}
 .btn{
@@ -530,8 +531,9 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 
         <!-- Qué hace la inmobiliaria (Sergio 2026-11-15). Lead Master es para quien
              vende: desarrollos y preventas, corretaje (venta, o venta y renta de
-             propiedades de terceros) o todo junto. «Solo rentas» no califica: no
-             se le muestran horarios (ver noCalifica en el script). -->
+             propiedades de terceros) o todo junto. «Solo rentas» no califica, como
+             «Solo yo» en asesores: no se le muestran horarios (ver motivo() en el
+             script). -->
         <div class="q" data-q="tipo_inmobiliaria" hidden>
           <p class="pregunta" id="q-tipo">¿A qué se dedica tu inmobiliaria? <em class="accent">*</em></p>
           <div class="opts lista" role="group" aria-labelledby="q-tipo">
@@ -557,7 +559,8 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
         <div class="q" data-q="asesores" hidden>
           <p class="pregunta" id="q-ases">¿Cuántos asesores tiene tu equipo? <em class="accent">*</em></p>
           <div class="opts" role="group" aria-labelledby="q-ases">
-            <button class="opt" type="button">1 a 5</button>
+            <button class="opt ancho" type="button" data-no-califica>Solo yo</button>
+            <button class="opt" type="button">2 a 5</button>
             <button class="opt" type="button">6 a 15</button>
             <button class="opt" type="button">16 a 30</button>
             <button class="opt" type="button">Más de 30</button>
@@ -585,11 +588,13 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
         </div>
       </div>
 
-      <!-- Solo rentas: no califica -->
+      <!-- No califica: solo rentas o trabaja solo (data-motivo = la pregunta) -->
       <div class="inner listo" id="no-califica" hidden tabindex="-1">
         <h2 id="nc-h">Gracias por tu interés</h2>
-        <p>Por ahora Lead Master trabaja con inmobiliarias que <strong>venden</strong>: desarrollos, preventas y corretaje de venta. Como tu inmobiliaria se dedica solo a rentas, no queremos hacerte perder tiempo con una llamada.</p>
-        <p class="nota">Si más adelante empiezan a vender, aquí estaremos.</p>
+        <p data-motivo="tipo_inmobiliaria">Por ahora Lead Master trabaja con inmobiliarias que <strong>venden</strong>: desarrollos, preventas y corretaje de venta. Como tu inmobiliaria se dedica solo a rentas, no queremos hacerte perder tiempo con una llamada.</p>
+        <p class="nota" data-motivo="tipo_inmobiliaria">Si más adelante empiezan a vender, aquí estaremos.</p>
+        <p data-motivo="asesores">Lead Master está hecho para inmobiliarias con <strong>equipo de asesores</strong>: atiende los leads al instante, los reparte y te muestra qué hace cada asesor con cada uno. Como hoy trabajas solo, no queremos hacerte perder tiempo con una llamada.</p>
+        <p class="nota" data-motivo="asesores">Cuando armes tu equipo, aquí estaremos.</p>
         <button class="atras volver" type="button" id="nc-volver">← Me equivoqué de opción</button>
       </div>
 
@@ -1065,16 +1070,22 @@ function irPaso(n){
   document.querySelector(".pasos").hidden=n>=3;
 }
 
-/* Lead Master es para inmobiliarias que venden (Sergio 2026-11-15: «no quiero
-   agencias inmobiliarias únicamente de rentas»). Con «Solo rentas» no se le
-   muestran horarios; el servidor tampoco le agenda ni le escribe. */
-function noCalifica(){
-  var b=bloques.tipo_inmobiliaria.querySelector("[data-no-califica]");
-  return !!(b&&S.r.tipo_inmobiliaria===b.textContent.trim());
+/* Lead Master es para inmobiliarias que venden y tienen equipo (Sergio
+   2026-11-15: «no quiero agencias inmobiliarias únicamente de rentas»; «solo
+   yo… esa tampoco da»). La opción que no califica lleva data-no-califica: con
+   ella no se le muestran horarios; el servidor tampoco le agenda ni le escribe.
+   motivo() = la pregunta que lo dejó fuera ("" si califica). */
+function motivo(){
+  for(var i=0;i<OPCIONES.length;i++){
+    var k=OPCIONES[i],b=bloques[k].querySelector("[data-no-califica]");
+    if(b&&S.r[k]===b.textContent.trim())return k;
+  }
+  return "";
 }
 function mostrarNoCalifica(enfocar){
-  var nombre=(S.nombre||"").split(" ")[0];
+  var nombre=(S.nombre||"").split(" ")[0],m=motivo();
   $("nc-h").textContent="Gracias por tu interés"+(nombre?", "+nombre:"");
+  Array.prototype.forEach.call(noCal.querySelectorAll("[data-motivo]"),function(p){p.hidden=p.getAttribute("data-motivo")!==m});
   irPaso(4);
   if(enfocar){noCal.focus({preventScroll:true});var card=$("embudo");if(card.getBoundingClientRect().top<0)card.scrollIntoView({block:"start"})}
 }
@@ -1137,7 +1148,7 @@ OPCIONES.forEach(function(k){
     Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){o.classList.toggle("sel",o===b);o.setAttribute("aria-pressed",o===b?"true":"false")});
     S.r[k]=b.textContent.trim();guardar();
     enSegundoPlano(enviarDatos());
-    var fuera=k==="tipo_inmobiliaria"&&noCalifica();
+    var fuera=b.hasAttribute("data-no-califica");
     setTimeout(function(){fuera?mostrarNoCalifica(true):mostrar(ORDEN.indexOf(k)+1,true)},170);
   });
 });
@@ -1149,7 +1160,7 @@ bloques.instagram_web.addEventListener("submit",function(e){
   err.textContent="";S.r.instagram_web=v;guardar();
   enSegundoPlano(enviarDatos());
   progreso();
-  if(noCalifica()){mostrarNoCalifica(true);return}
+  if(motivo()){mostrarNoCalifica(true);return}
   abrirHorarios();
 });
 
@@ -1157,7 +1168,7 @@ Array.prototype.forEach.call(paso1.querySelectorAll("[data-atras]"),function(b){
   b.addEventListener("click",function(){mostrar(Math.max(0,S.q-1),true)});
 });
 $("a-datos").addEventListener("click",function(){irPaso(1);mostrar(0,true)});
-$("nc-volver").addEventListener("click",function(){irPaso(1);mostrar(ORDEN.indexOf("tipo_inmobiliaria"),true)});
+$("nc-volver").addEventListener("click",function(){irPaso(1);mostrar(ORDEN.indexOf(motivo()||"tipo_inmobiliaria"),true)});
 
 /* ═══ 7 · Paso 2: día y hora ══════════════════════════════════════════════ */
 var H=null,Hcuando=0,Hpidiendo=null,diaSel=null,horaSel=null;
@@ -1277,7 +1288,7 @@ else{
   /* Retoma en la primera pregunta sin contestar. */
   var falta=!S.tel?0:!S.nombre?1:ORDEN.length;
   if(falta===ORDEN.length)ORDEN.slice(2).some(function(k,j){if(!S.r[k]){falta=j+2;return true}});
-  if(noCalifica()){mostrar(ORDEN.indexOf("tipo_inmobiliaria"),false);mostrarNoCalifica(false)}
+  if(motivo()){mostrar(ORDEN.indexOf(motivo()),false);mostrarNoCalifica(false)}
   else if(falta===ORDEN.length){mostrar(ORDEN.length-1,false);abrirHorariosSinMover()}
   else mostrar(Math.min(falta,S.q||falta),false);
 }
