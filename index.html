@@ -691,7 +691,8 @@ var RESPALDO="https://api.leadconnectorhq.com/widget/booking/AaKYLxcJcdadJunesjU
 var CLAVE="lm_embudo_v1";
 
 var $=function(id){return document.getElementById(id)};
-function pixel(ev,datos){try{if(window.fbq)window.fbq("track",ev,datos||{})}catch(e){}}
+/* opc: {eventID} para que Meta junte el evento del navegador con el mismo que manda el servidor. */
+function pixel(ev,datos,opc){try{if(window.fbq)window.fbq("track",ev,datos||{},opc||{})}catch(e){}}
 
 /* ═══ 0 · Seguimiento: la visita, el clic al video y cuánto se ve ═════════
    LM lo deja el <head>: la versión de la página que le tocó a esta visita
@@ -877,6 +878,16 @@ function origen(){
       if(document.referrer)o.referrer=document.referrer.slice(0,300);
       sessionStorage.setItem(CLAVE+"_o",JSON.stringify(o));
     }
+  }catch(e){}
+  /* Cookies del píxel (_fbp y _fbc): con ellas la agenda que el servidor le manda
+     a Meta se cruza con el visitante del anuncio. Se leen cada vez: el píxel
+     puede crearlas después de que se guardó lo demás. */
+  try{
+    o=JSON.parse(JSON.stringify(o));
+    ["_fbp","_fbc"].forEach(function(n){
+      var m=document.cookie.match(new RegExp("(?:^|; )"+n+"=([^;]*)"));
+      if(m)o[n.slice(1)]=decodeURIComponent(m[1]).slice(0,300);
+    });
   }catch(e){}
   return o;
 }
@@ -1190,7 +1201,9 @@ btnOk.addEventListener("click",function(){
     .then(function(){return api("/reservar",{lead:S.lead,inicio:horaSel,tz:ZONA})})
     .then(function(j){
       S.cita={inicio:j.inicio,zona:j.zona,dur:j.duracionMin||30};guardar();
-      pixel("Schedule");
+      /* Solo la agenda que califica (100+ leads al mes) va a Meta, con el mismo
+         id que manda el servidor: así cuenta una vez aunque se repita el clic. */
+      if(j.metaEvento)pixel("Schedule",{},{eventID:j.metaEvento});
       mostrarListo(true);
     })
     .catch(function(err){
