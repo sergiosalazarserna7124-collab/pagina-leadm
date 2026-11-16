@@ -481,7 +481,8 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
      Formulario propio en dos pasos (antes era el widget de GHL, que disparaba
      ~100 peticiones). Habla con el backend de Lead Master (/embudo-landing):
        · al dejar el WhatsApp, el contacto se crea en GHL — agende o no;
-       · cada respuesta se le suma al contacto;
+       · cada respuesta se le suma al contacto (el correo también: con él le llega
+         la invitación del calendario con el enlace de la videollamada);
        · los horarios salen del calendario de GHL y la cita se crea ahí;
        · al agendar sale la confirmación por WhatsApp. -->
 <section class="agenda" id="agendar">
@@ -496,7 +497,7 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
       <!-- Paso 1: una pregunta a la vez -->
       <div class="inner" id="paso1">
         <h2>Empecemos por tus datos</h2>
-        <div class="barra"><div><i id="barra"></i></div><span id="cuenta">0 de 5</span></div>
+        <div class="barra"><div><i id="barra"></i></div><span id="cuenta">0 de 6</span></div>
 
         <form class="q" data-q="telefono" novalidate>
           <label for="tel">WhatsApp <em>*</em></label>
@@ -550,6 +551,14 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
         <form class="q" data-q="instagram_web" novalidate hidden>
           <label for="igweb">¿Cuál es el Instagram o la página web de tu inmobiliaria? <em>*</em></label>
           <input class="campo" id="igweb" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@tuinmobiliaria o tuinmobiliaria.com" maxlength="200">
+          <p class="err" role="alert"></p>
+          <div class="acciones"><button class="btn" type="submit">Continuar →</button><button class="atras" type="button" data-atras>← Atrás</button></div>
+        </form>
+
+        <form class="q" data-q="correo" novalidate hidden>
+          <label for="correo">¿A qué correo te enviamos la invitación de la llamada? <em>*</em></label>
+          <input class="campo" id="correo" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="tu@correo.com" maxlength="120">
+          <p class="hint">Ahí te llega la invitación con el enlace de la videollamada.</p>
           <p class="err" role="alert"></p>
           <div class="acciones"><button class="btn" type="submit">Ver horarios →</button><button class="atras" type="button" data-atras>← Atrás</button></div>
         </form>
@@ -858,13 +867,13 @@ function paisInicial(){
 }
 
 /* ═══ 3 · Estado del formulario (se guarda para retomar si recarga) ═══════ */
-var ORDEN=["telefono","nombre","leads_mes","asesores","instagram_web"];
-var S={pais:paisInicial(),tel:"",nombre:"",r:{},lead:null,q:0,cita:null};
+var ORDEN=["telefono","nombre","leads_mes","asesores","instagram_web","correo"];
+var S={pais:paisInicial(),tel:"",nombre:"",correo:"",r:{},lead:null,q:0,cita:null};
 try{
   var g=JSON.parse(localStorage.getItem(CLAVE)||"null");
-  if(g&&g.t&&Date.now()-g.t<7*864e5&&PAISES[g.pais]){S.pais=g.pais;S.tel=g.tel||"";S.nombre=g.nombre||"";S.r=g.r||{};S.lead=g.lead||null;S.q=g.q||0;S.cita=g.cita||null}
+  if(g&&g.t&&Date.now()-g.t<7*864e5&&PAISES[g.pais]){S.pais=g.pais;S.tel=g.tel||"";S.nombre=g.nombre||"";S.correo=g.correo||"";S.r=g.r||{};S.lead=g.lead||null;S.q=g.q||0;S.cita=g.cita||null}
 }catch(e){}
-function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify({t:Date.now(),pais:S.pais,tel:S.tel,nombre:S.nombre,r:S.r,lead:S.lead,q:S.q,cita:S.cita}))}catch(e){}}
+function guardar(){try{localStorage.setItem(CLAVE,JSON.stringify({t:Date.now(),pais:S.pais,tel:S.tel,nombre:S.nombre,correo:S.correo,r:S.r,lead:S.lead,q:S.q,cita:S.cita}))}catch(e){}}
 
 /* De dónde vino la visita (se guarda la primera vez: el anuncio que la trajo). */
 function origen(){
@@ -1028,12 +1037,13 @@ function contestadas(){
   if(S.lead||S.tel)n++;
   if(S.nombre)n++;
   ["leads_mes","asesores","instagram_web"].forEach(function(k){if(S.r[k])n++});
+  if(S.correo)n++;
   return n;
 }
 function progreso(){
   var n=contestadas();
-  $("cuenta").textContent=n+" de 5";
-  $("barra").style.width=Math.max(6,n*20)+"%";
+  $("cuenta").textContent=n+" de "+ORDEN.length;
+  $("barra").style.width=Math.max(6,Math.round(n*100/ORDEN.length))+"%";
 }
 function mostrar(i,enfocar){
   S.q=i;guardar();
@@ -1062,9 +1072,9 @@ function asegurarLead(){
 var yaEnviado="";
 function enviarDatos(){
   return asegurarLead().then(function(lead){
-    var foto=JSON.stringify([lead,S.nombre,S.r]);
+    var foto=JSON.stringify([lead,S.nombre,S.correo,S.r]);
     if(foto===yaEnviado)return null;            /* nada nuevo que guardar */
-    return api("/datos",{lead:lead,nombre:S.nombre||undefined,respuestas:S.r}).then(function(j){yaEnviado=foto;return j});
+    return api("/datos",{lead:lead,nombre:S.nombre||undefined,correo:S.correo||undefined,respuestas:S.r}).then(function(j){yaEnviado=foto;return j});
   });
 }
 function enSegundoPlano(p){p.catch(function(){})}
@@ -1114,6 +1124,18 @@ bloques.instagram_web.addEventListener("submit",function(e){
   var inp=$("igweb"),v=inp.value.trim(),err=bloques.instagram_web.querySelector(".err");
   if(v.length<3){err.textContent="Escribe el Instagram o la página web de tu inmobiliaria.";inp.focus();return}
   err.textContent="";S.r.instagram_web=v;guardar();
+  enSegundoPlano(enviarDatos());
+  mostrar(5,true);
+});
+
+/* El correo va al contacto de GHL antes de reservar (el botón Agendar espera
+   enviarDatos): así la invitación del calendario le llega a ese correo. */
+var RE_CORREO=/^[^@\s]+@[^@\s.]+(\.[^@\s.]+)*\.[a-z]{2,}$/i;
+bloques.correo.addEventListener("submit",function(e){
+  e.preventDefault();
+  var inp=$("correo"),v=inp.value.replace(/\s+/g,"").toLowerCase(),err=bloques.correo.querySelector(".err");
+  if(!RE_CORREO.test(v)){err.textContent=v?"Revisa tu correo: debe verse como nombre@dominio.com":"Escribe tu correo para enviarte la invitación.";inp.focus();return}
+  err.textContent="";S.correo=v;inp.value=v;guardar();
   enSegundoPlano(enviarDatos());
   progreso();
   abrirHorarios();
@@ -1222,7 +1244,7 @@ function mostrarListo(enfocar){
   var dia=fmt({weekday:"long",day:"numeric",month:"long",timeZone:z}).format(f).replace(",","");
   $("listo-dia").textContent=dia.charAt(0).toUpperCase()+dia.slice(1)+" · "+fmt({hour:"numeric",minute:"2-digit",hour12:true,timeZone:z}).format(f);
   $("listo-zona").textContent="Hora de "+lugar(z);
-  $("listo-p").textContent="Te escribo por WhatsApp al +"+PAISES[S.pais].d+" "+agrupar(S.tel)+" con la confirmación. Si no te llega en unos minutos, revisa que el número esté bien.";
+  $("listo-p").textContent="Te escribo por WhatsApp al +"+PAISES[S.pais].d+" "+agrupar(S.tel)+" con la confirmación"+(S.correo?" y te llega la invitación a "+S.correo:"")+". Si no te llega en unos minutos, revisa que los datos estén bien.";
   var iso=function(d){return d.toISOString().replace(/[-:]|\.\d{3}/g,"")};
   $("listo-cal").href="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("Llamada con Lead Master")+
     "&dates="+iso(f)+"/"+iso(new Date(f.getTime()+c.dur*60000))+"&details="+encodeURIComponent("Llamada con Sergio, de Lead Master. Si necesitas mover la hora, escríbele por WhatsApp.");
@@ -1235,6 +1257,7 @@ pintarPais();
 if(S.tel)tel.value=agrupar(S.tel);
 if(S.nombre)$("nombre").value=S.nombre;
 if(S.r.instagram_web)$("igweb").value=S.r.instagram_web;
+if(S.correo)$("correo").value=S.correo;
 ["leads_mes","asesores"].forEach(function(k){
   Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){var s=o.textContent.trim()===S.r[k];o.classList.toggle("sel",s);o.setAttribute("aria-pressed",s?"true":"false")});
 });
@@ -1242,8 +1265,8 @@ if(S.cita&&new Date(S.cita.inicio).getTime()>Date.now()){mostrarListo(false)}
 else{
   S.cita=null;
   /* Retoma en la primera pregunta sin contestar. */
-  var falta=!S.tel?0:!S.nombre?1:!S.r.leads_mes?2:!S.r.asesores?3:!S.r.instagram_web?4:5;
-  if(falta===5){mostrar(4,false);abrirHorariosSinMover()}
+  var falta=!S.tel?0:!S.nombre?1:!S.r.leads_mes?2:!S.r.asesores?3:!S.r.instagram_web?4:!S.correo?5:6;
+  if(falta===6){mostrar(5,false);abrirHorariosSinMover()}
   else mostrar(Math.min(falta,S.q||falta),false);
 }
 function abrirHorariosSinMover(){
