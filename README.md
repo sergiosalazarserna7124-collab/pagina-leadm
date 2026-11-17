@@ -6,7 +6,7 @@ Página de captación de **leadmaster.com.co**: titular, video, formulario para 
 - **Dos versiones de la página (prueba A/B):** la misma página con otro video. La versión se sortea la primera vez que alguien entra y se le queda en ese navegador. Se configura en el bloque `VERSIONES DE LA PÁGINA`, al inicio de `index.html`.
 - **Seguimiento:** la página le avisa al backend la visita (con el anuncio que la trajo), el clic al video y cuánto se vio. Con eso y el formulario sale el embudo de cada versión: visitas, clic al video, retención, teléfonos, agendas y confirmaciones por WhatsApp. Ver `docs/embudo-landing/README.md` en `tracker_v1` (ahí está también cómo pedir el reporte).
 - **Formulario propio en dos pasos** (justo debajo del video), en lugar del calendario incrustado de GHL:
-  1. *Tus datos*: WhatsApp con selector de país, nombre, leads al mes, cantidad de asesores, Instagram o página web y correo (obligatorio: va al contacto de GHL antes de agendar, así le llega la invitación del calendario con el enlace de la videollamada).
+  1. *Tus datos*: WhatsApp con selector de país, nombre, leads al mes, cantidad de asesores, rol en la inmobiliaria (dueño, director comercial, marketing, asesor u operaciones), Instagram o página web y correo (obligatorio: va al contacto de GHL antes de agendar, así le llega la invitación del calendario con el enlace de la videollamada).
   2. *Día y hora*: horarios libres del calendario de GHL.
 - El formulario habla con el backend de Lead Master (`/embudo-landing/*` en `tracker_v1`). Ahí se crea el contacto en GHL apenas se escribe el WhatsApp, se agenda la cita y sale la confirmación por WhatsApp. Ver `docs/embudo-landing/README.md` en ese repo.
 - **Pixel de Meta:** `PageView` al cargar, `Lead` al dejar el WhatsApp y `Schedule` al agendar, pero solo si la agenda califica (100 leads al mes o más): lo decide el backend y manda el mismo evento por la API de conversiones con el mismo id (`lm-agenda-<id>`), así Meta lo cuenta una vez. Ver «Qué agenda le cuenta a Meta» en `docs/embudo-landing/README.md` de `tracker_v1`.
@@ -31,6 +31,6 @@ Página de captación de **leadmaster.com.co**: titular, video, formulario para 
 - **Ver una versión a propósito:** `leadmaster.com.co/?v=a` o `?v=b`.
 - **Que las visitas del equipo no cuenten:** abrir una vez `leadmaster.com.co/?interno=1` en ese navegador (`?interno=0` lo desmarca).
 - **Enlace de los anuncios:** `https://leadmaster.com.co/` con `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content` y los ids `ad_id`, `adset_id` y `campaign_id`. La página los guarda con la visita y con el lead.
-- **Cambiar las opciones de las preguntas:** los botones `.opt` de los bloques `data-q="leads_mes"` y `data-q="asesores"`.
+- **Cambiar las opciones de las preguntas:** los botones `.opt` de los bloques `data-q="leads_mes"`, `data-q="asesores"` y `data-q="rol"`.
 - **Datos y clientes:** la sección "PRUEBA SOCIAL". Solo datos reales. Cada cliente es un `<span>` (texto, sin enlace) dentro de la cinta que se mueve; al agregar o quitar uno, hazlo en las dos listas de `.cinta-pista` (la segunda es la copia que da la vuelta).
 - **Backend del formulario:** la constante `API` al inicio del `<script>`.
