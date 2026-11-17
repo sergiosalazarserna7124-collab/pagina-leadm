@@ -497,7 +497,7 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
       <!-- Paso 1: una pregunta a la vez -->
       <div class="inner" id="paso1">
         <h2>Empecemos por tus datos</h2>
-        <div class="barra"><div><i id="barra"></i></div><span id="cuenta">0 de 6</span></div>
+        <div class="barra"><div><i id="barra"></i></div><span id="cuenta">0 de 7</span></div>
 
         <form class="q" data-q="telefono" novalidate>
           <label for="tel">WhatsApp <em>*</em></label>
@@ -544,6 +544,18 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
             <button class="opt" type="button">6 a 15</button>
             <button class="opt" type="button">16 a 30</button>
             <button class="opt" type="button">Más de 30</button>
+          </div>
+          <div class="acciones"><button class="atras" type="button" data-atras>← Atrás</button></div>
+        </div>
+
+        <div class="q" data-q="rol" hidden>
+          <p class="pregunta" id="q-rol">¿Cuál es tu rol en la inmobiliaria? <em class="accent">*</em></p>
+          <div class="opts" role="group" aria-labelledby="q-rol">
+            <button class="opt" type="button">Dueño</button>
+            <button class="opt" type="button">Director comercial</button>
+            <button class="opt" type="button">Marketing</button>
+            <button class="opt" type="button">Asesor</button>
+            <button class="opt" type="button">Operaciones</button>
           </div>
           <div class="acciones"><button class="atras" type="button" data-atras>← Atrás</button></div>
         </div>
@@ -867,7 +879,7 @@ function paisInicial(){
 }
 
 /* ═══ 3 · Estado del formulario (se guarda para retomar si recarga) ═══════ */
-var ORDEN=["telefono","nombre","leads_mes","asesores","instagram_web","correo"];
+var ORDEN=["telefono","nombre","leads_mes","asesores","rol","instagram_web","correo"];
 var S={pais:paisInicial(),tel:"",nombre:"",correo:"",r:{},lead:null,q:0,cita:null};
 try{
   var g=JSON.parse(localStorage.getItem(CLAVE)||"null");
@@ -1036,7 +1048,7 @@ function contestadas(){
   var n=0;
   if(S.lead||S.tel)n++;
   if(S.nombre)n++;
-  ["leads_mes","asesores","instagram_web"].forEach(function(k){if(S.r[k])n++});
+  ["leads_mes","asesores","rol","instagram_web"].forEach(function(k){if(S.r[k])n++});
   if(S.correo)n++;
   return n;
 }
@@ -1109,13 +1121,13 @@ bloques.nombre.addEventListener("submit",function(e){
   mostrar(2,true);
 });
 
-["leads_mes","asesores"].forEach(function(k,idx){
+["leads_mes","asesores","rol"].forEach(function(k){
   bloques[k].addEventListener("click",function(e){
     var b=e.target.closest(".opt");if(!b)return;
     Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){o.classList.toggle("sel",o===b);o.setAttribute("aria-pressed",o===b?"true":"false")});
     S.r[k]=b.textContent.trim();guardar();
     enSegundoPlano(enviarDatos());
-    setTimeout(function(){mostrar(3+idx,true)},170);
+    setTimeout(function(){mostrar(ORDEN.indexOf(k)+1,true)},170);
   });
 });
 
@@ -1125,7 +1137,7 @@ bloques.instagram_web.addEventListener("submit",function(e){
   if(v.length<3){err.textContent="Escribe el Instagram o la página web de tu inmobiliaria.";inp.focus();return}
   err.textContent="";S.r.instagram_web=v;guardar();
   enSegundoPlano(enviarDatos());
-  mostrar(5,true);
+  mostrar(ORDEN.indexOf("correo"),true);
 });
 
 /* El correo va al contacto de GHL antes de reservar (el botón Agendar espera
@@ -1258,15 +1270,15 @@ if(S.tel)tel.value=agrupar(S.tel);
 if(S.nombre)$("nombre").value=S.nombre;
 if(S.r.instagram_web)$("igweb").value=S.r.instagram_web;
 if(S.correo)$("correo").value=S.correo;
-["leads_mes","asesores"].forEach(function(k){
+["leads_mes","asesores","rol"].forEach(function(k){
   Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){var s=o.textContent.trim()===S.r[k];o.classList.toggle("sel",s);o.setAttribute("aria-pressed",s?"true":"false")});
 });
 if(S.cita&&new Date(S.cita.inicio).getTime()>Date.now()){mostrarListo(false)}
 else{
   S.cita=null;
   /* Retoma en la primera pregunta sin contestar. */
-  var falta=!S.tel?0:!S.nombre?1:!S.r.leads_mes?2:!S.r.asesores?3:!S.r.instagram_web?4:!S.correo?5:6;
-  if(falta===6){mostrar(5,false);abrirHorariosSinMover()}
+  var falta=!S.tel?0:!S.nombre?1:!S.r.leads_mes?2:!S.r.asesores?3:!S.r.rol?4:!S.r.instagram_web?5:!S.correo?6:7;
+  if(falta===7){mostrar(6,false);abrirHorariosSinMover()}
   else mostrar(Math.min(falta,S.q||falta),false);
 }
 function abrirHorariosSinMover(){
