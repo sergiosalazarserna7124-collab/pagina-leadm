@@ -76,7 +76,7 @@
      y el player del video, que no existe hasta el clic. -->
 <link rel="preconnect" href="https://tracker-v1-mhx6.onrender.com" crossorigin>
 <link rel="preconnect" href="https://scripts.converteai.net">
-<link rel="dns-prefetch" href="https://cdn.converteai.net">
+<link rel="preconnect" href="https://cdn.converteai.net">
 <link rel="preconnect" href="https://connect.facebook.net">
 
 <!-- Meta Pixel — id 1263262645964599. fbevents.js entra async: no bloquea el
@@ -831,6 +831,25 @@ function montarVturb(url){
   seguirVturb();
   return true;
 }
+/* El video arranca más rápido al dar clic (Sergio 17-nov: «que cargue más
+   rápido»): cuando la página ya cargó y el navegador está libre, se baja el
+   player de vturb de la versión que le tocó, sin ejecutarlo; al clic,
+   montarVturb lo toma de la caché. No frena la carga de la página, y no se
+   hace con ahorro de datos ni en 2G. */
+function prepararVturb(){
+  var c=LM.cfg||{},m=(c.vturb||"").match(/converteai\.net\/([^/]+)\/players\/([^/]+)\//);
+  if(c.mp4||!m)return;
+  var cx=navigator.connection;
+  if(cx&&(cx.saveData||/2g/.test(cx.effectiveType||"")))return;
+  var l=document.createElement("link");
+  l.rel="prefetch";l.as="script";
+  l.href="https://scripts.converteai.net/"+m[1]+"/players/"+m[2]+"/v4/player.js";
+  document.head.appendChild(l);
+}
+(function(){
+  var ir=function(){(window.requestIdleCallback||function(f){setTimeout(f,1500)})(prepararVturb,{timeout:4000})};
+  if(document.readyState==="complete")ir();else window.addEventListener("load",ir,{once:true});
+})();
 function montarIframe(url){
   var f=document.createElement("iframe");
   f.src=url+(url.indexOf("?")>-1?"&":"?")+"autoplay=1";
