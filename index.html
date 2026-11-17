@@ -88,9 +88,14 @@
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};
 if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
+n.queue=[];
+/* fbevents.js (~100 KB) se baja cuando la página ya cargó, para que no le
+   quite conexión ni procesador a la portada. Lo que se mande antes (PageView,
+   Lead…) queda en la cola de fbq y sale apenas llega. */
+var cargar=function(){t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
+s.parentNode.insertBefore(t,s)};
+if(b.readyState==="complete")cargar();else f.addEventListener("load",cargar,{once:true})}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '1263262645964599');
 fbq('track', 'PageView');
@@ -156,6 +161,8 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
   background:rgba(7,9,13,.82);-webkit-backdrop-filter:saturate(1.5) blur(18px);backdrop-filter:saturate(1.5) blur(18px);
   border-bottom:1px solid var(--border);
 }
+/* En celular, fondo sólido: el desenfoque le cuesta a los de gama baja. */
+@media (max-width:767px){.top{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(7,9,13,.96)}}
 .top .wrap{display:flex;align-items:center;justify-content:center;height:52px}
 @media (min-width:768px){.top .wrap{height:62px}}
 .logo{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:16px;letter-spacing:-.03em}
@@ -215,6 +222,9 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 @media (min-width:768px){.pill{padding:16px 34px}}
 
 /* ── Prueba social ─────────────────────────────────────────────────────── */
+/* Lo de más abajo no se dibuja hasta que se acerca a la pantalla: la portada y
+   el formulario salen antes. */
+.trust,.que,.cierre{content-visibility:auto;contain-intrinsic-size:auto 700px}
 .trust{padding-top:44px;text-align:center}
 @media (min-width:768px){.trust{padding-top:88px}}
 .datos{color:var(--muted);font-size:14.5px;line-height:1.75}
@@ -463,11 +473,16 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
   <div class="wrap">
     <div class="vsl" id="vsl">
       <picture>
-        <source type="image/webp" srcset="portada-vsl-640.webp 640w, portada-vsl-800.webp 800w, portada-vsl.webp 1120w" sizes="(min-width:1184px) 1120px, calc(100vw - 40px)">
-        <img src="portada-vsl.jpg" width="1120" height="630" alt="Lead Master explicado fácil, para tu inmobiliaria" fetchpriority="high" decoding="async">
+        <source type="image/webp" sizes="(min-width:1184px) 1120px, calc(100vw - 40px)">
+        <img width="1120" height="630" alt="Lead Master explicado fácil, para tu inmobiliaria" fetchpriority="high">
       </picture>
-      <!-- Si a esta visita le tocó una versión con otra portada, se cambia aquí mismo, antes de pintarla. -->
-      <script>(function(){var b=window.LM&&LM.cfg.portada;if(!b||b==="portada-vsl")return;var p=document.querySelector("#vsl picture");p.querySelector("source").srcset=b+"-640.webp 640w, "+b+"-800.webp 800w, "+b+".webp 1120w";var i=p.querySelector("img");i.src=b+".jpg";if(LM.cfg.alt)i.alt=LM.cfg.alt})();</script>
+      <!-- La portada la pone este script según la versión que le tocó a la visita
+           (la precarga del <head> ya la está bajando). El HTML no trae una fija:
+           si la trajera, a quien le toca la versión B el navegador le bajaba
+           también la de A y se repartían la conexión (Sergio 17-nov: «que
+           cargue en menos de 1 segundo»). -->
+      <script>(function(){var c=(window.LM&&LM.cfg)||{},b=c.portada||"portada-vsl",p=document.querySelector("#vsl picture");p.querySelector("source").srcset=b+"-640.webp 640w, "+b+"-800.webp 800w, "+b+".webp 1120w";var i=p.querySelector("img");i.src=b+".jpg";if(c.alt)i.alt=c.alt})();</script>
+      <noscript><img src="portada-vsl.jpg" width="1120" height="630" alt="Lead Master explicado fácil, para tu inmobiliaria"></noscript>
       <button class="vsl-play" id="vsl-play" type="button" aria-label="Reproducir el video">
         <span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14z"/></svg></span>
       </button>
