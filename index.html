@@ -495,7 +495,8 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
      a leadmaster.com.co/#agendar.
      Formulario propio en dos pasos (antes era el widget de GHL, que disparaba
      ~100 peticiones). Habla con el backend de Lead Master (/embudo-landing):
-       · al dejar el WhatsApp, el contacto se crea en GHL — agende o no;
+       · primero el nombre y luego el WhatsApp (Sergio 17-nov-2026); al dejar
+         el WhatsApp, el contacto se crea en GHL con su nombre — agende o no;
        · cada respuesta se le suma al contacto (el correo también: con él le llega
          la invitación del calendario con el enlace de la videollamada);
        · los horarios salen del calendario de GHL y la cita se crea ahí;
@@ -514,7 +515,14 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
         <h2>Empecemos por tus datos</h2>
         <div class="barra"><div><i id="barra"></i></div><span id="cuenta">0 de 7</span></div>
 
-        <form class="q" data-q="telefono" novalidate>
+        <form class="q" data-q="nombre" novalidate>
+          <label for="nombre">¿Cómo te llamas? <em>*</em></label>
+          <input class="campo" id="nombre" type="text" autocomplete="name" autocapitalize="words" placeholder="Tu nombre y apellido" maxlength="80">
+          <p class="err" role="alert"></p>
+          <div class="acciones"><button class="btn" type="submit">Continuar →</button></div>
+        </form>
+
+        <form class="q" data-q="telefono" novalidate hidden>
           <label for="tel">WhatsApp <em>*</em></label>
           <div class="tel">
             <button type="button" class="pais-btn" id="pais-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="pais-pop">
@@ -531,13 +539,6 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
           <p class="hint sm">Si no alcanzas a terminar, te escribimos por WhatsApp a este número para ayudarte a agendar. <a href="https://login.leadmaster.com.co/privacidad" target="_blank" rel="noopener">Privacidad</a></p>
           <p class="err" id="tel-err" role="alert"></p>
           <input class="hp" id="sitio" name="sitio" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
-          <div class="acciones"><button class="btn" type="submit">Continuar →</button></div>
-        </form>
-
-        <form class="q" data-q="nombre" novalidate hidden>
-          <label for="nombre">¿Cómo te llamas? <em>*</em></label>
-          <input class="campo" id="nombre" type="text" autocomplete="name" autocapitalize="words" placeholder="Tu nombre y apellido" maxlength="80">
-          <p class="err" role="alert"></p>
           <div class="acciones"><button class="btn" type="submit">Continuar →</button><button class="atras" type="button" data-atras>← Atrás</button></div>
         </form>
 
@@ -555,7 +556,9 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
         <div class="q" data-q="asesores" hidden>
           <p class="pregunta" id="q-ases">¿Cuántos asesores tiene tu equipo? <em class="accent">*</em></p>
           <div class="opts" role="group" aria-labelledby="q-ases">
-            <button class="opt" type="button">1 a 5</button>
+            <button class="opt" type="button">Solo yo</button>
+            <button class="opt" type="button">Menos de 3</button>
+            <button class="opt" type="button">3 a 6</button>
             <button class="opt" type="button">6 a 15</button>
             <button class="opt" type="button">16 a 30</button>
             <button class="opt" type="button">Más de 30</button>
@@ -628,7 +631,7 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
     <ul class="datos">
       <li>+20 inmobiliarias lo usan</li>
       <li>Funcionando en 5 días</li>
-      <li>Para equipos de más de 5 asesores</li>
+      <li>Para equipos de más de 3 asesores</li>
     </ul>
     <div class="clientes">
       <small>Confían en nosotros</small>
@@ -913,7 +916,8 @@ function paisInicial(){
 }
 
 /* ═══ 3 · Estado del formulario (se guarda para retomar si recarga) ═══════ */
-var ORDEN=["telefono","nombre","leads_mes","asesores","rol","instagram_web","correo"];
+/* Primero el nombre y luego el WhatsApp (Sergio 17-nov-2026). */
+var ORDEN=["nombre","telefono","leads_mes","asesores","rol","instagram_web","correo"];
 var S={pais:paisInicial(),tel:"",nombre:"",correo:"",r:{},lead:null,q:0,cita:null};
 try{
   var g=JSON.parse(localStorage.getItem(CLAVE)||"null");
@@ -1139,11 +1143,11 @@ bloques.telefono.addEventListener("submit",function(e){
   guardar();
   /* Se avanza de una; el número se guarda mientras tanto. Si el servidor lo
      rechaza (número imposible), se vuelve aquí con el motivo. */
-  asegurarLead().catch(function(err){
-    if(err.delVisitante){mostrar(0,true);errTel.textContent=err.message}
+  asegurarLead().then(function(){enSegundoPlano(enviarDatos())},function(err){
+    if(err.delVisitante){mostrar(ORDEN.indexOf("telefono"),true);errTel.textContent=err.message}
   });
   cargarHorarios();
-  mostrar(1,true);
+  mostrar(ORDEN.indexOf("telefono")+1,true);
 });
 
 bloques.nombre.addEventListener("submit",function(e){
@@ -1151,8 +1155,9 @@ bloques.nombre.addEventListener("submit",function(e){
   var inp=$("nombre"),v=inp.value.replace(/\s+/g," ").trim(),err=bloques.nombre.querySelector(".err");
   if(v.length<2){err.textContent="Escribe tu nombre.";inp.focus();return}
   err.textContent="";S.nombre=v;guardar();
-  enSegundoPlano(enviarDatos());
-  mostrar(2,true);
+  /* Todavía no hay lead (el WhatsApp va después): el nombre sale junto con él. */
+  if(S.lead)enSegundoPlano(enviarDatos());
+  mostrar(ORDEN.indexOf("nombre")+1,true);
 });
 
 ["leads_mes","asesores","rol"].forEach(function(k){
@@ -1311,7 +1316,7 @@ if(S.cita&&new Date(S.cita.inicio).getTime()>Date.now()){mostrarListo(false)}
 else{
   S.cita=null;
   /* Retoma en la primera pregunta sin contestar. */
-  var falta=!S.tel?0:!S.nombre?1:!S.r.leads_mes?2:!S.r.asesores?3:!S.r.rol?4:!S.r.instagram_web?5:!S.correo?6:7;
+  var falta=!S.nombre?0:!S.tel?1:!S.r.leads_mes?2:!S.r.asesores?3:!S.r.rol?4:!S.r.instagram_web?5:!S.correo?6:7;
   if(falta===7){mostrar(6,false);abrirHorariosSinMover()}
   else mostrar(Math.min(falta,S.q||falta),false);
 }
@@ -1320,10 +1325,10 @@ function abrirHorariosSinMover(){
   cargarHorarios().then(pintarHorarios,function(){irPaso(1)});
 }
 
-/* El botón "Agendar mi llamada" del cierre lleva al formulario y deja el cursor en el WhatsApp. */
+/* El botón "Agendar mi llamada" del cierre lleva al formulario y deja el cursor en el nombre. */
 Array.prototype.forEach.call(document.querySelectorAll("[data-ir]"),function(a){
   a.addEventListener("click",function(){
-    if(!paso1.hidden&&S.q===0)setTimeout(function(){tel.focus({preventScroll:true})},650);
+    if(!paso1.hidden&&S.q===0)setTimeout(function(){$("nombre").focus({preventScroll:true})},650);
   });
 });
 
