@@ -1316,6 +1316,30 @@ $("anio").textContent=(new Date).getFullYear();
 
 /* La visita, con el anuncio que la trajo. Al final: no le quita tiempo a nada de lo de arriba. */
 alVerse(function(){evento("visita",{origen:origen(),tz:ZONA,ancho:window.innerWidth||0})});
+
+/* Velocidad real (Sergio 17-nov): una vez por visita se manda cuánto tardó la
+   página en este teléfono desde que tocó el anuncio: cuándo respondió el
+   servidor, cuándo se vio algo, cuándo se vio lo principal (Safari no lo da)
+   y cuándo terminó de cargar. Sale 4 s después de cargar o al irse, lo que
+   pase primero. Una página precargada o abierta en segundo plano no se mide:
+   sus tiempos no son los que vivió la persona. */
+(function(){
+  if(!window.performance||!performance.getEntriesByType||!window.PerformanceObserver)return;
+  var nav=performance.getEntriesByType("navigation")[0];
+  if(!nav||document.prerendering||(nav.activationStart||0)>0||document.visibilityState!=="visible")return;
+  var fcp=null,lcp=null,enviado=false;
+  try{new PerformanceObserver(function(l){l.getEntries().forEach(function(e){if(e.name==="first-contentful-paint")fcp=e.startTime})}).observe({type:"paint",buffered:true})}catch(e){}
+  try{new PerformanceObserver(function(l){var e=l.getEntries();if(e.length)lcp=e[e.length-1].startTime}).observe({type:"largest-contentful-paint",buffered:true})}catch(e){}
+  function enviar(){
+    if(enviado)return;enviado=true;
+    var n=performance.getEntriesByType("navigation")[0]||{},cx=navigator.connection;
+    evento("rendimiento",{ttfb:n.responseStart||null,fcp:fcp,lcp:lcp,carga:n.loadEventEnd||null,conexion:(cx&&cx.effectiveType)||null});
+  }
+  if(document.readyState==="complete")setTimeout(enviar,4000);
+  else window.addEventListener("load",function(){setTimeout(enviar,4000)},{once:true});
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")enviar()});
+  window.addEventListener("pagehide",enviar);
+})();
 })();
 </script>
 </body>
