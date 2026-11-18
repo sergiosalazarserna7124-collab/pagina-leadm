@@ -406,6 +406,14 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 .listo p{color:var(--muted);font-size:15px;margin:16px auto 0;max-width:400px}
 .listo .cal{display:inline-block;margin-top:18px;color:var(--accent);font-size:14.5px;text-decoration:underline;text-underline-offset:3px}
 
+/* No califica: trabaja solo, sin equipo de asesores */
+.nocal .check{background:rgba(255,255,255,.06);color:var(--muted)}
+.nocal .para{margin:18px auto 0;padding:14px 18px;max-width:400px;border-radius:14px;background:var(--bg);border:1px solid var(--border);text-align:left}
+.nocal .para small{display:block;color:var(--muted);font-size:13px}
+.nocal .para li{display:flex;gap:10px;margin-top:8px;font-size:15.5px;font-weight:600;line-height:1.35}
+.nocal .para li::before{content:"✓";color:var(--ok);font-weight:700}
+.nocal .atras{margin-top:16px}
+
 /* ── Cierre ────────────────────────────────────────────────────────────── */
 .cierre{padding:56px 0 0}
 @media (min-width:768px){.cierre{padding-top:104px}}
@@ -613,6 +621,25 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
         <div class="cuando"><span id="listo-dia"></span><small id="listo-zona"></small></div>
         <p id="listo-p"></p>
         <a class="cal" id="listo-cal" target="_blank" rel="noopener">Agregar a Google Calendar</a>
+      </div>
+
+      <!-- No califica (Sergio 18-nov-2026): si en asesores contesta «Solo yo»,
+           no se agenda. Se le dice que no podemos ayudarle y para quién es
+           Lead Master. Sus respuestas igual quedan en el contacto de GHL. -->
+      <div class="inner listo nocal" id="nocal" hidden tabindex="-1">
+        <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg></div>
+        <h2 id="nocal-h">Lo lamento, no podemos ayudarte</h2>
+        <p>Lead Master es para inmobiliarias con un equipo de asesores. Si trabajas sin equipo, todavía no te va a servir.</p>
+        <div class="para">
+          <small>Es para ti si:</small>
+          <ul>
+            <li>Tienes asesores atendiendo los leads de tu inmobiliaria</li>
+            <li>Necesitas saber qué hace cada asesor con cada lead</li>
+          </ul>
+        </div>
+        <p>Se conecta al WhatsApp y a las llamadas de cada asesor y en automático te dice qué pasó con cada lead, sin que nadie llene nada.</p>
+        <p>Cuando tu inmobiliaria tenga equipo, aquí vamos a estar.</p>
+        <button class="atras" type="button" id="nocal-atras">← Me equivoqué, cambiar mi respuesta</button>
       </div>
 
       <noscript>
@@ -1078,7 +1105,17 @@ tel.addEventListener("input",function(){
 });
 
 /* ═══ 6 · Paso 1: una pregunta a la vez ═══════════════════════════════════ */
-var paso1=$("paso1"),paso2=$("paso2"),listo=$("listo");
+var paso1=$("paso1"),paso2=$("paso2"),listo=$("listo"),nocal=$("nocal");
+
+/* Para quién es (Sergio 18-nov-2026): si trabaja solo («Solo yo» en
+   asesores) no se agenda; se le muestra para quién es Lead Master. */
+function noCalifica(){return S.r.asesores==="Solo yo"}
+function mostrarNoCalifica(enfocar){
+  var nombre=(S.nombre||"").split(" ")[0];
+  $("nocal-h").textContent="Lo lamento"+(nombre?", "+nombre:"")+", no podemos ayudarte";
+  irPaso(4);
+  if(enfocar){nocal.focus({preventScroll:true});var card=$("embudo");if(card.getBoundingClientRect().top<0)card.scrollIntoView({block:"start"})}
+}
 var bloques={};
 Array.prototype.forEach.call(paso1.querySelectorAll("[data-q]"),function(el){bloques[el.getAttribute("data-q")]=el});
 
@@ -1102,9 +1139,9 @@ function mostrar(i,enfocar){
   if(enfocar){var c=bloques[ORDEN[i]].querySelector("input:not(.hp),.opt");if(c)c.focus({preventScroll:true})}
 }
 function irPaso(n){
-  paso1.hidden=n!==1;paso2.hidden=n!==2;listo.hidden=n!==3;
+  paso1.hidden=n!==1;paso2.hidden=n!==2;listo.hidden=n!==3;nocal.hidden=n!==4;
   $("pa1").classList.toggle("on",n===1);$("pa1").classList.toggle("ok",n>=2);$("pa2").classList.toggle("on",n>=2);
-  document.querySelector(".pasos").hidden=n===3;
+  document.querySelector(".pasos").hidden=n>=3;
 }
 
 /* El lead se crea al dejar el WhatsApp. Si esa petición falla por red, se
@@ -1166,7 +1203,7 @@ bloques.nombre.addEventListener("submit",function(e){
     Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){o.classList.toggle("sel",o===b);o.setAttribute("aria-pressed",o===b?"true":"false")});
     S.r[k]=b.textContent.trim();guardar();
     enSegundoPlano(enviarDatos());
-    setTimeout(function(){mostrar(ORDEN.indexOf(k)+1,true)},170);
+    setTimeout(function(){if(noCalifica())mostrarNoCalifica(true);else mostrar(ORDEN.indexOf(k)+1,true)},170);
   });
 });
 
@@ -1189,6 +1226,7 @@ bloques.correo.addEventListener("submit",function(e){
   err.textContent="";S.correo=v;inp.value=v;guardar();
   enSegundoPlano(enviarDatos());
   progreso();
+  if(noCalifica()){mostrarNoCalifica(true);return}
   abrirHorarios();
 });
 
@@ -1196,6 +1234,7 @@ Array.prototype.forEach.call(paso1.querySelectorAll("[data-atras]"),function(b){
   b.addEventListener("click",function(){mostrar(Math.max(0,S.q-1),true)});
 });
 $("a-datos").addEventListener("click",function(){irPaso(1);mostrar(0,true)});
+$("nocal-atras").addEventListener("click",function(){irPaso(1);mostrar(ORDEN.indexOf("asesores"),true)});
 
 /* ═══ 7 · Paso 2: día y hora ══════════════════════════════════════════════ */
 var H=null,Hcuando=0,Hpidiendo=null,diaSel=null,horaSel=null;
@@ -1268,6 +1307,7 @@ cajaH.addEventListener("click",function(e){
 
 btnOk.addEventListener("click",function(){
   if(!horaSel||btnOk.disabled)return;
+  if(noCalifica()){mostrarNoCalifica(true);return}
   var texto=btnOk.textContent;
   btnOk.disabled=true;btnOk.textContent="Agendando…";errRes.textContent="";
   enviarDatos()
@@ -1313,6 +1353,7 @@ if(S.correo)$("correo").value=S.correo;
   Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){var s=o.textContent.trim()===S.r[k];o.classList.toggle("sel",s);o.setAttribute("aria-pressed",s?"true":"false")});
 });
 if(S.cita&&new Date(S.cita.inicio).getTime()>Date.now()){mostrarListo(false)}
+else if(noCalifica()){S.cita=null;mostrarNoCalifica(false)}
 else{
   S.cita=null;
   /* Retoma en la primera pregunta sin contestar. */
