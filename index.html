@@ -578,6 +578,16 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
           <div class="acciones"><button class="atras" type="button" data-atras>← Atrás</button></div>
         </div>
 
+        <!-- Presupuesto (Sergio, 18-nov-2026): va aquí en el formulario, no por WhatsApp. -->
+        <div class="q" data-q="presupuesto" hidden>
+          <p class="pregunta" id="q-presu">Nuestro plan mensual arranca desde 197 USD<span id="presu-aprox"></span>. ¿Esto está dentro de tu presupuesto? <em class="accent">*</em></p>
+          <div class="opts" role="group" aria-labelledby="q-presu">
+            <button class="opt" type="button">Sí</button>
+            <button class="opt" type="button">No</button>
+          </div>
+          <div class="acciones"><button class="atras" type="button" data-atras>← Atrás</button></div>
+        </div>
+
         <form class="q" data-q="instagram_web" novalidate hidden>
           <label for="igweb">¿Cuál es el Instagram o la página web de tu inmobiliaria? <em>*</em></label>
           <input class="campo" id="igweb" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="@tuinmobiliaria o tuinmobiliaria.com" maxlength="200">
@@ -917,7 +927,7 @@ function paisInicial(){
 
 /* ═══ 3 · Estado del formulario (se guarda para retomar si recarga) ═══════ */
 /* Primero el nombre y luego el WhatsApp (Sergio 17-nov-2026). */
-var ORDEN=["nombre","telefono","leads_mes","asesores","rol","instagram_web","correo"];
+var ORDEN=["nombre","telefono","leads_mes","asesores","rol","presupuesto","instagram_web","correo"];
 var S={pais:paisInicial(),tel:"",nombre:"",correo:"",r:{},lead:null,q:0,cita:null};
 try{
   var g=JSON.parse(localStorage.getItem(CLAVE)||"null");
@@ -1086,7 +1096,7 @@ function contestadas(){
   var n=0;
   if(S.lead||S.tel)n++;
   if(S.nombre)n++;
-  ["leads_mes","asesores","rol","instagram_web"].forEach(function(k){if(S.r[k])n++});
+  ["leads_mes","asesores","rol","presupuesto","instagram_web"].forEach(function(k){if(S.r[k])n++});
   if(S.correo)n++;
   return n;
 }
@@ -1098,6 +1108,7 @@ function progreso(){
 function mostrar(i,enfocar){
   S.q=i;guardar();
   ORDEN.forEach(function(k,j){bloques[k].hidden=j!==i});
+  if(ORDEN[i]==="presupuesto")$("presu-aprox").textContent=APROX_PLAN[S.pais]||"";
   progreso();
   if(enfocar){var c=bloques[ORDEN[i]].querySelector("input:not(.hp),.opt");if(c)c.focus({preventScroll:true})}
 }
@@ -1160,7 +1171,9 @@ bloques.nombre.addEventListener("submit",function(e){
   mostrar(ORDEN.indexOf("nombre")+1,true);
 });
 
-["leads_mes","asesores","rol"].forEach(function(k){
+/* El plan desde 197 USD con el aproximado en la moneda de su país (el del WhatsApp). */
+var APROX_PLAN={MX:" (unos 3,600 pesos mexicanos)",CO:" (unos 790.000 pesos colombianos)"};
+["leads_mes","asesores","rol","presupuesto"].forEach(function(k){
   bloques[k].addEventListener("click",function(e){
     var b=e.target.closest(".opt");if(!b)return;
     Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){o.classList.toggle("sel",o===b);o.setAttribute("aria-pressed",o===b?"true":"false")});
@@ -1309,15 +1322,16 @@ if(S.tel)tel.value=agrupar(S.tel);
 if(S.nombre)$("nombre").value=S.nombre;
 if(S.r.instagram_web)$("igweb").value=S.r.instagram_web;
 if(S.correo)$("correo").value=S.correo;
-["leads_mes","asesores","rol"].forEach(function(k){
+["leads_mes","asesores","rol","presupuesto"].forEach(function(k){
   Array.prototype.forEach.call(bloques[k].querySelectorAll(".opt"),function(o){var s=o.textContent.trim()===S.r[k];o.classList.toggle("sel",s);o.setAttribute("aria-pressed",s?"true":"false")});
 });
 if(S.cita&&new Date(S.cita.inicio).getTime()>Date.now()){mostrarListo(false)}
 else{
   S.cita=null;
   /* Retoma en la primera pregunta sin contestar. */
-  var falta=!S.nombre?0:!S.tel?1:!S.r.leads_mes?2:!S.r.asesores?3:!S.r.rol?4:!S.r.instagram_web?5:!S.correo?6:7;
-  if(falta===7){mostrar(6,false);abrirHorariosSinMover()}
+  var falta=ORDEN.length;
+  for(var qi=0;qi<ORDEN.length;qi++){var qk=ORDEN[qi];if(!(qk==="nombre"?S.nombre:qk==="telefono"?S.tel:qk==="correo"?S.correo:S.r[qk])){falta=qi;break}}
+  if(falta===ORDEN.length){mostrar(ORDEN.length-1,false);abrirHorariosSinMover()}
   else mostrar(Math.min(falta,S.q||falta),false);
 }
 function abrirHorariosSinMover(){
