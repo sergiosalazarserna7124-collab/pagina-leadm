@@ -22,6 +22,7 @@ Página de captación de **leadmaster.com.co**: titular, video, formulario para 
 | `portada-anterior.jpg`, `.webp`, `-800.webp`, `-640.webp` | La portada del video original de Sergio (la B hasta el 14-nov); queda por si se vuelve a él. |
 | `videos/` | Los videos alojados aquí (MP4 H.264 + AAC, con el índice al inicio: `-movflags +faststart`). |
 | `web/` | Otra página, en `/web`. |
+| `contrataciones/` | Vacante de closer (`/contrataciones`), la que se publica en las bolsas de trabajo de Skool. Se genera desde `tracker_v1` (`src/services/reclutamiento/landing-closers.html.ts`): cambiar los textos o preguntas allá y volver a generar este archivo. El formulario envía a `/contrataciones/postular` del Cerebro, que crea al postulante en la subcuenta Sergio Salazar MKT, pipeline «Reclutamiento Closers». Para saber de qué bolsa llegó cada uno, el enlace lleva `?utm_source=…`. |
 
 ## Cambios frecuentes
 
