@@ -404,7 +404,7 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
 .listo .cuando{margin:14px auto 0;padding:14px 18px;max-width:380px;border-radius:14px;background:var(--bg);border:1px solid var(--border);font-size:16.5px;font-weight:600}
 .listo .cuando small{display:block;color:var(--muted);font-size:13px;font-weight:400;margin-top:2px}
 .listo p{color:var(--muted);font-size:15px;margin:16px auto 0;max-width:400px}
-.listo .cal{display:inline-block;margin-top:18px;color:var(--accent);font-size:14.5px;text-decoration:underline;text-underline-offset:3px}
+.listo .cal{display:table;margin:16px auto 0;color:var(--accent);font-size:14.5px;text-decoration:underline;text-underline-offset:3px}
 
 /* ── Cierre ────────────────────────────────────────────────────────────── */
 .cierre{padding:56px 0 0}
@@ -613,6 +613,7 @@ h1,h2,h3{text-wrap:balance;font-weight:800;letter-spacing:-.035em}
         <div class="cuando"><span id="listo-dia"></span><small id="listo-zona"></small></div>
         <p id="listo-p"></p>
         <a class="cal" id="listo-cal" target="_blank" rel="noopener">Agregar a Google Calendar</a>
+        <a class="cal" href="/gracias/">Ver el video antes de la llamada →</a>
       </div>
 
       <noscript>
@@ -1201,7 +1202,7 @@ $("a-datos").addEventListener("click",function(){irPaso(1);mostrar(0,true)});
 var H=null,Hcuando=0,Hpidiendo=null,diaSel=null,horaSel=null;
 var cajaH=$("horarios"),btnOk=$("confirmar"),errRes=$("res-err");
 
-var LUGARES={Mexico_City:"Ciudad de México",Bogota:"Bogotá",Cancun:"Cancún",Merida:"Mérida",Mazatlan:"Mazatlán",Panama:"Panamá",Asuncion:"Asunción",Los_Angeles:"Los Ángeles",New_York:"Nueva York",Sao_Paulo:"São Paulo",Bahia_Banderas:"Bahía de Banderas",Ciudad_Juarez:"Ciudad Juárez"};
+var LUGARES={Mexico_City:"Ciudad de México",Bogota:"Bogotá",Cancun:"Cancún",Merida:"Mérida",Mazatlan:"Mazatlán",Panama:"Panamá",Asuncion:"Asunción",Los_Angeles:"California",New_York:"Nueva York",Sao_Paulo:"São Paulo",Bahia_Banderas:"Bahía de Banderas",Ciudad_Juarez:"Ciudad Juárez"};
 function lugar(z){var c=String(z||"").split("/").pop();return LUGARES[c]||c.replace(/_/g," ")}
 function fmt(op){try{return new Intl.DateTimeFormat("es",op)}catch(e){delete op.timeZone;return new Intl.DateTimeFormat("es",op)}}
 function zonaDe(){return (H&&H.zona)||ZONA||"America/Bogota"}
@@ -1278,6 +1279,9 @@ btnOk.addEventListener("click",function(){
          id que manda el servidor: así cuenta una vez aunque se repita el clic. */
       if(j.metaEvento)pixel("Schedule",{},{eventID:j.metaEvento});
       mostrarListo(true);
+      /* Y a la página de gracias, con el video de confirmación (Sergio 23-nov-2026).
+         Un momento de espera si salió el Schedule del navegador, para no cortarlo. */
+      setTimeout(function(){location.href="/gracias/"},j.metaEvento?700:150);
     })
     .catch(function(err){
       btnOk.disabled=false;btnOk.textContent=texto;

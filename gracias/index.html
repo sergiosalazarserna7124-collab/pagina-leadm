@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gracias por agendar · Lead Master</title>
+<meta name="description" content="Tu llamada con Lead Master quedó agendada. Antes de continuar, mira este video de cómo funciona.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#07090d">
+<meta property="og:title" content="Gracias por agendar tu llamada · Lead Master">
+<meta property="og:description" content="Antes de la llamada, mira este video: qué hacemos, qué no hacemos y para quién es Lead Master.">
+<meta property="og:type" content="video.other">
+<meta property="og:url" content="https://leadmaster.com.co/gracias/">
+<meta property="og:image" content="https://leadmaster.com.co/videos/confirmacion-llamada.jpg">
+<meta property="og:video" content="https://leadmaster.com.co/videos/confirmacion-llamada.mp4">
+<meta property="og:video:type" content="video/mp4">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='none'%3E%3ClinearGradient id='g' x1='0' y1='0' x2='512' y2='512' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%237C3AED'/%3E%3Cstop offset='1' stop-color='%2306B6D4'/%3E%3C/linearGradient%3E%3Crect width='512' height='512' rx='116' fill='url(%23g)'/%3E%3Cpath d='M138 126V376H226L276 256L322 326L357 232' stroke='%23fff' stroke-width='58' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='388' cy='150' r='44' fill='%23fff'/%3E%3C/svg%3E">
+<!-- Página de gracias: a ella llega la landing al agendar (y el WhatsApp, si el
+     video no se pudo mandar como video). Saluda por el nombre, pide ver el video
+     de confirmación (el mismo que sale por WhatsApp tras la confirmación) y
+     repite el día y la hora de la llamada. El nombre y la cita los lee de lo que
+     guardó el formulario de la landing en este navegador (lm_embudo_v1); sin eso
+     queda el saludo general y el video. El video y su portada están en /videos/
+     (se generan en nuevo-tracker-fe-v1/scripts/videos-explicativos/confirmacion-llamada). -->
+<link rel="preload" as="image" href="/videos/confirmacion-llamada.webp" type="image/webp" fetchpriority="high">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+img,svg,video{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+[hidden]{display:none!important}
+:root{
+  --bg:#07090d;--surface:#0d1016;--surface-2:#131722;--border:rgba(255,255,255,.08);--border-strong:rgba(255,255,255,.16);
+  --text:#f5f7fa;--muted:#9ba5b6;--faint:#7c8698;--accent:#4cc9f0;--accent-hover:#7ad7f5;--accent-soft:rgba(76,201,240,.12);
+  --accent-ink:#04141b;--ok:#43d9a0;--r-lg:22px;--ease:cubic-bezier(.32,.72,0,1);
+}
+body{
+  background:var(--bg);color:var(--text);min-height:100vh;
+  font-family:ui-sans-serif,system-ui,-apple-system,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+
+.top{position:sticky;top:0;z-index:30;background:rgba(7,9,13,.96);border-bottom:1px solid var(--border)}
+.top .wrap{display:flex;align-items:center;justify-content:center;height:52px}
+.logo{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:16px;letter-spacing:-.03em}
+.logo svg{width:24px;height:24px}
+@media (min-width:768px){.top .wrap{height:62px}.logo{font-size:19px}.logo svg{width:28px;height:28px}}
+
+.hola{position:relative;text-align:center;padding:26px 0 0}
+.hola::before{
+  content:"";position:absolute;z-index:-1;inset:-60px 0 auto;height:460px;pointer-events:none;
+  background:radial-gradient(ellipse 45% 55% at 50% 0%,rgba(76,201,240,.13),transparent 70%),
+             radial-gradient(ellipse 30% 42% at 64% 6%,rgba(124,58,237,.12),transparent 70%);
+}
+.ok{display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 10px;border-radius:999px;font-size:13.5px;font-weight:650;color:var(--ok);background:rgba(67,217,160,.12);border:1px solid rgba(67,217,160,.25)}
+.ok svg{width:16px;height:16px}
+h1{margin-top:16px;font-size:clamp(1.7rem,6.6vw,2.5rem);line-height:1.1;font-weight:800;letter-spacing:-.035em;text-wrap:balance}
+.pide{margin-top:12px;font-size:clamp(1.05rem,3.6vw,1.2rem);font-weight:650;text-wrap:balance}
+.pide small{display:block;margin-top:4px;color:var(--muted);font-size:15px;font-weight:400}
+@media (min-width:768px){.hola{padding-top:48px}}
+
+/* El video es vertical (4:5): se ve completo en el celular. */
+.video{padding-top:18px}
+.vsl{position:relative;aspect-ratio:4/5;width:100%;max-width:460px;margin:0 auto;overflow:hidden;border-radius:18px;border:1px solid var(--border);background:#000;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.vsl picture,.vsl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vsl video{position:absolute;inset:0;width:100%;height:100%;background:#000;object-fit:contain}
+/* La portada es el primer cuadro (el título arriba): el botón va en el espacio de abajo. */
+.vsl-play{position:absolute;inset:0;width:100%;display:flex;align-items:center;justify-content:center;padding-top:30%}
+.vsl-play::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.45),transparent 50%)}
+.vsl-play span{position:relative;display:flex;align-items:center;justify-content:center;width:76px;height:76px;border-radius:50%;background:var(--accent);color:var(--accent-ink);box-shadow:0 14px 36px rgba(0,0,0,.5);transition:transform .45s var(--ease)}
+.vsl-play svg{width:30px;height:30px;margin-left:4px}
+.vsl-play em{position:absolute;bottom:18px;left:0;right:0;font-style:normal;font-size:14px;font-weight:600;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.7)}
+@media (hover:hover){.vsl-play:hover span{transform:scale(1.08)}}
+
+.cita{margin:22px auto 0;max-width:460px;padding:18px 20px;border-radius:16px;background:var(--surface);border:1px solid var(--border);text-align:center}
+.cita small{display:block;color:var(--faint);font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.cita strong{display:block;margin-top:6px;font-size:17px;font-weight:700}
+.cita .zona{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.cita p{color:var(--muted);font-size:14.5px;margin-top:12px;text-wrap:pretty}
+.cita a{display:inline-block;margin-top:12px;color:var(--accent);font-size:14.5px;text-decoration:underline;text-underline-offset:3px}
+
+.pie{margin-top:40px;padding:22px 0 30px;border-top:1px solid var(--border);color:var(--faint);font-size:13px;text-align:center}
+.pie nav{display:flex;justify-content:center;gap:18px;margin-top:8px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="Lead Master">
+      <svg viewBox="0 0 512 512" fill="none" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#06B6D4"/></linearGradient></defs><rect width="512" height="512" rx="116" fill="url(#lg)"/><path d="M138 126V376H226L276 256L322 326L357 232" stroke="#fff" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/><circle cx="386" cy="152" r="38" fill="#fff"/><circle cx="386" cy="152" r="16" fill="#7C3AED"/></svg>
+      Lead Master
+    </a>
+  </div>
+</header>
+
+<main>
+  <section class="hola">
+    <div class="wrap">
+      <span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Llamada agendada</span>
+      <h1 id="titulo">¡Hola! Gracias por agendar tu llamada</h1>
+      <p class="pide">Antes de continuar, quiero que veas este video.<small>En minuto y medio: qué hacemos, qué no hacemos y para quién es Lead Master.</small></p>
+    </div>
+  </section>
+
+  <section class="video" aria-label="Video de cómo funciona Lead Master">
+    <div class="wrap">
+      <div class="vsl" id="vsl">
+        <picture>
+          <source type="image/webp" srcset="/videos/confirmacion-llamada.webp">
+          <img src="/videos/confirmacion-llamada.jpg" width="720" height="900" alt="Gracias por agendar tu llamada: qué hacemos, qué no hacemos y para quién es" fetchpriority="high">
+        </picture>
+        <button class="vsl-play" id="play" type="button" aria-label="Reproducir el video">
+          <span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14z"/></svg></span>
+          <em>1:28 · con sonido</em>
+        </button>
+      </div>
+
+      <div class="cita" id="cita" hidden>
+        <small>Tu llamada</small>
+        <strong id="cita-dia"></strong>
+        <span class="zona" id="cita-zona"></span>
+        <p id="cita-p"></p>
+        <a id="cita-cal" target="_blank" rel="noopener">Agregar a Google Calendar</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="pie">
+  <div class="wrap">
+    <span>© 2026 Lead Master · Gestión comercial para inmobiliarias</span>
+    <nav aria-label="Legal"><a href="https://login.leadmaster.com.co/privacidad">Privacidad</a><a href="https://login.leadmaster.com.co/terminos">Términos</a></nav>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+
+/* El video nace al tocar play (la página carga solo la portada). */
+var VIDEO="/videos/confirmacion-llamada.mp4";
+$("play").addEventListener("click",function(){
+  var v=document.createElement("video");
+  v.src=VIDEO;v.controls=true;v.autoplay=true;v.playsInline=true;v.setAttribute("playsinline","");v.preload="auto";
+  var caja=$("vsl");caja.appendChild(v);
+  $("play").remove();var p=caja.querySelector("picture");if(p)p.remove();
+  var r=v.play();if(r&&r.catch)r.catch(function(){});
+});
+
+/* Lo que dejó en el formulario de la landing (mismo navegador, mismo dominio). */
+var S=null;
+try{S=JSON.parse(localStorage.getItem("lm_embudo_v1")||"null")}catch(e){}
+var nombre=S&&S.nombre?String(S.nombre).trim().split(/\s+/)[0]:"";
+if(nombre){nombre=nombre.charAt(0).toUpperCase()+nombre.slice(1);$("titulo").textContent="Hola "+nombre+", gracias por agendar tu llamada"}
+
+var c=S&&S.cita;
+if(c&&c.inicio&&new Date(c.inicio).getTime()>Date.now()-3600000){
+  var LUGARES={Mexico_City:"Ciudad de México",Bogota:"Colombia",Cancun:"Cancún",Merida:"Mérida",Mazatlan:"Mazatlán",Panama:"Panamá",Asuncion:"Asunción",Los_Angeles:"California",New_York:"Nueva York",Madrid:"España",Lima:"Perú",Santiago:"Chile",Tijuana:"Baja California",Hermosillo:"Sonora",Bahia_Banderas:"Bahía de Banderas",Ciudad_Juarez:"Ciudad Juárez",Sao_Paulo:"São Paulo"};
+  var lugar=function(z){var k=String(z||"").split("/").pop();return LUGARES[k]||k.replace(/_/g," ")};
+  var fmt=function(op){try{return new Intl.DateTimeFormat("es",op)}catch(e){delete op.timeZone;return new Intl.DateTimeFormat("es",op)}};
+  var z=c.zona||"America/Bogota",f=new Date(c.inicio),dur=c.dur||30;
+  var dia=fmt({weekday:"long",day:"numeric",month:"long",timeZone:z}).format(f).replace(",","");
+  $("cita-dia").textContent=dia.charAt(0).toUpperCase()+dia.slice(1)+" · "+fmt({hour:"numeric",minute:"2-digit",hour12:true,timeZone:z}).format(f);
+  $("cita-zona").textContent="Hora de "+lugar(z);
+  $("cita-p").textContent="Te escribo por WhatsApp con la confirmación"+(S.correo?" y te llega la invitación con el enlace a "+S.correo:"")+".";
+  var iso=function(d){return d.toISOString().replace(/[-:]|\.\d{3}/g,"")};
+  $("cita-cal").href="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("Llamada con Lead Master")+
+    "&dates="+iso(f)+"/"+iso(new Date(f.getTime()+dur*60000))+"&details="+encodeURIComponent("Llamada con Sergio, de Lead Master. Si necesitas mover la hora, escríbele por WhatsApp.");
+  $("cita").hidden=false;
+}
+})();
+</script>
+</body>
+</html>
